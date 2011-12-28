@@ -1,5 +1,7 @@
 <?php
-class Flyf_Model_Meta_ValueObject extends Flyf_Abstract_Model_ValueObject {
+namespace Flyf\Models\Abstracts;
+
+class MetaValueObject extends ValueObject {
 	public $date_created;
 	public $date_modified;
 	public $date_trashed;

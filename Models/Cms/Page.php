@@ -1,5 +1,7 @@
 <?php
-class Cms_Page extends Flyf_Abstract_Model {
+namespace Flyf\Models\Cms;
+
+class Page extends \Flyf\Models\Abstracts\Model {
 
 }
 ?>

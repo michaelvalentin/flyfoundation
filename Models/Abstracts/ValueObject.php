@@ -1,5 +1,7 @@
 <?php
-class Flyf_Abstract_Model_ValueObject {
+namespace Flyf\Models\Abstracts;
+
+abstract class ValueObject {
 	protected $annotations;
 	protected $translatable;
 
@@ -18,7 +20,7 @@ class Flyf_Abstract_Model_ValueObject {
 		return $this->$key;
 	}
 	
-	public function setValues($values) {
+	public function SetValues($values) {
 		if (is_array($values)) {
 			foreach ($values as $key => $value) {
 				$this->$key = $value;
@@ -26,7 +28,9 @@ class Flyf_Abstract_Model_ValueObject {
 		}
 	}
 	
-	public function getValues() {
+	public function GetValues() {
+		$result = array();
+		
 		foreach (get_object_vars($this) as $key => $value) {
 			if ($key != 'annotations' && $key != 'translatable') {
 				$result[$key] = $value;
@@ -37,7 +41,7 @@ class Flyf_Abstract_Model_ValueObject {
 	}
 
 	// TODO
-	public function validate($key = null, $value = null) {
+	public function Validate($key = null, $value = null) {
 		if ($key != null && $value != null) {
 			// validate key against value
 		} else if ($key != null) {

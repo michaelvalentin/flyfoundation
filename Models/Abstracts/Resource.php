@@ -1,38 +1,40 @@
 <?php
-class Flyf_Abstract_Model_Resource {
-	protected $queryBuilder;
+namespace Flyf\Models\Abstracts;
+
+class Resource {
+	protected $QueryBuilder;
 	
 	public function __construct() {
-		$this->queryBuilder = Flyf::registry('flyf_database_querybuilder');
+		$this->QueryBuilder = new \Flyf\Database\QueryBuilder();
 
-		$this->queryBuilder->setTable(strtolower(str_replace('_Resource', '', get_class($this))));
-		$this->queryBuilder->setFields(array_keys(get_class_vars(str_replace('_Resource', '', get_class($this)).'_ValueObject')));
-	}
-
-	public function setLimit($limit) {
-		$this->queryBuilder->setLimit($limit);
-	}
-	public function setOffset($offset) {
-		$this->queryBuilder->setOffset($offset);
-	}
-	public function setOrder($order, $dir) {
-		$this->queryBuilder->addOrder($order, $dir);
+		$this->QueryBuilder->SetTable(strtolower(str_replace('_Resource', '', get_class($this))));
+		$this->QueryBuilder->SetFields(array_keys(get_class_vars(str_replace('_Resource', '', get_class($this)).'_ValueObject')));
 	}
 
-	public function getCount() {
-		return $this->queryBuilder->getCount();
+	public function SetLimit($limit) {
+		$this->QueryBuilder->setLimit($limit);
 	}
-	public function getCountTotal() {
-		return $this->queryBuilder->getCountTotal();
+	public function SetOffset($offset) {
+		$this->QueryBuilder->setOffset($offset);
+	}
+	public function SetOrder($order, $dir) {
+		$this->QueryBuilder->addOrder($order, $dir);
 	}
 
-	public function build() {
+	public function GetCount() {
+		return $this->QueryBuilder->GetCount();
+	}
+	public function GetCountTotal() {
+		return $this->QueryBuilder->GetCountTotal();
+	}
+
+	public function Build() {
 		$objects = array();
 		$class = str_replace('_Resource', '', get_called_class());
 		
-		if (count($dataset = $this->queryBuilder->execute())) {
+		if (count($dataset = $this->QueryBuilder->ExecuteQuery())) {
 			foreach ($dataset as $data) {
-				$objects[] = $class::create($data);
+				$objects[] = $class::Create($data);
 			}
 		}
 

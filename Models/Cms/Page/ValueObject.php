@@ -1,5 +1,7 @@
 <?php
-class Cms_Page_ValueObject extends Flyf_Abstract_Model_ValueObject {
+namespace Flyf\Models\Cms\Page;
+
+class ValueObject extends \Flyf\Models\Abstracts\ValueObject {
 	public $id;
 
 	public $title;

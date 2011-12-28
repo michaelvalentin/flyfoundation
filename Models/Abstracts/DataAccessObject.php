@@ -1,118 +1,116 @@
 <?php
-class Flyf_Abstract_Model_DataAccessObject {
-	protected $queryBuilder;
+namespace Flyf\Models\Abstracts;
+
+class DataAccessObject {
+	protected $QueryBuilder;
 	
-	protected $table;
-	protected $fields;
+	protected $Table;
+	protected $Fields;
 	
-	public function __construct($meta = false) {
-		$this->queryBuilder = Flyf::registry('flyf_database_querybuilder');
-
-		$this->table = strtolower(str_replace('_DataAccessObject', '', get_class($this)));
-		$this->fields = array_keys(get_class_vars(str_replace('_DataAccessObject', '_ValueObject', get_class($this))));
-
-		if ($meta) {
-			$metaValueObjectCustom = str_replace('_DataAccessObject', '_Meta_ValueObject', get_class($this));
-			$metaValueObjectBase = 'Flyf_Model_Meta_ValueObject';
-
-			$meta_fields = array_keys(get_class_vars(class_exists($metaValueObjectCustom) ? $metaValueObjectCustom : $metaValueObjectBase));
-
-			$this->fields = array_unique(array_merge($this->fields, $meta_fields));
-		}
+	public function __construct() {
+		$this->QueryBuilder = new \Flyf\Database\QueryBuilder();
 	}
 
-	public function load($data) {
+	public function SetTable($table) {
+		$this->Table = $table;
+	}
+	
+	public function SetFields($fields) {
+		$this->Fields = $fields;
+	}
+
+	public function Load($data) {
 		if (is_array($data)) {
-			$this->queryBuilder->setType('select');
-			$this->queryBuilder->setTable($this->table);
-			$this->queryBuilder->setFields($this->fields);
+			$this->QueryBuilder->SetType('select');
+			$this->QueryBuilder->SetTable($this->Table);
+			$this->QueryBuilder->SetFields($this->Fields);
 			
-			$this->queryBuilder->setLimit(1);
+			$this->QueryBuilder->SetLimit(1);
 			
 			foreach ($data as $key => $value) {
-				$this->queryBuilder->addCondition("`".$key."` = '".$value."'");
+				$this->QueryBuilder->AddCondition("`".$key."` = '".$value."'");
 			}
 
-			if (count($result = $this->queryBuilder->execute())) {
+			if (count($result = $this->QueryBuilder->Execute())) {
 				return $result[0];
 			} else {
 				return array();	
 			}
 		} else {
-			return $this->load(array('id' => $data));
+			return $this->Load(array('id' => $data));
 		}
 	}
 
-	public function save($data) {
+	public function Save($data) {
 		if (isset($data['id']) && $data['id']) {
-			$this->queryBuilder->setType('update');
-			$this->queryBuilder->addCondition('id = '.$data['id']);
+			$this->QueryBuilder->SetType('update');
+			$this->QueryBuilder->AddCondition('id = '.$data['id']);
 
 			if (array_key_exists('date_modified', $data)) {
 				$data['date_modified'] = date('Y-m-d H:i:s');
 			}
 		} else {
-			$this->queryBuilder->setType('insert');
+			$this->QueryBuilder->SetType('insert');
 
 			if (array_key_exists('date_created', $data)) {
 				$data['date_created'] = date('Y-m-d H:i:s');
 			}
 		}
 		
-		$this->queryBuilder->setTable($this->table);
+		$this->QueryBuilder->SetTable($this->Table);
 
-		$this->queryBuilder->setFields(array_keys($data));
-		$this->queryBuilder->setValues(array_values($data));
+		$this->QueryBuilder->SetFields(array_keys($data));
+		$this->QueryBuilder->SetValues(array_values($data));
 		
-		$this->queryBuilder->setLimit(1);
+		$this->QueryBuilder->SetLimit(1);
 
-		if (($id = $this->queryBuilder->execute()) !== null) {
+		if (($id = $this->QueryBuilder->Execute()) !== null) {
 			$data['id'] = isset($data['id']) && $data['id'] ? $data['id'] : $id;
 		}
 
 		return $data;
 	}
 
-	public function delete($id) {
-		$this->queryBuilder->setType('delete');
-		$this->queryBuilder->setTable($this->table);
+	public function Delete($id) {
+		$this->QueryBuilder->SetType('delete');
+		$this->QueryBuilder->SetTable($this->Table);
 		
-		$this->queryBuilder->addCondition('id = '.$id);
-		$this->queryBuilder->setLimit(1);
+		$this->QueryBuilder->AddCondition('id = '.$id);
+		$this->QueryBuilder->SetLimit(1);
 
-		$this->queryBuilder->execute();
+		$this->QueryBuilder->Execute();
 	}
 
-	public function trash($id) {
+	public function Trash($id) {
 		$data = array(
 			'date_trashed' => date('Y-m-d H:i:s')
 		);
 		
-		$this->queryBuilder->setType('update');
-		$this->queryBuilder->setTable($this->table);
-		$this->queryBuilder->setFields(array_keys($data));
-		$this->queryBuilder->setValues(array_values($data));
-		$this->queryBuilder->addCondition('id = '.$id);		
-		$this->queryBuilder->setLimit(1);
-
-		$this->queryBuilder->execute();
+		$this->QueryBuilder->SetType('update');
+		$this->QueryBuilder->SetTable($this->Table);
+		$this->QueryBuilder->SetFields(array_keys($data));
+		$this->QueryBuilder->SetValues(array_values($data));
+		$this->QueryBuilder->AddCondition('id = '.$id);		
+		$this->QueryBuilder->SetLimit(1);
+		
+		$this->QueryBuilder->Execute();
 
 		return $data;
 	}
 
-	public function untrash($id) {
+	public function Untrash($id) {
 		$data = array(
 			'date_trashed' => 0
 		);
 		
-		$this->queryBuilder->setType('update');
-		$this->queryBuilder->setTable($this->table);
-		$this->queryBuilder->setFields(array_keys($data));
-		$this->queryBuilder->setValues(array_values($data));
-		$this->queryBuilder->addCondition('id = '.$id);		
-		$this->queryBuilder->setLimit(1);
+		$this->QueryBuilder->SetType('update');
+		$this->QueryBuilder->SetTable($this->Table);
+		$this->QueryBuilder->SetFields(array_keys($data));
+		$this->QueryBuilder->SetValues(array_values($data));
+		$this->QueryBuilder->AddCondition('id = '.$id);		
+		$this->QueryBuilder->SetLimit(1);
 
-		$this->queryBuilder->execute();
+		$this->QueryBuilder->Execute();
 
 		return $data;
 	}
