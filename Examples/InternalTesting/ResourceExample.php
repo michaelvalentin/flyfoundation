@@ -15,6 +15,7 @@ $connection = Connection::GetInstance();
 $connection->Connect();
 
 $resource = Page::Resource();
+$resource->SetSomething('something');
 $pages = $resource->Build();
 
 foreach ($pages as $page) {
