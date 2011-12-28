@@ -29,14 +29,45 @@ class View {
 		array_merge($this->values,array($label=>$array));
 	}
 	
-	protected function Process(){
-		//Should escape values!!! - Wrap includes (that should not be escaped... in some sort of object indicating that it is "includedHtml")...
-		//Should do standard formatting of Dates and the like...
-		//Make an interface "printable" to allow the printing of.. Say a "Price" object..
+	private function Process(array $array){
+		$output = array();
+		foreach($array as $l=>$v){
+			if(is_array($v)){
+				$output[$l] = $this->Process($v);
+				continue;
+			}
+			if($v instanceof \Flyf\Models\Abstracts\Model){
+				$output[$l] = $v->AsArray();
+				continue;
+			}
+			if($v instanceof Util\HtmlString){
+				//if(!$v->Validate()) Debug::Hint("Malformed html in".get_called_class()); //TODO: Implement
+				$output[$l] = $v->Output();
+				continue;
+			}
+			if(is_bool($v) || is_int($v)){
+				$output[$l] = $v;
+				continue;
+			}
+			if(is_float($v)){
+				$output[$l] = \Flyf\Language\Formatter::FormatFloat($v);
+				continue;
+			}
+			if(is_string($v)){
+				$output[$l] = htmlentities($v);
+				continue;
+			}
+			if($v instanceof \DateTime){
+				$output[$l] = \Flyf\Language\Formatter::FormatDateTime($v);
+				continue;
+			}
+			$output[$l] = (string) $v; //TODO: Consider a "Printable" interface instead??
+		}
+		return $output;
 	}
 	
 	public function GetValues(){
-		$this->Process();
+		$this->values = $this->Process($this->values);
 		return $this->values;
 	}
 }
