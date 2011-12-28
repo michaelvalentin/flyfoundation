@@ -2,8 +2,6 @@
 namespace Flyf\Models\Abstracts;
 
 abstract class Model {
-	protected $Table;
-	
 	private $dataAccessObject = null;
 	private $valueObject = null;
 	private $metaValueObject = null;
@@ -19,14 +17,17 @@ abstract class Model {
 		
 			$this->UseMetaValueObject(true);
 		
-			$this->dataAccessObject->SetTable(strtolower(end(explode('\\' ,get_class($this)))));
-			$this->dataAccessObject->SetFields($this->getFields());
+			$this->dataAccessObject->SetTable($this->GetTable());
+			$this->dataAccessObject->SetFields($this->GetFields());
 		} else {
 			throw new \Flyf\Exceptions\MissingValueObjectException('The value object "'.$valueObjectClass.'" does not exists');
 		}
 	}
 
-	private function GetFields() {
+	public function GetTable() {
+		return strtolower(end(explode('\\' ,get_class($this))));
+	}
+	public function GetFields() {
 		return array_merge(array_keys($this->valueObject->GetValues()), array_keys($this->metaValueObject != null ? $this->metaValueObject->GetValues() : array()));
 	}
 
@@ -64,11 +65,12 @@ abstract class Model {
 	}
 
 	public static function Resource() {
-		$class = get_called_class().'_Resource';
-
-		if (class_exists($class)) {
-			return new $class();
-		}
+		$model = self::Create(array());
+		
+		$resourceClass = '\\'.get_called_class().'\\Resource';
+		$resource = class_exists($resourceClass) ? new $resourceClass($model) : new Resource($model);
+		
+		return $resource;
 	}
 
 	public function Set($key, $value) {

@@ -26,9 +26,10 @@ class DataAccessObject {
 			$this->QueryBuilder->SetFields($this->Fields);
 			
 			$this->QueryBuilder->SetLimit(1);
-			
+
 			foreach ($data as $key => $value) {
-				$this->QueryBuilder->AddCondition("`".$key."` = '".$value."'");
+				$this->QueryBuilder->AddCondition('`'.$key.'` = :'.$key);
+				$this->QueryBuilder->Bindparam($key, $value);
 			}
 
 			if (count($result = $this->QueryBuilder->Execute())) {
@@ -44,8 +45,9 @@ class DataAccessObject {
 	public function Save($data) {
 		if (isset($data['id']) && $data['id']) {
 			$this->QueryBuilder->SetType('update');
-			$this->QueryBuilder->AddCondition('id = '.$data['id']);
-
+			$this->QueryBuilder->AddCondition('id = :id');
+			$this->QueryBuilder->BindParam('id', $data['id']);
+		
 			if (array_key_exists('date_modified', $data)) {
 				$data['date_modified'] = date('Y-m-d H:i:s');
 			}
@@ -75,7 +77,8 @@ class DataAccessObject {
 		$this->QueryBuilder->SetType('delete');
 		$this->QueryBuilder->SetTable($this->Table);
 		
-		$this->QueryBuilder->AddCondition('id = '.$id);
+		$this->QueryBuilder->AddCondition('id = :id');
+		$this->QueryBuilder->BindParam('id', $id);
 		$this->QueryBuilder->SetLimit(1);
 
 		$this->QueryBuilder->Execute();
@@ -90,7 +93,8 @@ class DataAccessObject {
 		$this->QueryBuilder->SetTable($this->Table);
 		$this->QueryBuilder->SetFields(array_keys($data));
 		$this->QueryBuilder->SetValues(array_values($data));
-		$this->QueryBuilder->AddCondition('id = '.$id);		
+		$this->QueryBuilder->AddCondition('id = :id');
+		$this->QueryBuilder->BindParam('id', $id);
 		$this->QueryBuilder->SetLimit(1);
 		
 		$this->QueryBuilder->Execute();
@@ -107,7 +111,8 @@ class DataAccessObject {
 		$this->QueryBuilder->SetTable($this->Table);
 		$this->QueryBuilder->SetFields(array_keys($data));
 		$this->QueryBuilder->SetValues(array_values($data));
-		$this->QueryBuilder->AddCondition('id = '.$id);		
+		$this->QueryBuilder->AddCondition('id = :id');
+		$this->QueryBuilder->BindParam('id', $id);	
 		$this->QueryBuilder->SetLimit(1);
 
 		$this->QueryBuilder->Execute();
