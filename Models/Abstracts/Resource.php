@@ -3,12 +3,15 @@ namespace Flyf\Models\Abstracts;
 
 class Resource {
 	protected $QueryBuilder;
+	private $model;
 	
-	public function __construct() {
+	public function __construct($model) {
+		$this->model = get_class($model);
+		
 		$this->QueryBuilder = new \Flyf\Database\QueryBuilder();
 
-		$this->QueryBuilder->SetTable(strtolower(str_replace('_Resource', '', get_class($this))));
-		$this->QueryBuilder->SetFields(array_keys(get_class_vars(str_replace('_Resource', '', get_class($this)).'_ValueObject')));
+		$this->QueryBuilder->SetTable($model->GetTable());
+		$this->QueryBuilder->SetFields($model->getFields());
 	}
 
 	public function SetLimit($limit) {
@@ -30,9 +33,9 @@ class Resource {
 
 	public function Build() {
 		$objects = array();
-		$class = str_replace('_Resource', '', get_called_class());
+		$class = $this->model;
 		
-		if (count($dataset = $this->QueryBuilder->ExecuteQuery())) {
+		if (count($dataset = $this->QueryBuilder->Execute())) {
 			foreach ($dataset as $data) {
 				$objects[] = $class::Create($data);
 			}

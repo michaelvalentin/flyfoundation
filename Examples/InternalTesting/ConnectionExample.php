@@ -4,7 +4,7 @@ namespace Flyf\Examples;
 error_reporting(E_ALL);
 ini_set('display_errors', true);
 
-require_once '../Core/Dispatcher.php';
+require_once '../../Core/Dispatcher.php';
 \Flyf\Core\Dispatcher::Init();
 
 use \Flyf\Database\Connection;
