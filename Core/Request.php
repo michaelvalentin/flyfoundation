@@ -5,9 +5,8 @@ class Request {
 	private static $_requests = array();
 	
 	private $language;
-	private $component;
+	private $components;
 	
-	private $path;
 	private $params;
 
 	private function __construct() {
@@ -25,40 +24,58 @@ class Request {
 	}
 
 	public function Configure() {
-		$this->path = $this->GetGetParam('path');
-		
-		$this->language = $this->GetGetParam('language');
-		$this->component = $this->GetGetParam('component');
-
+		$this->language = null;
 		$this->params = array();
+		$this->components = array();
 
-		$fragments = explode('/', $this->path);
+		$this->language = $this->GetGetParam('language');
 
-		for ($x = 1; $x < count($fragments); $x++) {
-			$this->params[$fragments[$x - 1]] = $fragments[$x];
+		if ($params = $this->GetGetParam('params')) {
+			$pairs = explode(',', $params);
+		
+			foreach ($pairs as $pair) {
+				$_pair = explode('=', $pair);
+
+				$key = $_pair[0];
+				$value = isset($_pair[1]) ? $_pair[1] : null;
+
+				$this->params[$key] = $value;
+			}
+		}
+
+		if ($components = $this->GetGetParam('components')) {
+			$fragments = explode('/', $components);
+			array_unshift($fragments, 'root');
+		
+			for ($x = 1; $x < count($fragments); $x++) {
+				$this->components[str_replace('_', '\\', $fragments[$x - 1])] = str_replace('_', '\\', $fragments[$x]);
+			}
 		}
 	}
 
 	public function GetLanguage() {
 		return $this->language ? : Config::GetValue('default_language');
 	}
-
-	public function GetComponent() {
-		return $this->component ? : Config::GetValue('default_component');
+	
+	public function getComponents() {
+		return $this->components;
+	}
+	public function GetComponent($index = 'root') {
+		return isset($this->components[$index]) ? $this->components[$index] : null;
 	}
 
 	public function GetParams() {
 		return $this->params;
 	}
 	public function GetParam($index) {
-		return isset($this->params[$index]) ? $this->params[$index] : false;	
+		return isset($this->params[$index]) ? $this->params[$index] : null;	
 	}
 
 	public function GetGet() {
 		return $_GET;
 	}
 	public function GetGetParam($index) {
-		return isset($_GET[$index]) ? $_GET[$index] : false;
+		return isset($_GET[$index]) ? $_GET[$index] : null;
 	}
 	public function SetGetParam($index, $value) {
 		$_GET[$index] = $value;
@@ -78,7 +95,7 @@ class Request {
 		return $_SESSION; //TODO: Consider db session -> To allow scaling...
 	}
 	public function GetSessionParam($index) {
-		return isset($_SESSION[$index]) ? $_SESSION[$index] : false; //TODO: Consider db session -> To allow scaling...
+		return isset($_SESSION[$index]) ? $_SESSION[$index] : null; //TODO: Consider db session -> To allow scaling...
 	}
 	public function SetSessionParam($index, $value) {
 		$_SESSION[$index] = $value; //TODO: Consider db session -> To allow scaling...
@@ -100,7 +117,7 @@ class Request {
 		return $_SERVER;
 	}
 	public function GetServerParam($index) {
-		return isset($_SERVER[strtoupper($index)]) ? $_SERVER[strtoupper($index)] : false;
+		return isset($_SERVER[strtoupper($index)]) ? $_SERVER[strtoupper($index)] : null;
 	}
 }
 ?>
