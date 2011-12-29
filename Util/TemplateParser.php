@@ -23,6 +23,12 @@ class TemplateParser {
 		$m = new Mustache(null,null,null,$options);
 		return $m->render($template, $view->GetValues());
 	}
+
+	public static function BufferTemplate($template) {
+		ob_start();
+		require $template;
+		return ob_get_clean();
+	}
 }
 
 ?>

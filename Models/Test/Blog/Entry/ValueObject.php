@@ -1,5 +1,5 @@
 <?php
-namespace Flyf\Models\Cms\Page;
+namespace Flyf\Models\Test\Blog\Entry;
 
 class ValueObject extends \Flyf\Models\Abstracts\ValueObject {
 	public $id;

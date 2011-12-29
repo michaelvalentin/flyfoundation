@@ -27,7 +27,8 @@ abstract class AbstractController {
 	public function Render(){ //TODO: Implement caching...
 		if(is_array($this->_controllers)){
 			foreach($this->_controllers as $l=>$c){
-				$this->_view->AddValue($l,new \Flyf\Util\HtmlString($c->Render(),array("all")));
+				#$this->_view->AddValue($l,new \Flyf\Util\HtmlString($c->Render(),array("all")));
+				$this->_view->AddValue($l,$c->Render());
 			}
 		}
 		return Util\TemplateParser::ParseTemplate($this->_template,$this->_view);

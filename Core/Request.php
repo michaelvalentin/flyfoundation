@@ -2,21 +2,33 @@
 namespace Flyf\Core;
 
 class Request {
+	private static $_requests = array();
+	
 	private $language;
 	private $component;
 	
 	private $path;
 	private $params;
 
-	public function __construct() {
-		$this->configure();
+	private function __construct() {
+		$this->Configure();
 	}
 
-	public function configure() {
-		$this->path = $this->getGetParam('path');
+	public static function GetRequest($key = 'default'){
+		if(isset(self::$_requests[$key])){
+			return self::$_requests[$key];
+		}else{
+			self::$_requests[$key] = new Request();
+
+			return self::$_requests[$key];
+		}
+	}
+
+	public function Configure() {
+		$this->path = $this->GetGetParam('path');
 		
-		$this->language = $this->getGetParam('language');
-		$this->component = $this->getGetParam('component');
+		$this->language = $this->GetGetParam('language');
+		$this->component = $this->GetGetParam('component');
 
 		$this->params = array();
 
@@ -27,65 +39,67 @@ class Request {
 		}
 	}
 
-	public function getLanguage() {
-		return $this->language ? : 'default_language'; // TODO from config
+	public function GetLanguage() {
+		return $this->language ? : Config::GetValue('default_language');
 	}
 
-	public function getComponent() {
-		return $this->component ? : 'default_component'; // TODO from config
+	public function GetComponent() {
+		return $this->component ? : Config::GetValue('default_component');
 	}
 
-	public function getParams() {
+	public function GetParams() {
 		return $this->params;
 	}
-	public function getParam($index) {
+	public function GetParam($index) {
 		return isset($this->params[$index]) ? $this->params[$index] : false;	
 	}
 
-	public function getGet() {
+	public function GetGet() {
 		return $_GET;
 	}
-	public function getGetParam($index) {
+	public function GetGetParam($index) {
 		return isset($_GET[$index]) ? $_GET[$index] : false;
 	}
-	public function setGetParam($index, $value) {
+	public function SetGetParam($index, $value) {
 		$_GET[$index] = $value;
 	}
 
-	public function getPost() {
+	public function GetPost() {
 		return $_POST;
 	}
-	public function getPostParam($index) {
+	public function GetPostParam($index) {
 		return isset($_POST[$index]) ? $_POST[$index] : false;
 	}
-	public function setPostParam($index, $value) {
+	public function SetPostParam($index, $value) {
 		$_POST[$index] = $value;
 	}
 
-	public function getSession() {
+	public function GetSession() {
 		return $_SESSION; //TODO: Consider db session -> To allow scaling...
 	}
-	public function getSessionParam($index) {
+	public function GetSessionParam($index) {
 		return isset($_SESSION[$index]) ? $_SESSION[$index] : false; //TODO: Consider db session -> To allow scaling...
 	}
-	public function setSessionParam($index, $value) {
+	public function SetSessionParam($index, $value) {
 		$_SESSION[$index] = $value; //TODO: Consider db session -> To allow scaling...
 	}
 
-	public function getCookie() {
+	/*
+	public function GetCookie() {
 		return $_COOKIE;
 	}
-	public function getCookieParam($index) {
+	public function GetCookieParam($index) {
 		return isset($_COOKIE[$index]) ? $_COOKIE[$index] : false;
 	}
-	public function setCookieParam($index, $values) {
+	public function SetCookieParam($index, $values) {
 		setcookie($values['name'], $values['value'], $values['expire']); //TODO: Consider a response thing?
 	}
+	*/
 
-	public function getServer() {
+	public function GetServer() {
 		return $_SERVER;
 	}
-	public function getServerParam($index) {
+	public function GetServerParam($index) {
 		return isset($_SERVER[strtoupper($index)]) ? $_SERVER[strtoupper($index)] : false;
 	}
 }
