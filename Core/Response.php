@@ -6,9 +6,9 @@
  */
 namespace Flyf\Core;
 
-require_once __DIR__.'/ResponseHeaders.php';
-require_once __DIR__.'/ResponseMetaData.php';
-require_once __DIR__.'/../util/Set.php';
+#require_once __DIR__.'/ResponseHeaders.php';
+#require_once __DIR__.'/ResponseMetaData.php';
+#require_once __DIR__.'/../util/Set.php';
 
 use Flyf\Util\Set as Set;
 
