@@ -19,8 +19,10 @@ class Dispatcher {
 		$connection->Connect();
 		
 		$Response = Response::GetResponse();
-		$rootController = Config::GetValue("root_controller");
-		//$rootController->AddArgs(Request::GetArgs());  //TODO: WHERE SHOULD WE GET ROOT CONTROLLER FROM? Consider other than argument
+		$rootController = \Flyf\Util\ComponentLoader::FromRequest();
+		if($rootController  == null){
+			$rootController = \Flyf\Util\ComponentLoader::FromName("SharedTest");
+		}
 		$rootController->Process();
 		$rootController->CollectData();
 		$Response->SetContent($rootController->Render()); 
