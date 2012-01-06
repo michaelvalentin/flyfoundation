@@ -19,7 +19,13 @@ class ComponentLoader {
 			$parentKey = preg_replace("/\\?Flyf\\Components\\\(.+?)Controller/","$1", get_class($parent));
 		}
 		$req = \Flyf\Core\Request::GetRequest();
-		$actualClassName = "\\Flyf\\Components\\".$req->GetComponent($parentKey)."Controller";
+		$controller = $req->GetComponent($parentKey);
+		$controller = str_replace(' ', '', ucwords(str_replace('\\', ' ', $controller)));
+
+		// jeg har bare justeret en anelse her for at kunne lave urlhelperen.
+		
+		$actualClassName = "\\Flyf\\Components\\".$controller."\\".$controller."Controller";
+
 		return self::TryToLoad($actualClassName);
 	}
 	
@@ -31,7 +37,7 @@ class ComponentLoader {
 			}*/
 			
 			return new $className();
-		}else{
+		}else{	
 			return null;
 		}
 	}
