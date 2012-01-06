@@ -7,6 +7,15 @@ ini_set('display_errors', true);
 require_once '../../Core/Dispatcher.php';
 \Flyf\Core\Dispatcher::Init();
 
+\Flyf\Core\Config::Setup(array(
+	'profiler_console_output' => true,
+	'profiler_file_output' => true,
+	'profiler_file_write' => array('multiple', 'single'),
+	'profiler_file_path' => 'Var/'
+));
+
+
+
 use \Flyf\Database\Connection as Connection;
 use \Flyf\Models\Cms\Page as Page;
 

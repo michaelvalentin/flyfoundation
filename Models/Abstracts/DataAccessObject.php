@@ -1,24 +1,103 @@
 <?php
 namespace Flyf\Models\Abstracts;
 
+/**
+ * The data access object facilitates communication
+ * with the external data source (database) for the 
+ * model. When a model wants to save/delete/load content
+ * it propagates its calls/uses the data access object
+ * to execute the nessecary queries and fetch the desired
+ * data.
+ *
+ * Said in other words, the data access object is the
+ * bridge between the models used in the application
+ * and the persistent storage.
+ *
+ * The data access object uses an instance of the 
+ * QueryBuilder to build an execute it's queries.
+ *
+ * The data access object is very close to a classic
+ * CRUD mechanism, but is designed with inheritance
+ * in mind. If unique behaviour or added behvaiour is
+ * needed by a model, one can simply create a new
+ * data access object (given the right naming-convention)
+ * and inherit from the DataAccessObject (this class).
+ *
+ * The model will load the custom data access object
+ * without any further editing.
+ *
+ * @author Henrik Haugbølle <hh@signifly.com>
+ * @version 2011-01-06
+ * @dependencies QueryBuilder
+ */
 class DataAccessObject {
+	// The query builder used to build queries (o'rly)
 	protected $QueryBuilder;
-	
+
+	// The base table
 	protected $Table;
+	// The base fields
 	protected $Fields;
-	
+
+	// The translation table
+	protected $TableTranslation;
+	// The translation fields
+	protected $FieldsTranslation;
+
+	/**
+	 * The constructor is only used to instantiate
+	 * an instance of the QueryBuilder.
+	 */
 	public function __construct() {
 		$this->QueryBuilder = new \Flyf\Database\QueryBuilder();
 	}
 
+	/**
+	 * Set method for setting the base table.
+	 *
+	 * @param string $table
+	 */
 	public function SetTable($table) {
 		$this->Table = $table;
 	}
-	
+
+	/**
+	 * Set method for setting the base fields.
+	 *
+	 * @param array $fields
+	 */
 	public function SetFields($fields) {
 		$this->Fields = $fields;
 	}
 
+	/**
+	 * Set method for setting the translation table.
+	 *
+	 * @param string $tableTranslation
+	 */
+	public function SetTableTranslation($tableTranslation) {
+		$this->TableTranslation = $tableTranslation;
+	}
+
+	/**
+	 * Set method for setting the translation fields.
+	 *
+	 * @param array $fieldsTranslation
+	 */
+	public function SetFieldsTranslation($fieldsTranslation) {
+		$this->FieldsTranslation = $fieldsTranslation;
+	}
+
+	/**
+	 * The Load method can either be called with an id or with
+	 * a various range as parameters (given as an associative array).
+	 *
+	 * The method builds a select statement from the parameters
+	 * and fetches the results from the database using the query builder.
+	 *
+	 * @param mixed $data (either an id as integer, or an associative array)
+	 * @return array (the data as an associative array)
+	 */
 	public function Load($data) {
 		if (is_array($data)) {
 			$this->QueryBuilder->SetType('select');
@@ -29,7 +108,7 @@ class DataAccessObject {
 
 			foreach ($data as $key => $value) {
 				$this->QueryBuilder->AddCondition('`'.$key.'` = :'.$key);
-				$this->QueryBuilder->Bindparam($key, $value);
+				$this->QueryBuilder->BindParam($key, $value);
 			}
 
 			if (count($result = $this->QueryBuilder->Execute())) {
@@ -42,6 +121,53 @@ class DataAccessObject {
 		}
 	}
 
+	/**
+	 * The LoadTranslation method is, as its name says, used 
+	 * to load a translation of a model.
+	 *
+	 * It uses the translation-table and translation-fields.
+	 * 
+	 * @param integer $model_id (the id of the model)
+	 * @param string $language (the language to load)
+	 */
+	public function LoadTranslation($model_id, $language) {
+		$this->QueryBuilder->SetType('select');
+		$this->QueryBuilder->SetTable($this->TableTranslation);
+		$this->QueryBuilder->SetFields(array_merge(array('id'), $this->FieldsTranslation));
+		
+		$this->QueryBuilder->SetLimit(1);
+
+		$this->QueryBuilder->AddCondition('`model_id` = :model_id');
+		$this->QueryBuilder->BindParam('model_id', $model_id);
+		$this->QueryBuilder->AddCondition('`language` = :language');
+		$this->QueryBuilder->BindParam('language', $language);
+
+		if (count($result = $this->QueryBuilder->Execute())) {
+			return $result[0];
+		} else {
+			return array();	
+		}
+	}
+
+	/**
+	 * Both updates and inserts into the external data source.
+	 * The parameter must be an associative array, where the
+	 * keys represents the fields of the table in the database
+	 * and the values represents ... The values.
+	 *
+	 * If an 'id' key is in the associative array, the row associated
+	 * with the id in the database is updated. If an 'id' key is not
+	 * to be found, the method will insert a new row in the database.
+	 *
+	 * The method automatically adds modified and created date-stamps,
+	 * if 'date_modified' and 'date_created' exists in the data given.
+	 * 
+	 * If the "operation" is an insert-"operation" it also inserts the
+	 * newly created id into the data, before returning it.
+	 *
+	 * @param array $data (an associative array of the data to be saved)
+	 * @return array $data (the data after saving)
+	 */
 	public function Save($data) {
 		if (isset($data['id']) && $data['id']) {
 			$this->QueryBuilder->SetType('update');
@@ -73,17 +199,91 @@ class DataAccessObject {
 		return $data;
 	}
 
+	/**
+	 * The method simply interates through the given translations
+	 * and saves those to the specified translation-table. 
+	 * 
+	 * If a translation does not exists, it will be created in
+	 * the database. 
+	 *
+	 * @param integer $model_id (the id of the model)
+	 * @param array $translations (the translations to be saved)
+	 * @return array (the saved translations)
+	 */
+	public function SaveTranslations($model_id, $translations) {
+		foreach ($translations as $key => $data) {
+			$data['model_id'] = $model_id;
+			$data['language'] = $key;
+			
+			if (isset($data['id']) && $data['id']) {
+				$this->QueryBuilder->SetType('update');
+				$this->QueryBuilder->AddCondition('id = :id');
+				$this->QueryBuilder->BindParam('id', $data['id']);
+			} else {
+				$this->QueryBuilder->SetType('insert');
+			}
+		
+			$this->QueryBuilder->SetTable($this->TableTranslation);
+
+			$this->QueryBuilder->SetFields(array_keys($data));
+			$this->QueryBuilder->SetValues(array_values($data));
+		
+			$this->QueryBuilder->SetLimit(1);
+
+			if (($translation_id = $this->QueryBuilder->Execute()) !== null) {
+				$data['id'] = isset($data['id']) && $data['id'] ? $data['id'] : $translation_id;
+			}
+
+			$translations[$key] = $data;
+		}
+
+		return $translations;
+	}
+
+	/**
+	 * Assembles a delete-statement to be executed. The
+	 * id parameter determines which row to delete in the
+	 * database. 
+	 *
+	 * @param integer $id (the id of the model to delete)
+	 */
 	public function Delete($id) {
 		$this->QueryBuilder->SetType('delete');
 		$this->QueryBuilder->SetTable($this->Table);
 		
-		$this->QueryBuilder->AddCondition('id = :id');
+		$this->QueryBuilder->AddCondition('`id` = :id');
 		$this->QueryBuilder->BindParam('id', $id);
 		$this->QueryBuilder->SetLimit(1);
 
 		$this->QueryBuilder->Execute();
 	}
 
+	/**
+	 * Deletes all translations of a model. Like the Delete
+	 * method it assembles an delete-statement and executes
+	 * it towards the database using the query builder.
+	 *
+	 * @param integer $model_id (the model_id of the translations to delete)
+	 */
+	public function DeleteTranslations($model_id) {
+		$this->QueryBuilder->SetType('delete');
+		$this->QueryBuilder->SetTable($this->TableTranslation);
+		
+		$this->QueryBuilder->AddCondition('`model_id` = :model_id');
+		$this->QueryBuilder->BindParam('model_id', $model_id);
+
+		$this->QueryBuilder->Execute();
+	}
+
+	/**
+	 * Used when a model has a meta value object attached.
+	 * The method takes the id of the model, and simply
+	 * updates the 'date_trashed' field in the database to
+	 * the current time, thereby declaring the model as
+	 * "trashed".
+	 * 
+	 * @param integer $id (the id of the model to trash)
+	 */
 	public function Trash($id) {
 		$data = array(
 			'date_trashed' => date('Y-m-d H:i:s')
@@ -101,7 +301,16 @@ class DataAccessObject {
 
 		return $data;
 	}
-
+	
+	/**
+	 * Used when a model has a meta value object attached.
+	 * The method takes the id of the model, and simply
+	 * updates the 'date_trashed' field in the database to
+	 * the 0, thereby decalring the model as "untrashed"
+	 * or not-trashed.
+	 * 
+	 * @param integer $id (the id of the model to untrash)
+	 */
 	public function Untrash($id) {
 		$data = array(
 			'date_trashed' => 0

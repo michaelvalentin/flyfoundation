@@ -1,16 +1,16 @@
 <?php
 namespace Flyf\Language;
 
+use \Flyf\Core\Config as Config;
+use \Flyf\Core\Request as Request;
+
 class LanguageSettings {
-	private $default = null;
-	
 	public static function GetDefaultLanguage(){
-		$this->default = \Flyf\Core\Config::GetValue("default_language");
-		return $this->default; //TODO: Implement
+		return Config::GetValue("default_language");
 	}
 	
 	public static function GetCurrentLanguage(){
-		return "en"; //TODO: Implement
+		return Request::GetRequest()->GetLanguage();
 	}
 }
 

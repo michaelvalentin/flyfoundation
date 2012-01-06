@@ -1,7 +1,8 @@
 <?php
 namespace Flyf\Core;
 
-use \Flyf\Database\Connection;
+use \Flyf\Database\Connection as Connection;
+use \Flyf\Util\Debug as Debug;
 
 /**
  * A class to take of dispatching the application
@@ -15,6 +16,8 @@ class Dispatcher {
 		//Constants
 		define("DEBUG",Config::GetValue("debug"));
 
+		Debug::Log("start");
+		
 		$connection = Connection::GetConnection();
 		$connection->Connect();
 		
@@ -28,7 +31,9 @@ class Dispatcher {
 		$Response->SetContent($rootController->Render()); 
 		$Response->Output();
 
-		
+		Debug::Log("end");
+
+		Debug::Flush();
 		$connection->Disconnect();
 	}
 	

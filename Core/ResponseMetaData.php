@@ -1,7 +1,6 @@
 <?php
 namespace Flyf\Core;
 
-#require_once __DIR__.'/../util/Set.php';
 use Flyf\Util\Set;
 
 /**
