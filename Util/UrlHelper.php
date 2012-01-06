@@ -10,8 +10,13 @@ use \Flyf\Language\LanguageSettings as LanguageSettings;
 class UrlHelper {
 	private static $urlHelper;
 
+	// definer standard params ud fra component
+	// find og arrangerer params / component / s
+	// match over til seo url via regex i rækkefølge
+
 	private $urls = array(
-		'testblogmain:action=view,id=:id' => 'blog/:id'
+		'testblogmain:action=view,id=(.+?)' => 'blog/$1',
+		'testblogmain:action=(.+?),id=(.+?)' => 'blog/$2/$1'
 	);
 
 	public static function GetUrlHelper() {
@@ -24,6 +29,10 @@ class UrlHelper {
 		}
 
 		return self::$urlHelper;
+	}
+
+	public function getProductUrl($pruduct) {
+		return '/'.Translate('blog').'/'.$product->get('id');
 	}
 
 	public function GetUrl($key, $values = null) {
