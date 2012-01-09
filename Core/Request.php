@@ -265,4 +265,3 @@ class Request {
 		return isset($_SERVER[strtoupper($index)]) ? $_SERVER[strtoupper($index)] : null;
 	}
 }
-?>

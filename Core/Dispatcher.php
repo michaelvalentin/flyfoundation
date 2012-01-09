@@ -41,8 +41,11 @@ class Dispatcher {
 		//Constants
 		define("DS",DIRECTORY_SEPARATOR);
 		
-		require_once 'Autoloader.php';
 		//Autoloader
+		require_once 'Autoloader.php';
+		
+		//Standard configuration
+		require_once 'Flyf/Resources/DefaultConfig/stdConfig.php';
 	}
 }
 

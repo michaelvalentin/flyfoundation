@@ -106,5 +106,3 @@ class Response {
 		ob_end_flush();
 	}
 }
-
-?>
