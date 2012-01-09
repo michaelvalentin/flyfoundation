@@ -7,17 +7,20 @@ namespace Flyf\Core;
  */
 class Config {
 	private static $_config;
-	private static $_setup = false;
+	private static $_locked = false;
 	
 	/**
-	 * Set the configuration for the system to the values defined in the input array
+	 * Set the configuration for the system to the values defined in the input array.
+	 * Existing values are overridden by new values.
 	 * @param array $config Configuration as an array
-	 * @throws \Exception If configuration is allready set..
 	 */
-	public static function Setup(array $config){
-		if(self::$_setup==true) throw new \Exception("Config can only be set up once");
-		self::$_config = $config;
-		self::$_setup = true;
+	public static function Set(array $config){
+		if(self::$_locked) throw new \Exception("Config is locked and can not be modified.");
+		if(!is_array(self::$_config)){
+			self::$_config = $config;
+		}else{
+			self::$_config = array_merge(self::$_config,$config);	
+		}
 	}
 	
 	/**
@@ -26,11 +29,15 @@ class Config {
 	 * @return multitype:|NULL The value of the configuration field, null if no value is set.
 	 */
 	public static function GetValue($index){
-		if(!self::$_setup) throw new \Exception("You cannot call Config before it is initialized");
+		if(!is_array(self::$_config)) throw new \Exception("You cannot call Config before it is initialized");
 		if(isset(self::$_config[$index])){
 			return self::$_config[$index];
 		}
 		return null;
+	}
+	
+	public static function Lock(){
+		
 	}
 }
 
