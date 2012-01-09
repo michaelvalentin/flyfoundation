@@ -90,6 +90,19 @@ class Request {
 				$this->components[str_replace('_', '\\', $fragments[$x - 1])] = str_replace('_', '\\', $fragments[$x]);
 			}
 		}
+
+		$this->components = array('root' => 'blok18', 'blok18' => 'blog', 'blog' => 'list');
+		$this->params = array(
+			'blok18' => array(
+				'secure' => 'secure'
+			),
+			'blog' => array(
+
+			),
+			'list' => array(
+				'view' => 'something'
+			)
+		);
 	}
 
 	/**
@@ -134,14 +147,28 @@ class Request {
 		return isset($this->components[$index]) ? $this->components[$index] : null;
 	}
 
+	public function GetCurrentComponent() {
+		$keys = array_keys($this->components);
+
+		return $this->components[array_pop($keys)];
+	}
+
 	/**
 	 * Get all parameters as interpreted in the request.
 	 * Returns an associate array.
 	 *
 	 * @return array (an associative array)
 	 */
-	public function GetParams() {
-		return $this->params;
+	public function GetParams($component = null) {
+		if ($component != null) {
+			if (isset($this->params[$component])) {
+				return $this->params[$component];
+			}
+
+			return null;
+		} else {
+			return $this->params;
+		}
 	}
 	
 	/**

@@ -69,10 +69,7 @@ abstract class Model {
 			$this->UseMetaValueObject(true);
 		
 			$this->dataAccessObject->SetTable($this->GetTable());
-			$this->dataAccessObject->SetFields($this->GetFields());
-			
 			$this->dataAccessObject->SetTableTranslation($this->GetTranslatableTable());
-			$this->dataAccessObject->SetFieldsTranslation($this->GetTranslatableFields());
 		} else {
 			throw new \Flyf\Exceptions\MissingValueObjectException('The value object "'.$valueObjectClass.'" does not exists');
 		}
@@ -93,8 +90,8 @@ abstract class Model {
 			$this->metaValueObject = null;
 		}
 
-		$this->dataAccessObject->SetFields($this->getFields());
-		$this->dataAccessObject->SetFields($this->GetTranslatableFields());
+		$this->dataAccessObject->SetFields($this->GetFields());
+		$this->dataAccessObject->SetFieldsTranslation($this->GetTranslatableFields());
 	}
 
 	/**
