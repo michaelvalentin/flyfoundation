@@ -1,6 +1,8 @@
 <?php
 namespace Flyf\Core;
 
+use \Flyf\Models\Url\Rewrite as Rewrite;
+
 /**
  *	The Request class interprets and arranges
  * the request sent from the client to the server.
@@ -18,12 +20,14 @@ class Request {
 	// Used to hold the different request instances
 	private static $_requests = array();
 
+	// The request
+	private $request;
 	// The language of the request
 	private $language;
 	// THe components of the request
 	private $components;
 	// The parameters of the request
-	private $params;
+	private $parameters;
 
 	/**
 	 * Initially call the Configure method to
@@ -43,12 +47,19 @@ class Request {
 	 * @return a instance
 	 *
 	 */
-	public static function GetRequest($key = 'default'){
-		if(!isset(self::$_requests[$key])) {
+	public static function GetRequest($key = 'default') {
+		if (!isset(self::$_requests[$key])) {
 			self::$_requests[$key] = new Request();
 		}
 		
 		return self::$_requests[$key];
+		
+		/*
+		if (!isset(self::$_requests[$key])) {
+			self::$_requests[$key] = new Request();
+		}
+		
+		return self::$_requests[$key];*/
 	}
 
 
@@ -63,46 +74,52 @@ class Request {
 	 * But it will soon be changed.
 	 */
 	public function Configure() {
-		$this->language = null;
-		$this->params = array();
-		$this->components = array();
-
+		$base = 'http://localhost/blok18/';
+	
 		$this->language = $this->GetGetParam('language');
+		$this->request = $this->GetGetParam('request');
 
-		if ($params = $this->GetGetParam('params')) {
-			$pairs = explode(',', $params);
-		
-			foreach ($pairs as $pair) {
-				$_pair = explode('=', $pair);
+		$this->components = array();
+		$this->parameters = array();
 
-				$key = $_pair[0];
-				$value = isset($_pair[1]) ? $_pair[1] : null;
+		$seoRequest = $base.$this->request;
 
-				$this->params[$key] = $value;
+		$rewrite = Rewrite::Load(array(
+			'seo' => $seoRequest
+		));
+
+		if ($rewrite->Exists()) {
+			$systemRequest = $rewrite->Get('system');
+			$systemRequest = str_replace($base, '', $systemRequest);
+
+			if ($count = count($components = explode('/', $systemRequest))) {
+				$prevComponent = 'root';
+				foreach ($components as $component) {
+					$parameters = array();
+
+					if (preg_match_all('/\((.+?)\)/ismu', $component, $matches)) {
+						$component = str_replace($matches[0][0], '', $component);
+
+						if ($count = count($fragments = explode('&', $matches[1][0]))) {
+							foreach ($fragments as $fragment) {
+								$split = explode('=', $fragment);
+								$key = $split[0];
+								$value = $split[1];
+
+								$parameters[$key] = $value;
+							}
+						}
+					}
+
+					$this->components[$prevComponent] = $component;
+					$prevComponent = $component;
+
+					$this->parameters[$component] = $parameters;
+				}
 			}
+		} else {
+			echo 'Rewrite does not exists';
 		}
-
-		if ($components = $this->GetGetParam('components')) {
-			$fragments = explode('/', $components);
-			array_unshift($fragments, 'root');
-		
-			for ($x = 1; $x < count($fragments); $x++) {
-				$this->components[str_replace('_', '\\', $fragments[$x - 1])] = str_replace('_', '\\', $fragments[$x]);
-			}
-		}
-
-		$this->components = array('root' => 'blok18', 'blok18' => 'blog', 'blog' => 'list');
-		$this->params = array(
-			'blok18' => array(
-				'secure' => 'secure'
-			),
-			'blog' => array(
-
-			),
-			'list' => array(
-				'view' => 'something'
-			)
-		);
 	}
 
 	/**
@@ -161,13 +178,13 @@ class Request {
 	 */
 	public function GetParams($component = null) {
 		if ($component != null) {
-			if (isset($this->params[$component])) {
-				return $this->params[$component];
+			if (isset($this->parameters[$component])) {
+				return $this->parameters[$component];
 			}
 
 			return null;
 		} else {
-			return $this->params;
+			return $this->parameters;
 		}
 	}
 	
@@ -179,7 +196,7 @@ class Request {
 	 * @return string
 	 */
 	public function GetParam($index) {
-		return isset($this->params[$index]) ? $this->params[$index] : null;	
+		return isset($this->parameters[$index]) ? $this->parameters[$index] : null;	
 	}
 
 	/**

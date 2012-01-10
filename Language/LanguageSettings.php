@@ -10,7 +10,9 @@ class LanguageSettings {
 	}
 	
 	public static function GetCurrentLanguage(){
-		return Request::GetRequest()->GetLanguage();
+		return 'da';
+		#return Request::GetRequest()->GetLanguage();
+		// What the fuck
 	}
 }
 

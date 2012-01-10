@@ -3,14 +3,19 @@ namespace Flyf\Util;
 
 use \Flyf\Core\Config as Config;
 use \Flyf\Core\Request as Request;
+
 use \Flyf\Util\Debug as Debug;
+
 use \Flyf\Language\LanguageSettings as LanguageSettings;
+
 use \Flyf\Models\Url\Rewrite as Rewrite;
+use \Flyf\Models\Url\Redirect as Redirect;
 
 class UrlHelper {
 
 	private static $seo = array(
-		'blok18/secure/blog/page' => 'blog'
+		'blok18/blog' => 'blog',
+		'blog' => 'blog'
 	);
 	
 	public static function GetUrl($url, $language = 'current', $absolute = false, $secure = false) {
@@ -35,29 +40,31 @@ class UrlHelper {
 				$params = explode('&', $params);
 
 				foreach ($params as $param) {
-					$split = explode('=', $param);
-					$key = $split[0];
-					$value = $split[1];
+				
+					if (count($split = explode('=', $param)) > 1) {
+						$key = $split[0];
+						$value = $split[1];
 
-					$parameters[$component[0]][$key] = $value; 
+						$parameters[$component[0]][$key] = $value; 
+					}
 				}
 			}
 		}
-
-		$targetComponent = $component[0];
-		$targetParameters = $parameters[$targetComponent];
 		
 		if (!$absolute) {
 			$currentComponents = $request->GetComponents();
-			array_pop($currentComponents);
+			count($currentComponents) > 1 ? array_pop($currentComponents) : null;
 			
 			$components = array_merge($currentComponents, $components);
 		}
+
+		$targetComponent = $component[0];
+		$targetParameters = isset($parameters[$targetComponent]) ? $parameters[$targetComponent] : array();
 		
 		foreach ($components as $key => $component) {
 			if ($component != $targetComponent) { 
 				$params = isset($parameters[$component]) ? $parameters[$component] : $request->GetParams($component);
-
+				
 				$rewriteSeo .= $component.'/'.self::FormatSeoParameters($component, $params);
 				$rewriteSystem .= $component.self::FormatSystemParameters($component, $params).'/';
 			} else {
@@ -68,15 +75,15 @@ class UrlHelper {
 
 		Debug::Log('Rewrite Seo: '.$rewriteSeo);
 		Debug::Log('Rewrite System: '.$rewriteSystem);
-		
-		$rewriteSeo = self::SubstituteSeo($rewriteSeo);
+
+		$rewriteSeo = self::SubstituteSeo($rewriteSystem);
 		
 		$rewriteSeo .= '/'.self::FormatSeoParameters($targetComponent, $targetParameters);
 		$rewriteSystem .= self::FormatSystemParameters($targetComponent, $targetParameters);
 
-		// TODO domain fra database
-		$rewriteSeo = 'www.blok18.dk/'.$rewriteSeo;
-		$rewriteSystem = 'www.blok18.dk/'.$rewriteSystem;
+		// TODO domain fra database / config ?
+		$rewriteSeo = 'localhost/blok18/'.$rewriteSeo;
+		$rewriteSystem = 'localhost/blok18/'.$rewriteSystem;
 
 		$rewriteSeo = $secure ? 'https://'.$rewriteSeo : 'http://'.$rewriteSeo;
 		$rewriteSystem = $secure ? 'https://'.$rewriteSystem : 'http://'.$rewriteSystem;
@@ -98,28 +105,17 @@ class UrlHelper {
 	}
 
 	private static function FormatSeoParameters($component, $parameters) {
-		// skal kaldes på components controller
-		return implode('/', $parameters).(count($parameters) > 0 ? '/' : '');
+		$controller = str_replace(' ', '', ucwords(str_replace('_', ' ', $component)));
+		$class = '\\Flyf\\Components\\'.$controller.'\\'.$controller."Controller";
+
+		return $class::FormatSeoParameters($parameters);
 	}
 
 	private static function FormatSystemParameters($component, $parameters) {
-		// skal kaldes på components controller
-		$result = '';
-		
-		if ($count = count($parameters)) {
-			$result .= '(';
+		$controller = str_replace(' ', '', ucwords(str_replace('_', ' ', $component)));
+		$class = '\\Flyf\\Components\\'.$controller.'\\'.$controller."Controller";
 
-			$x = 1;
-			foreach ($parameters as $key => $value) {
-				$result .= $key.'='.$value.($count > $x ? '&' : '');
-
-				$x++;
-			}
-
-			$result .= ')';
-		}
-
-		return $result;
+		return $class::FormatSystemParameters($parameters);
 	}
 
 	private static function StoreRewrites($rewriteSeo, $rewriteSystem) {
@@ -129,7 +125,11 @@ class UrlHelper {
 
 		if ($rewrite->Exists()) {
 			if ($rewrite->Get('seo') != $rewriteSeo) {
-				// husk at føre den over i 301 table
+				$redirect = Redirect::Create(array(
+					'from' => $rewrite->Get('seo'),
+					'to' => $rewriteSeo
+				));
+				$redirect->Save();
 				
 				$rewrite->Set('seo', $rewriteSeo);
 				$rewrite->Save();
