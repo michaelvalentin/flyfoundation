@@ -19,9 +19,20 @@ class MetaValueObject extends ValueObject {
 	public $date_created;
 	public $date_modified;
 	public $date_trashed;
-
-	public function __construct() {
-		
+	
+	public function __construct(){
+		$this->addAnnotations(array(
+			"date_created" => array(
+				"type" => "DateTime",
+				"required" => true
+			),
+			"date_modified" => array(
+				"type" => "DateTime"
+			),
+				"date_trashed" => array(
+				"type" => "DateTime"
+			)
+		));
 	}
 }
 ?>

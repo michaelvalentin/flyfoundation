@@ -92,6 +92,25 @@ abstract class ValueObject {
 		
 		return $result;
 	}
+	
+	/**
+	 * Get all defined fields with annotations
+	 * @return array An array of all fields (keys) with eventual 
+	 * annotations as array (values) 
+	 */
+	public function GetFieldDefinitions() {
+		$result = array();
+		foreach(get_object_vars($this) as $key => $value){
+			if($key != 'annotations'){
+				if(isset($this->annotations[$key])){
+					$result[$key] = $this->annotations[$key];
+				}else{
+					$result[$key] = array();
+				}
+			}
+		}
+		return $result;
+	}
 
 	/**
 	 * This method is a variation of the GetValues method.
@@ -166,6 +185,10 @@ abstract class ValueObject {
 
 			return true;
 		}
+	}
+	
+	protected function addAnnotations(array $annotations){
+		$this->annotations = array_merge($this->annotations, $annotations);
 	}
 }
 ?>
