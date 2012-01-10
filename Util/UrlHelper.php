@@ -12,15 +12,12 @@ use \Flyf\Models\Url\Rewrite as Rewrite;
 use \Flyf\Models\Url\Redirect as Redirect;
 
 class UrlHelper {
-
 	private static $seo = array(
 		'blok18/blog' => 'blog',
 		'blog' => 'blog'
 	);
 	
 	public static function GetUrl($url, $language = 'current', $absolute = false, $secure = false) {
-		Debug::Log('UrlHelper::GetUrl input: '.$url);
-		
 		$rewriteSeo = '';
 		$rewriteSystem = '';
 
@@ -73,23 +70,16 @@ class UrlHelper {
 			}
 		}
 
-		Debug::Log('Rewrite Seo: '.$rewriteSeo);
-		Debug::Log('Rewrite System: '.$rewriteSystem);
-
 		$rewriteSeo = self::SubstituteSeo($rewriteSystem);
 		
 		$rewriteSeo .= '/'.self::FormatSeoParameters($targetComponent, $targetParameters);
 		$rewriteSystem .= self::FormatSystemParameters($targetComponent, $targetParameters);
 
-		// TODO domain fra database / config ?
-		$rewriteSeo = 'localhost/blok18/'.$rewriteSeo;
-		$rewriteSystem = 'localhost/blok18/'.$rewriteSystem;
+		$rewriteSeo = $request->GetDomain().$request->GetTLD().'/'.Config::GetValue('root_path').'/'.$rewriteSeo;
+		$rewriteSystem = $request->GetDomain().$request->GetTLD().'/'.Config::GetValue('root_path').'/'.$rewriteSystem;
 
 		$rewriteSeo = $secure ? 'https://'.$rewriteSeo : 'http://'.$rewriteSeo;
 		$rewriteSystem = $secure ? 'https://'.$rewriteSystem : 'http://'.$rewriteSystem;
-		
-		Debug::Log('Rewrite Seo: '.$rewriteSeo);
-		Debug::Log('Rewrite System: '.$rewriteSystem);
 
 		self::StoreRewrites($rewriteSeo, $rewriteSystem);
 		
@@ -100,7 +90,9 @@ class UrlHelper {
 		if (isset(self::$seo[$key])) {
 			return self::$seo[$key];
 		} else {
-			throw new \Exception('The key "'.$key.'" does not exists in the seo-table in UrlHelper');
+			Debug::Hint('The key "'.$key.'" does not exists in the seo-table in UrlHelper');
+
+			return $key;
 		}
 	}
 
@@ -142,62 +134,5 @@ class UrlHelper {
 			$rewrite->Save();
 		}
 	}
-
-	/*
-	private static $urlHelper;
-	
-	public static function GetUrlHelper() {
-		if (!self::$urlHelper) {
-			if ($helper = Config::GetValue('url_helper')) {
-				self::$urlHelper = $helper;
-			} else {
-				self::$urlHelper = new UrlHelper();
-			}
-		}
-
-		return self::$urlHelper;
-	}
-	
-	// definer standard params ud fra component
-	// find og arrangerer params / component / s
-	// match over til seo url via regex i rækkefølge
-
-	private $urls = array(
-		'testblogmain:action=view,id=(.+?)' => 'blog/$1',
-		'testblogmain:action=(.+?),id=(.+?)' => 'blog/$2/$1'
-	);
-	*/
-
-	/*
-	public function getProductUrl($pruduct) {
-		return '/'.Translate('blog').'/'.$product->get('id');
-	}
-
-	public function GetUrl($key, $values = null) {
-		if (!isset($this->urls[$key])) {
-			throw new \Exception('The url key "'.$key.'" is not defined in the "'.__CLASS__.'"');
-		}
-		$url = $this->urls[$key];
-		
-		if (($language = Request::GetRequest()->GetLanguage()) != LanguageSettings::GetDefaultLanguage()) {
-			$url = $language.'/'.$url;
-		}
-
-		$url = '/'.Config::GetValue('root_path').'/'.$url;
-		
-		if ($values && is_array($values)) {
-			foreach ($values as $key => $value) {
-				$url = str_replace($key, $value, $url);
-			}
-		}
-
-		return $url;
-	}
-
-	private function CompleteUrl($url) {
-		// ud fra det givne component, skal alle parents findes så url'en kan konstrueres korrekt
-		return $url;
-	}
-	*/
 }
 ?>

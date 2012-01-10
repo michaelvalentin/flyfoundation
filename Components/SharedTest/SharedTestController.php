@@ -13,7 +13,7 @@ class SharedTestController extends AbstractController{
 	 * @see Flyf.AbstractController::Render()
 	 */
 	public function Render() {
-		return 'hello';
+		return 'hello1';
 		#return '<p>Hello world from Flyf Shared</p><p>'.\Flyf\Language\Writer::_("Test 2").'</p>';
 	}
 

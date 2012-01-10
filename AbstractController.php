@@ -10,28 +10,34 @@ abstract class AbstractController {
 
 	public function __construct($params = array()) {
 		self::$_params = array_merge(self::$_params, $params);
+
+		$prefix = str_replace('Controller', '', end(explode('\\', get_class($this))));
+		if (($nextComponent = \Flyf\Util\ComponentLoader::NextComponent($this)) !== null) {
+			$this->_controllers[$prefix.'Content'] = $nextComponent;
+		}
 	}
 	
 	public function Process(){ //TODO: Implement caching...
 		if(is_array($this->_controllers)){
-			foreach($this->_controllers as $c){
-				$c->Process();
+			foreach($this->_controllers as $controller) {
+		
+				$controller->Process();
 			}
 		}
 	}
 	
 	public function CollectData(){ //TODO: Implement caching...
 		if(is_array($this->_controllers)){
-			foreach($this->_controllers as $c){
-				$c->CollectData();
+			foreach($this->_controllers as $controller){
+				$controller->CollectData();
 			}
 		}
 	}
 	
 	public function Render(){ //TODO: Implement caching...
 		if(is_array($this->_controllers)){
-			foreach($this->_controllers as $l=>$c){
-				$this->_view->AddValue($l,new \Flyf\Util\HtmlString($c->Render(),array("all")));
+			foreach($this->_controllers as $l=>$controller){
+				$this->_view->AddValue($l,new \Flyf\Util\HtmlString($controller->Render(),array("all")));
 			}
 		}
 		return Util\TemplateParser::ParseTemplate($this->_template,$this->_view);

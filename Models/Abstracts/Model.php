@@ -79,7 +79,7 @@ abstract class Model {
 		if(DEBUG){
 			if(!$this->dataAccessObject->TableExists()){
 				$definitions = $this->getFieldDefinitions();
-				$this->dataAccessObject->CreateTable($definitions);
+				#$this->dataAccessObject->CreateTable($definitions);
 			}	
 		}
 	}
