@@ -1,7 +1,7 @@
 <?php
 namespace Flyf\Models\Abstracts;
 
-use \Flyf\Language\LanguageSettings as LanguageSettings;
+use \Flyf\Language\LanguageSettings;
 
 /**
  * The model is an abstract meant to be inherited by all
@@ -60,6 +60,7 @@ abstract class Model {
 	 * @throws MissingValueObjectException if the value object is missing
 	 */
 	protected function __construct() {
+		
 		if (class_exists($valueObjectClass = '\\'.get_class($this).'\\ValueObject')) {
 			$this->valueObject = new $valueObjectClass();
 			
@@ -73,6 +74,18 @@ abstract class Model {
 		} else {
 			throw new \Flyf\Exceptions\MissingValueObjectException('The value object "'.$valueObjectClass.'" does not exists');
 		}
+		
+		//If in debug, check if the necessary tables exists..
+		if(DEBUG){
+			if(!$this->dataAccessObject->TableExists()){
+				$definitions = $this->getFieldDefinitions();
+				$this->dataAccessObject->CreateTable($definitions);
+			}	
+		}
+	}
+	
+	public function __get($field){
+		return $this->Get($field);
 	}
 
 	/**
@@ -454,7 +467,7 @@ abstract class Model {
 	 * @return string (the table)
 	 */
 	public function GetTable() {
-		return strtolower(end(explode('\\' ,get_class($this))));
+		return preg_replace("/\\\/","_",str_replace("flyf\\models\\","",strtolower(get_class($this))));
 	}
 
 	/**
@@ -488,6 +501,14 @@ abstract class Model {
 	 */
 	public function GetTranslatableFields() {
 		return array_keys($this->valueObject->getTranslatableValues());
+	}
+	
+	public function GetFieldDefinitions() {
+		if($this->metaValueObject != null){
+			return array_merge($this->valueObject->getFieldDefinitions(), $this->metaValueObject->getFieldDefinitions());
+		}else{
+			return $this->valueObject->getFieldDefinitions();
+		}
 	}
 
 	/**

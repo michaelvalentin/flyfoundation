@@ -38,6 +38,7 @@ class Dispatcher {
 	 * Initialize the application
 	 */
 	public static function Init(){
+		
 		//Constants
 		define("DS",DIRECTORY_SEPARATOR);
 		

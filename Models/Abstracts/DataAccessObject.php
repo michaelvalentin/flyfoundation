@@ -1,5 +1,6 @@
 <?php
 namespace Flyf\Models\Abstracts;
+use \Flyf\Database\DatabaseType;
 
 /**
  * The data access object facilitates communication
@@ -327,6 +328,46 @@ class DataAccessObject {
 		$this->QueryBuilder->Execute();
 
 		return $data;
+	}
+	
+	public function GetTableName(){
+		$class = get_class($this);
+		$parts = explode("\\", $class);
+		return $parts[count($parts)-2];
+	}
+	
+	/**
+	 * Query the database to check if the table exists 
+	 */
+	public function TableExists(){
+		$conn = \Flyf\Database\Connection::GetConnection();
+		$conn->Prepare("SHOW TABLES LIKE :name");
+		$conn->Bind(array(":name"=>$this->Table));
+		$res = $conn->ExecuteQuery();
+		return count($res["result"]) == 1 ? true : false;
+	}
+	
+	/**
+	 * Build a table from FieldDefinitions from ValueObject
+	 * @param array $fieldDefinitions The field definitions to build from.
+	 */
+	public function CreateTable(array $fieldDefinitions){
+		$table = new \Flyf\Database\TableBuilder($this->Table);
+		foreach($fieldDefinitions as $k => $v){
+			$limit = isset($v["max-length"]) && is_int($v["max-length"]) ? $v["max-length"] : false;
+			$type = isset($v["type"]) ? $v["type"] : "string";
+			$table->AddField($k, $type, $limit);
+			if(isset($v["required"]) && $v["required"]) $table->SetNotNull($k);
+			if(isset($v["primaryIndex"]) && $v["primaryIndex"]) $table->SetPrimaryKey($k);
+		}
+		$table->CreateTable();
+	}
+	
+	/**
+	 * Custom post processing of newly build table..
+	 */
+	protected function PrepareNewTable(){
+		//Only for extending..
 	}
 }
 ?>
