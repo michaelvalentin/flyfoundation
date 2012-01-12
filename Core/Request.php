@@ -1,6 +1,9 @@
 <?php
 namespace Flyf\Core;
 
+use \Flyf\Models\Url\Rewrite as Rewrite;
+use \Flyf\Util\Debug as Debug;
+
 /**
  *	The Request class interprets and arranges
  * the request sent from the client to the server.
@@ -18,12 +21,14 @@ class Request {
 	// Used to hold the different request instances
 	private static $_requests = array();
 
+	// The request
+	private $request;
 	// The language of the request
 	private $language;
 	// THe components of the request
 	private $components;
 	// The parameters of the request
-	private $params;
+	private $parameters;
 
 	/**
 	 * Initially call the Configure method to
@@ -43,66 +48,121 @@ class Request {
 	 * @return a instance
 	 *
 	 */
-	public static function GetRequest($key = 'default'){
-		if(!isset(self::$_requests[$key])) {
+	public static function GetRequest($key = 'default') {
+		if (!isset(self::$_requests[$key])) {
 			self::$_requests[$key] = new Request();
 		}
 		
 		return self::$_requests[$key];
 	}
 
-
 	/**
 	 * The method taking care of interpreting and 
 	 * rearranging the request in the way we want.
 	 *
-	 * @note
-	 * by today (2012-01-06) a request looks like this:
-	 * language/comp1/comp2:key1=value1,key2=value2
+	 * Will interpret the raw request from the client,
+	 * look it up in the database, and if it exists in
+	 * the database, it will use the system-request.
 	 *
-	 * But it will soon be changed.
+	 * From the system-request the method will extract
+	 * the components used, and the parameters belonging
+	 * to each component.
 	 */
 	public function Configure() {
-		$this->language = null;
-		$this->params = array();
+		$base = $this->GetProtocol().$this->GetDomain().$this->GetTLD().'/'.Config::GetValue('root_path').'/';
+	
+		$this->language = $this->GetGetParam('language') ? : Config::GetValue('default_language');
+		$this->request = $this->GetGetParam('request') ? : Config::GetValue('default_request');
+
 		$this->components = array();
+		$this->parameters = array();
 
-		$this->language = $this->GetGetParam('language');
+		$seoRequest = $base.$this->request;
 
-		if ($params = $this->GetGetParam('params')) {
-			$pairs = explode(',', $params);
-		
-			foreach ($pairs as $pair) {
-				$_pair = explode('=', $pair);
+		$rewrite = Rewrite::Load(array(
+			'seo' => $seoRequest
+		));
 
-				$key = $_pair[0];
-				$value = isset($_pair[1]) ? $_pair[1] : null;
+		if ($rewrite->Exists()) {
+			$request = $rewrite->Get('system');
+			$request = str_replace($base, '', $request);
+		} else {
+			Debug::Hint('Rewrite "'.$seoRequest.'" does not exists in database, using request as raw');
 
-				$this->params[$key] = $value;
-			}
+			$request = $this->request;
 		}
 
-		if ($components = $this->GetGetParam('components')) {
-			$fragments = explode('/', $components);
-			array_unshift($fragments, 'root');
-		
-			for ($x = 1; $x < count($fragments); $x++) {
-				$this->components[str_replace('_', '\\', $fragments[$x - 1])] = str_replace('_', '\\', $fragments[$x]);
+		if ($count = count($components = explode('/', $request))) {
+			$components = array_filter($components);
+			$prevComponent = 'root';
+
+			if (count($components) == 0) {
+				$components = array('root', Config::getValue('root_controller_key'));
+			}
+			
+			foreach ($components as $component) {
+				$parameters = array();
+				
+				if (preg_match_all('/\((.+?)\)/ismu', $component, $matches)) {
+					$component = str_replace($matches[0][0], '', $component);
+
+					if ($count = count($fragments = explode('&', $matches[1][0]))) {
+						foreach ($fragments as $fragment) {
+							$split = explode('=', $fragment);
+							$key = $split[0];
+							$value = $split[1];
+
+							$parameters[$key] = $value;
+						}
+					}
+				}
+
+				$this->components[$prevComponent] = $component;
+				$prevComponent = $component;
+
+				$this->parameters[$component] = $parameters;
 			}
 		}
+	}
 
-		$this->components = array('root' => 'blok18', 'blok18' => 'blog', 'blog' => 'list');
-		$this->params = array(
-			'blok18' => array(
-				'secure' => 'secure'
-			),
-			'blog' => array(
+	/**
+	 * Returns the protocol of the request.
+	 * 
+	 * @return the protocol
+	 */
+	public function GetProtocol() {
+		$fragments = explode('/', $this->GetServerParam('server_protocol'));
 
-			),
-			'list' => array(
-				'view' => 'something'
-			)
-		);
+		return strtolower(array_shift($fragments)).'://';
+	}
+
+	/**
+	 * Returns the domain of the request.
+	 * 
+	 * @return the host domain
+	 */
+	public function GetDomain() {
+		$fragments = explode('.', $this->GetServerParam('http_host'));
+		if (count($fragments) > 1) {
+			array_pop($fragments);
+		}
+
+		return implode('.', $fragments);
+	}
+
+	/**
+	 * Returns the top level domain of the
+	 * request.
+	 * 
+	 * @return the tld of the domain
+	 */
+	public function GetTLD() {
+		$fragments = explode('.', $this->GetServerParam('http_host'));
+		if (count($fragments) > 1) {
+			return '.'.array_pop($fragments);
+		}
+
+		return null;
 	}
 
 	/**
@@ -114,7 +174,7 @@ class Request {
 	 * @return the language of the request
 	 */
 	public function GetLanguage() {
-		return $this->language ? : Config::GetValue('default_language');
+		return $this->language;
 	}
 
 	/**
@@ -155,31 +215,42 @@ class Request {
 
 	/**
 	 * Get all parameters as interpreted in the request.
-	 * Returns an associate array.
+	 * The method can be refined to give only the parameters
+	 * of a specied component-key. The method returns an
+	 * associative array.
 	 *
+	 * @param string $component (optional)
 	 * @return array (an associative array)
 	 */
 	public function GetParams($component = null) {
 		if ($component != null) {
-			if (isset($this->params[$component])) {
-				return $this->params[$component];
+			if (isset($this->parameters[$component])) {
+				return $this->parameters[$component];
 			}
 
 			return null;
 		} else {
-			return $this->params;
+			return $this->parameters;
 		}
 	}
 	
 	/**
-	 * Method for getting a value of a parameter using
-	 * its key. Will return null if the key does not exists.
-	 *
+	 * Method for getting a value of a parameter of a component,
+	 * by using the component-key and an index-key. Will return
+	 * null if the value does not exists.
+	 * 
+	 * @param string $component
 	 * @param string $index
 	 * @return string
 	 */
-	public function GetParam($index) {
-		return isset($this->params[$index]) ? $this->params[$index] : null;	
+	public function GetParam($component, $index) {
+		if (($parameters = $this->GetParams($component)) !== null) {
+			if (isset($parameters[$index])) {
+				return $parameters[$index];
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 <?php
-namespace Flyf\Models\Test\Blog\Entry;
+namespace Flyf\Models\Url\Redirect;
 
 class Resource extends \Flyf\Models\Abstracts\Resource {
 	

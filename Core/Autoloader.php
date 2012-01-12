@@ -6,13 +6,13 @@ namespace Flyf\Core;
  * @author MV
  */
 class Autoloader {
-	public static function LoadClass($name){
+	public static function LoadClass($name) {
 		$parts = preg_split("&\\\&", $name);
 		
 		$include_paths_string = get_include_path();
-		if(preg_match("/;/",$include_paths_string)){
+		if (preg_match("/;/",$include_paths_string)) {
 			$include_paths = preg_split("/;/",$include_paths_string);
-		}else{
+		} else {
 			$include_paths = preg_split("/:/", $include_paths_string);
 		}
 
@@ -26,14 +26,14 @@ class Autoloader {
 		
 		//Try to find file in libraries with flyf..
 		$libfile = __DIR__.DS."..".DS."..".DS.$libname.DS.$filename;
-		if(file_exists($libfile)){
+		if (file_exists($libfile)) {
 			require_once $libfile;
 			return;
 		}
 		
 		//Try to require file from include path(s)
-		foreach($include_paths as $p){
-			if(file_exists($p.DS.$libname.DS.$filename)){
+		foreach ($include_paths as $p){
+			if (file_exists($p.DS.$libname.DS.$filename)) {
 				require_once $p.DS.$libname.DS.$filename;
 				return;
 			}

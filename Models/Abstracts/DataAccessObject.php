@@ -38,12 +38,17 @@ class DataAccessObject {
 	// The base table
 	protected $Table;
 	// The base fields
-	protected $Fields;
+	protected $Fields = array();
 
 	// The translation table
 	protected $TableTranslation;
 	// The translation fields
-	protected $FieldsTranslation;
+	protected $FieldsTranslation = array();
+
+	// The field definitions
+	protected $FieldDefinitions = array();
+	// The primary keys
+	protected $PrimaryKeys = array();
 
 	/**
 	 * The constructor is only used to instantiate
@@ -87,6 +92,23 @@ class DataAccessObject {
 	 */
 	public function SetFieldsTranslation($fieldsTranslation) {
 		$this->FieldsTranslation = $fieldsTranslation;
+	}
+
+	/**
+	 * Set method for setting the field defintions.
+	 *
+	 * @param array $fieldsTranslation
+	 */
+	public function SetFieldDefinitions($fieldDefinitions) {
+		$this->PrimaryKeys = array();
+		
+		foreach ($fieldDefinitions as $key => $definition) {
+			if (isset($definition['primaryIndex']) && $definition['primaryIndex'] == true) {
+				$this->PrimaryKeys[] = $key;
+			}
+		}
+		
+		$this->FieldDefinitions = $fieldDefinitions;
 	}
 
 	/**
@@ -172,8 +194,11 @@ class DataAccessObject {
 	public function Save($data, $primaryKey = "id") {
 		if (isset($data['id']) && $data['id']) {
 			$this->QueryBuilder->SetType('update');
-			$this->QueryBuilder->AddCondition('id = :id');
-			$this->QueryBuilder->BindParam('id', $data['id']);
+			
+			foreach ($this->PrimaryKeys as $key) {
+				$this->QueryBuilder->AddCondition($key.' = :'.$key);
+				$this->QueryBuilder->BindParam($key, $data[$key]);
+			}
 		
 			if (array_key_exists('date_modified', $data)) {
 				$data['date_modified'] = date('Y-m-d H:i:s');
@@ -216,10 +241,24 @@ class DataAccessObject {
 			$data['model_id'] = $model_id;
 			$data['language'] = $key;
 			
-			if (isset($data['id']) && $data['id']) {
+			$isUpdate = true;
+			foreach ($this->PrimaryKeys as $key) {
+				if (!$isUpdate) {
+					throw new \Exception('Trying to save translation without all primary keys included in data');
+				}
+			
+				if (!in_array($key, array_keys($data))) {
+					$isUpdate = false;
+				}
+			}
+		
+			if ($isUpdate) {
 				$this->QueryBuilder->SetType('update');
-				$this->QueryBuilder->AddCondition('id = :id');
-				$this->QueryBuilder->BindParam('id', $data['id']);
+			
+				foreach ($this->PrimaryKeys as $key) {
+					$this->QueryBuilder->AddCondition($key.' = :'.$key);
+					$this->QueryBuilder->BindParam($key, $data[$key]);
+				}
 			} else {
 				$this->QueryBuilder->SetType('insert');
 			}
@@ -351,7 +390,9 @@ class DataAccessObject {
 	 * Build a table from FieldDefinitions from ValueObject
 	 * @param array $fieldDefinitions The field definitions to build from.
 	 */
-	public function CreateTable(array $fieldDefinitions){
+	public function CreateTable(){
+		$fieldDefinitions = $this->FieldDefinitions;
+		
 		$table = new \Flyf\Database\TableBuilder($this->Table);
 		foreach($fieldDefinitions as $k => $v){
 			$limit = isset($v["max-length"]) && is_int($v["max-length"]) ? $v["max-length"] : false;

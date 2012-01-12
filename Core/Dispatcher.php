@@ -14,30 +14,30 @@ class Dispatcher {
 	 */
 	public static function Run(){
 		//Constants
-		define("DEBUG",Config::GetValue("debug"));
+		define('DEBUG', Config::GetValue("debug"));
 		
 		$connection = Connection::GetConnection();
 		$connection->Connect();
 
-		$Response = Response::GetResponse();
+		$response = Response::GetResponse();
+		
 		$rootController = \Flyf\Util\ComponentLoader::FromRequest();
-		if($rootController  == null) {
-			$rootController = \Flyf\Util\ComponentLoader::FromName("SharedTest");
-		}
 
 		$rootController->Process();
 		$rootController->CollectData();
-		$Response->SetContent($rootController->Render()); 
-		$Response->Output();
+		
+		$response->SetContent($rootController->Render()); 
+		$response->Output();
 
-		Debug::Flush();
 		$connection->Disconnect();
+		
+		Debug::Flush();
 	}
 	
 	/**
 	 * Initialize the application
 	 */
-	public static function Init(){
+	public static function Init() {
 		
 		//Constants
 		define("DS",DIRECTORY_SEPARATOR);

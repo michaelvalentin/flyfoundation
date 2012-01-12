@@ -7,39 +7,47 @@ class ComponentLoader {
 	 * @param string $componentName
 	 * @return AbstractController The controller for the component
 	 */
-	public static function FromName($componentName){
+	public static function FromName($componentName) {
 		$className = "\\Flyf\\Components\\".$componentName."\\".$componentName."Controller";
 		return self::TryToLoad($className);
 	}
 	
-	public static function FromRequest(\Flyf\AbstractController $parent = null){
-		if($parent == null){
-			$parentKey = "root";
-		}else{
+	public static function FromRequest(\Flyf\AbstractController $parent = null) {
+		if ($parent == null) {
+			$parentKey = 'root';
+
+			Debug::Log('No component specified when loading FromRequest in ComponentLoader; therefore loading root-component');
+		} else {
 			$parentKey = preg_replace("/\\?Flyf\\Components\\\(.+?)Controller/","$1", get_class($parent));
 		}
-		$req = \Flyf\Core\Request::GetRequest();
-		$controller = $req->GetComponent($parentKey);
+
+		$request = \Flyf\Core\Request::GetRequest();
+		$controller = $request->GetComponent($parentKey);
 		$controller = str_replace(' ', '', ucwords(str_replace('\\', ' ', $controller)));
-
-		// jeg har bare justeret en anelse her for at kunne lave urlhelperen.
 		
-		$actualClassName = "\\Flyf\\Components\\".$controller."\\".$controller."Controller";
+		$className = "\\Flyf\\Components\\".$controller."\\".$controller."Controller";
 
-		return self::TryToLoad($actualClassName);
+		return self::TryToLoad($className);
 	}
 	
 	private static function TryToLoad($className){
-		if(class_exists($className, true)){
-			/*if(!in_array($className, \Flyf\Core\Config::GetValue("allowed_components"))){
-				echo $className;
-				throw new \Exception("Component is not allowed to be called in this project");
-			}*/
-			
+		if (class_exists($className, true)) {
+			// tjek om klassen er "lovlig" at kalde
 			return new $className();
-		}else{	
-			return null;
 		}
+
+		return null;
+	}
+
+	public static function NextComponent($component) {
+		$request = \Flyf\Core\Request::GetRequest();
+		$component_key = strtolower(str_replace('Controller', '', end(explode('\\', get_class($component)))));
+
+		if (($next_key = $request->GetComponent($component_key)) !== null) {
+			return self::FromName($next_key);
+		}
+
+		return null;
 	}
 }
 
