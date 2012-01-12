@@ -6,6 +6,8 @@
  */
 namespace Flyf\Core;
 
+use \Flyf\Core\Request as Request;
+
 #require_once __DIR__.'/ResponseHeaders.php';
 #require_once __DIR__.'/ResponseMetaData.php';
 #require_once __DIR__.'/../util/Set.php';
@@ -16,7 +18,8 @@ class Response {
 	public $Headers;
 	public $MetaData;
 	public $Title;
-	private $_scripts;
+	private $_javascripts;
+	private $_stylesheets;
 	public $CompressOutput = true;
 	private $_content;	
 	private static $_responses = array();
@@ -29,7 +32,8 @@ class Response {
 		$this->Headers = new ResponseHeaders();
 		$this->MetaData = new ResponseMetaData();
 		$this->_content = "";
-		$this->_scripts = new Set();
+		$this->_javascripts = new Set();
+		$this->_stylesheets = new Set();
 	}
 	
 	
@@ -67,42 +71,108 @@ class Response {
 
 	/**
 	 * Add this script to the response
-	 * @param string $script
+	 * @param string $js
 	 */
-	public function AddScript($script){
-		$this->_scripts->Add($script);
+	public function AddJs($js) {
+		$this->_javascripts->Add($js);
 	}
 	
 	/**
 	 * Remove this script from the response
+	 * @param string $js
+	 */
+	public function RemoveJs($js) {
+		$this->_javascripts->Remove($js);
+	}
+
+	/**
+	 * Add this stylesheet to the response
+	 * @param string $css
+	 */
+	public function AddCss($css) {
+		$this->_stylesheets->Add($css);
+	}
+	
+	/**
+	 * Remove this stylesheet from the response
 	 * @param string $script
 	 */
-	public function RemoveScript($script){
-		$this->_scripts->Remove($script);
+	public function RemoveCss($css){
+		$this->_stylesheets->Remove($css);
+	}
+
+	private function GetJs() {
+		$request = Request::GetRequest();
+		$jsInternal = array();
+		$jsExternal = array();
+
+		foreach($this->_javascripts->AsArray() as $js) {
+			if (stripos($js, 'http') === 0) {
+				$jsExternal[] = $js;
+			} else {
+				$jsInternal[] = 'http://'.$request->GetDomain().$request->getTLD().'/'.Config::GetValue('root_path').'/'.$js;
+			}
+		}
+
+		$jsExternal = array_reverse($jsExternal);
+		$jsInternal = array_reverse($jsInternal);
+
+		return array_merge($jsExternal, $jsInternal);
+	}
+
+	private function GetCss() {
+		$request = Request::GetRequest();
+		$cssInternal = array();
+		$cssExternal = array();
+
+		foreach($this->_stylesheets->AsArray() as $css) {
+			if (stripos($css, 'http') === 0) {
+				$cssExternal[] = $css;
+			} else {
+				$cssInternal[] = 'http://'.$request->GetDomain().$request->getTLD().'/'.Config::GetValue('root_path').'/'.$css;
+			}
+		}
+
+		$cssExternal = array_reverse($cssExternal);
+		$cssInternal = array_reverse($cssInternal);
+
+		return array_merge($cssExternal, $cssInternal);
 	}
 	
 	/**
 	 * Output all current contents and send the response
 	 */
 	public function Output(){
-		if($this->CompressOutput && !DEBUG){ //Never compress in debug mode
+		if ($this->CompressOutput && !DEBUG) { //Never compress in debug mode
 			ob_start("ob_gzhandler");
-		}else{
+		} else {
 			ob_start();
 		}
+		
 		$this->Headers->Output();
-		echo '<html>';
-		echo '<head>';
-		echo '<title>'.$this->Title.'</title>';
-		foreach($this->_scripts->AsArray() as $script){
-			echo '<script type="text/javascript" scr="'.$script.'"></script>';	
-		}
-		echo $this->MetaData->Output();
-		echo '</head>';
-		echo '<body>';
-		echo $this->_content;
-		echo '</body>';
-		echo '</html>';
+		
+		echo '<html>'."\r\n";
+			echo "\t".'<head>'."\r\n";
+				echo "\t"."\t".'<title>'.$this->Title.'</title>'."\r\n"."\r\n";
+
+				foreach($this->GetCss() as $css) {
+					echo "\t"."\t".'<link rel="stylesheet" type="text/css" href="'.$css.'" />'."\r\n";	
+				}
+				echo "\r\n";
+				
+				foreach($this->GetJs() as $js) {
+					echo "\t"."\t".'<script type="text/javascript" src="'.$js.'"></script>'."\r\n";	
+				}
+				echo "\r\n";
+		
+				echo $this->MetaData->Output();
+			echo "\t".'</head>'."\r\n";
+			
+			echo "\t".'<body>'."\r\n";
+			echo $this->_content;
+			echo "\t".'</body>'."\r\n";
+		echo '</html>'."\r\n";
+		
 		ob_end_flush();
 	}
 }

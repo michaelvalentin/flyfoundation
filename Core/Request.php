@@ -71,8 +71,8 @@ class Request {
 	public function Configure() {
 		$base = $this->GetProtocol().$this->GetDomain().$this->GetTLD().'/'.Config::GetValue('root_path').'/';
 	
-		$this->language = $this->GetGetParam('language');
-		$this->request = $this->GetGetParam('request');
+		$this->language = $this->GetGetParam('language') ? : Config::GetValue('default_language');
+		$this->request = $this->GetGetParam('request') ? : Config::GetValue('default_request');
 
 		$this->components = array();
 		$this->parameters = array();
@@ -174,7 +174,7 @@ class Request {
 	 * @return the language of the request
 	 */
 	public function GetLanguage() {
-		return $this->language ? : Config::GetValue('default_language');
+		return $this->language;
 	}
 
 	/**

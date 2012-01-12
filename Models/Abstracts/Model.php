@@ -76,10 +76,10 @@ abstract class Model {
 		}
 		
 		//If in debug, check if the necessary tables exists..
-		if(DEBUG){
-			if(!$this->dataAccessObject->TableExists()){
-				$definitions = $this->getFieldDefinitions();
-				#$this->dataAccessObject->CreateTable($definitions);
+		if (DEBUG) {
+			if (!$this->dataAccessObject->TableExists()) {
+				#$definitions = $this->getFieldDefinitions();
+				$this->dataAccessObject->CreateTable();
 			}	
 		}
 	}
@@ -105,6 +105,7 @@ abstract class Model {
 
 		$this->dataAccessObject->SetFields($this->GetFields());
 		$this->dataAccessObject->SetFieldsTranslation($this->GetTranslatableFields());
+		$this->dataAccessObject->setFieldDefinitions($this->GetFieldDefinitions());
 	}
 
 	/**
