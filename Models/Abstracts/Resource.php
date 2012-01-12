@@ -118,4 +118,3 @@ class Resource {
 		return $objects;
 	}
 }
-?>

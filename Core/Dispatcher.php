@@ -49,5 +49,3 @@ class Dispatcher {
 		require_once 'Flyf/Resources/DefaultConfig/stdConfig.php';
 	}
 }
-
-?>

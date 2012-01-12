@@ -169,7 +169,7 @@ class DataAccessObject {
 	 * @param array $data (an associative array of the data to be saved)
 	 * @return array $data (the data after saving)
 	 */
-	public function Save($data) {
+	public function Save($data, $primaryKey = "id") {
 		if (isset($data['id']) && $data['id']) {
 			$this->QueryBuilder->SetType('update');
 			$this->QueryBuilder->AddCondition('id = :id');
@@ -370,4 +370,3 @@ class DataAccessObject {
 		//Only for extending..
 	}
 }
-?>

@@ -31,5 +31,3 @@ class ValueObject extends \Flyf\Models\Abstracts\ValueObject{
 		));
 	}
 }
-
-?>

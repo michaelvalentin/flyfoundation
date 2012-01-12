@@ -35,4 +35,3 @@ class MetaValueObject extends ValueObject {
 		));
 	}
 }
-?>

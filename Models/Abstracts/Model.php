@@ -200,6 +200,7 @@ abstract class Model {
 
 		$this->translations = $this->dataAccessObject->SaveTranslations($this->Get('id'), $this->translations);
 	}
+	
 	/**
 	 * The delete method removes the model from persistent storage
 	 * (someone might call this the database). Delete only effects
@@ -556,4 +557,3 @@ abstract class Model {
 		}
 	}
 }
-?>
