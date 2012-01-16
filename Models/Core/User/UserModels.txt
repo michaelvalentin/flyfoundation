@@ -1,0 +1,25 @@
+####USER MODELS IN FLYF####
+version: 0.1
+
+RESUME:
+#################
+“User”-pakkens formål er at tilbyde den i de fleste applikationer anvendte basale bruger-funktionalitet. Denne består i at kunne logge ind og at have adgang til forskellige områder af en hjemmeside alt efter ens adgangs-niveau.
+
+Modellen skal som udgangspunkt tilbyde, at en bruger kan være med i en bruger-gruppe med privilegier til en eller flere handlinger i applikationen. Herudover skal det være muligt at tilføje enkelt privilegier til en enkelt bruger.
+
+MODELLER:
+###################
+“User”
+Dette er den centrale model i pakken. Den indeholder brugerens navn, email, password-informationer og lignende. Den inkluderer eventuelt også sprog og tidszone indstillinger (se pakker for language fx). 
+
+“Action”
+En action er en handling der er mulig at udføre i systemet. Eksempler på handlinger kunne være at se en liste med indlæg, at logge ind som administrator, at redigere et indlæg etc. Actions bliver defineret i databasen under udviklingen af applikationen.
+
+“Privilege”
+Er modellen der anvendes, hvis man gerne vil tilføje en unik action til en enkelt bruger. En unik aktion kan eksempelvis være at give brugeren lov til at redigere artikler på sitet. Men dette kan refineres endnu mere, da det er muligt at angive præcis hvilken artikel brugeren kan redigere ved at angive et “model id”. Dette gør, at hvis man gerne vil have en bruger til at redigere flere artikler (men ikke alle), skal et privilegie til hver artikel oprettes for brugeren.
+
+“Group”
+En gruppe er en samling af privilegier. Dette er praktisk, da man eksempelvis i mange tilfælde gerne vil have “niveauer” af adgang. Et eksempel kunne være “webadmin” som kan se, redigere, oprette og slette artikler (hvilket er 4 forskellige actions). 
+
+“Member”
+Denne model er forbindelsen mellem brugere og grupper. En bruger kan være medlem af flere grupper, og en gruppe kan have flere brugere. Der er altså et mange til mange forhold mellem brugere og grupper.
