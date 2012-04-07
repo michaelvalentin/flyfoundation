@@ -1,7 +1,9 @@
 <?php
-namespace Flyf\Models\Abstracts;
+namespace Flyf\Models\Abstracts\RawModel;
 
 /**
+ * !TODO Rebuild the Resource... It is kind of an optimization (compared to just loading objects), so it can wait a bit, but on the other hand it's is NECESSARY to display fx. a list of blog-posts or products.. 
+ * 
  * The Resource is a convenient way to fetch multiple
  * instances of a model. The Resource is designed to
  * inheritance, but can be used as an instance on its own.
@@ -23,7 +25,7 @@ namespace Flyf\Models\Abstracts;
  * $resource->SetUrl('blog'); // this could be a method defined in a child of Resource
  * $pages = $resource->Build(); // Fetches the models given the parameters
  * 
- * @author Henrik Haugbølle <hh@signifly.com>
+ * @author Michael Valentin <mv@signifly.com>
  * @version 2012-01-06
  * @dependencies QueryBuilder
  */
@@ -45,8 +47,8 @@ class Resource {
 		
 		$this->QueryBuilder = new \Flyf\Database\QueryBuilder();
 
-		$this->QueryBuilder->SetTable($model->GetTable());
-		$this->QueryBuilder->SetFields($model->getFields());
+		$this->QueryBuilder->SetTable($model::GetTable());
+		$this->QueryBuilder->SetFields($model::getFields());
 	}
 
 	/**

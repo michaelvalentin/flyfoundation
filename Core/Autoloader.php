@@ -38,6 +38,32 @@ class Autoloader {
 				return;
 			}
 		}
+		
+		if(preg_match("/_/",$name)){
+			$parts = preg_split("/_/",$name);
+			//Determine library and file name
+			$libname = $parts[0];
+			$filename = "";
+			for($i = 1; $i<(count($parts)-1); $i++){
+				$filename .= $parts[$i].DS;
+			}
+			$filename .= $parts[count($parts)-1].".php";
+			
+			//Try to find file in libraries with flyf..
+			$libfile = __DIR__.DS."..".DS."..".DS.$libname.DS.$filename;
+			if (file_exists($libfile)) {
+				require_once $libfile;
+				return;
+			}
+			
+			//Try to require file from include path(s)
+			foreach ($include_paths as $p){
+				if (file_exists($p.DS.$libname.DS.$filename)) {
+					require_once $p.DS.$libname.DS.$filename;
+					return;
+				}
+			}
+		}
 	}
 }
 

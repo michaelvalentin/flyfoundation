@@ -36,7 +36,7 @@ class View {
 				$output[$l] = $this->Process($v);
 				continue;
 			}
-			if($v instanceof \Flyf\Models\Abstracts\Model){
+			if($v instanceof \Flyf\Models\Abstracts\RawModel){
 				$output[$l] = $v->AsArray();
 				continue;
 			}

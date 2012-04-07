@@ -9,19 +9,19 @@ class ValueObject extends \Flyf\Models\Abstracts\ValueObject{
 	
 	public function __construct(){
 		$this->addAnnotations(array(
-			"iso" => array(
+			"iso2" => array(
 				"type" => "string",
-				"max-length" => 2,
+				"maxlength" => 2,
 				"primaryIndex" => true,
 				"required" => true
 			),
 			"url" => array(
 				"type" => "string",
-				"max-length" => 255
+				"maxlength" => 255
 			),
 			"name" => array(
 				"type" => "string",
-				"max-length" => 55,
+				"maxlength" => 55,
 				"required" => true
 			),
 			"active" => array(
