@@ -130,7 +130,7 @@ abstract class ValueObject {
 	 *
 	 * @return array (the definition of all Translatable fields)
 	 */
-	public function GetTranslationFieldsDefinitions() {
+	public function GetTranslationFieldDefinitions() {
 		$result = array();
 		
 		foreach ($this->GetValues() as $column => $options) {

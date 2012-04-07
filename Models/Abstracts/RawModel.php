@@ -29,6 +29,7 @@ abstract class RawModel {
 	private $dataAccessObject = null; // The DataAccessObject of the model (see the DataAccessObject for documentation). 
 	private $valueObject = null;	// The ValueObject of the model (see the ValueObject for documentation).
 	private $translations = array(); // The loaded translations of a model.
+	private $resource = null; // The resource object for this model.
 
 	/**
 	 * Protected constructor to emphasize the objects SHOULD be created
@@ -115,6 +116,25 @@ abstract class RawModel {
 		return $this->dataAccessObject;
 	}
 
+	protected function loadResource(){
+		$class = get_called_class();
+		$model = new $class();
+		$resource = null;
+		//Go back the inheritance-chain to find a Resource object..
+		while($resource == null && $class){
+			$resourceClass = '\\'.$class.'\\Resource';
+			if(class_exists($resourceClass)) $resource = new $resourceClass($model);
+		}
+		if($resource == null) throw new UnexpectedStateException("There should always be a resource object; if nothing else, then the resource object from the RawModel..");
+		
+		return $resource;
+	}
+	
+	public function GetResource(){
+		if($this->resource === null) $this->resource = $this->loadResource();
+		return $this->resource;
+	}
+	
 	/**
 	 * What should the name for this models database table be?
 	 */
@@ -322,6 +342,7 @@ abstract class RawModel {
 	 * Load this translation for this language
 	 */
 	private function loadTranslation($language) {
+		if(!count($this->valueObject->GetTranslationFieldDefinitions())) return;
 		if (!isset($this->translations[$language])) {
 			$languageModel = new Language($this);
 			$languageData  = array_merge(array("language"=>$language),$this->valueObject->GetPrimaryKey());
@@ -392,15 +413,6 @@ abstract class RawModel {
 	 */
 	public static function Resource() {
 		$model = static::Create();
-		$class = get_class();
-		$resource = null;
-		//Go back the inheritance-chain to find a Resource object..
-		while($resource == null && $class){
-			$resourceClass = '\\'.$class.'\\Resource';
-			if(class_exists($resourceClass)) $resource = new $resourceClass($model);
-		}
-		if($resource == null) throw new UnexpectedStateException("There should always be a resource object; if nothing else, then the resource object from the RawModel..");
-		
-		return $resource;
+		return $model->GetResource();
 	}
 }

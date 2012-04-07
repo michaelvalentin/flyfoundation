@@ -11,7 +11,25 @@ use Flyf\Models\Abstracts\SimpleModel;
  * @author Michael Valentin <mv@signifly.com>
  */
 abstract class Model extends SimpleModel {
-
+	public function Save(){
+		if(!$this->Exists()){
+			$this->Set("created",new \DateTime());
+		}else{
+			$this->Set("modified",new \DateTime());
+		}
+		return parent::Save();
+	}
+	
+	//!TODO We must implement features to ensure that trashed elements aren't returned in.. Say the resource-object...
+	public function Trash(){
+		$this->Set("trashed",new \DateTime());
+		return parent::Save();
+	}
+	
+	public function Untrash(){
+		$this->Set("trashed",null);
+		return parent::Save();
+	}
 }
 
 ?>
