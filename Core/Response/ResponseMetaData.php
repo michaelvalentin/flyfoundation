@@ -11,17 +11,13 @@ use Flyf\Util\Set;
  */
 class ResponseMetaData {
 	private $_keyWords;
-	private $_description;
-	private $_author;
-	private $_robots;
 	private $_allowedRobots;
-	private $_type;
-	private $_charset;
+	private $_meta;
 	
 	/**
 	 * Create a new response meta data 
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->_keyWords = new Set();
 		$this->_allowedRobots = array(
 				"INDEX, FOLLOW",
@@ -29,8 +25,40 @@ class ResponseMetaData {
 				"INDEX, NOFOLLOW",
 				"NOINDEX, NOFOLLOW"
 				);
-		$this->_type = "text/html";
-		$this->_charset = "UTF-8";
+		$this->_meta = array();
+		$this->setDefaults();
+	}
+	
+	private function SetDefaults(){
+		$this->Set("content-type","text/html; charset=UTF-8");
+	}
+	
+	public function __get($name){
+		return $this->Get($name);
+	}
+	
+	public function __set($name, $value){
+		return $this->Set($name, $value);
+	}
+	
+	public function Set($label,$value){
+		$label = strtolower($label);
+		$method = "Set".ucfirst($label);
+		if(method_exists($this, $method)) $this->$method($value);
+		else $this->_meta[$label] = $value;
+	}
+	
+	public function Get($label){
+		$label = strtolower($label);
+		$method = "Get".ucfirst($label);
+		if(method_exists($this, $method))
+		{
+			return $this->$method();
+		}
+		else
+		{
+			return isset($this->_meta[$label]) ? $this->_meta[$label] : null;
+		}
 	}
 	
 	/**
@@ -63,12 +91,23 @@ class ResponseMetaData {
 	}
 	
 	/**
-	 * Get an array of all keywords
+	 * Get all keywords as a comma seperated string
 	 * 
-	 * @return array
+	 * @return string
 	 */
 	public function GetKeywords(){
-		return $this->_keyWords->AsArray();
+		return implode(", ",$this->_keyWords->AsArray());
+	}
+	
+	/**
+	 * Set all keywords (it's suggested to use the "AddKeyword(s)" methods instead!!!)
+	 */
+	public function SetKeywords($keywords){
+		$words = explode(",",$keywords);
+		foreach($words as $l=>$word){
+			$words[$l] = trim($word);
+		}
+		$this->_keyWords = $words;
 	}
 
 	/**
@@ -83,15 +122,6 @@ class ResponseMetaData {
 		}
 		$this->_robots = $robotsStatement;
 	}
-	
-	/**
-	 * Get the current robots statement
-	 * 
-	 * @return string
-	 */
-	public function GetRobots(){
-		return $this->_robots;
-	}
 
 	/**
 	 * Set meta description
@@ -105,83 +135,20 @@ class ResponseMetaData {
 	}
 	
 	/**
-	 * Get meta description
-	 * 
-	 * @return string
-	 */
-	public function GetDescription(){
-		return $this->_description;
-	}
-
-	/**
-	 * Set author in metadata
-	 * 
-	 * @param string $author
-	 */
-	public function SetAuthor($author) {
-		$this->_author = $author;
-	}
-	
-	/**
-	 * Get author in metadata
-	 * 
-	 * @return string
-	 */
-	public function GetAuthor() {
-		return $this->_author;
-	}
-
-	/**
-	 * Set type in metadata
-	 * 
-	 * @param string $type
-	 */
-	public function SetType($type) {
-		$this->_type = $type;
-	}
-	
-	/**
-	 * Get type in metadata
-	 * 
-	 * @return string
-	 */
-	public function GetType(){
-		return $this->_type;
-	}
-
-	/**
-	 * Set charset in metadata
-	 * 
-	 * @param string $charset
-	 */
-	public function SetCharset($charset) {
-		$this->_charset = $charset;
-	}
-	
-	/**
-	 * Get charset in metadata
-	 * 
-	 * @return string
-	 */
-	public function GetCharset(){
-		return $this->_charset;
-	}
-	
-	/**
 	 * Return meta-data html to be placed inside of html head tag
 	 * 
 	 * @return string
 	 */
 	public function HtmlOutput() {
 		$output = '';
-		if ($this->_type && $this->_charset) $output .= '<meta http-equiv="content-type" content="'.$this->_type.'; charset='.$this->_charset.'" />';
-		if ($this->_description) $output .= '<meta name="description" content="'.$this->description.'" />';
-		if (count($this->_keyWords->AsArray())) $output .= '<meta name="keywords" content="'.implode(', ', $this->_keyWords->AsArray()).'" />';
-		if ($this->_robots) $output .= '<meta name="robots" content="'.$this->_robots.'" />';
-		if ($this->_author) $output .= '<meta name="author" content="'.$this->_author.'" />';
+		
+		if (!$this->_keyWords->IsEmpty()) $output .= '<meta name="keywords" content="'.implode(', ', $this->_keyWords->AsArray()).'" />';
+		foreach($this->_meta as $label=>$value){
+			if(trim($value)){
+				$output.= '<meta name="'.$label.'" content="'.$value.'" />'."\n";
+			}
+		}
 
 		return $output;
 	}
 }
-
-?>

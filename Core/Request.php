@@ -149,8 +149,8 @@ class Request {
 	 *
 	 * @return the language of the request
 	 */
-	public function GetLanguage() {
-		return $this->language;
+	public function GetLanguageIso() {
+		return $this->_lang_iso;
 	}
 	
 	/**

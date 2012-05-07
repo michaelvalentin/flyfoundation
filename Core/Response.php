@@ -17,6 +17,7 @@ class Response {
 	public $Headers;
 	public $MetaData;
 	public $Title;
+	private $_doctype;
 	private $_javascripts;
 	private $_stylesheets;
 	public $CompressOutput = true;
@@ -33,7 +34,11 @@ class Response {
 		$this->_javascripts = new Set();
 		$this->_stylesheets = new Set();
 		$defaultComponent = Config::GetValue("default_component");
-		$this->_controller = \Flyf\Util\ComponentLoader::LoadController($defaultComponent); 
+		$this->_controller = \Flyf\Util\ComponentLoader::LoadController($defaultComponent);
+		$this->_doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+		if(DEBUG) $this->_doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'; 
 	}
 	
 	
@@ -62,8 +67,7 @@ class Response {
 	 */
 	public function SetContentType($type="text/html",$charset="utf-8"){
 		$this->Headers->SetHeader("Content-Type",$type."; ".$charset);
-		$this->MetaData->SetType($type);
-		$this->MetaData->SetCharset(strtoupper($charset));
+		$this->MetaData->Set("content-type",$type."; charset=".strtoupper($charset));
 	}
 	
 	/**
@@ -120,42 +124,20 @@ class Response {
 		$this->_stylesheets->Remove($css);
 	}
 
-	private function GetJs() {
-		$request = Request::GetRequest();
-		$jsInternal = array();
-		$jsExternal = array();
-
-		foreach($this->_javascripts->AsArray() as $js) {
-			if (stripos($js, 'http') === 0) {
-				$jsExternal[] = $js;
-			} else {
-				$jsInternal[] = 'http://'.$request->GetDomain().$request->getTLD().'/'.Config::GetValue('root_path').'/'.$js;
-			}
-		}
-
-		$jsExternal = array_reverse($jsExternal);
-		$jsInternal = array_reverse($jsInternal);
-
-		return array_merge($jsExternal, $jsInternal);
+	public function GetJs() {
+		return $this->_javascripts->AsArray();
 	}
 
-	private function GetCss() {
-		$request = Request::GetRequest();
-		$cssInternal = array();
-		$cssExternal = array();
-
-		foreach($this->_stylesheets->AsArray() as $css) {
-			if (stripos($css, 'http') === 0) {
-				$cssExternal[] = $css;
-			} else {
-				$cssInternal[] = 'http://'.$request->GetDomain().$request->getTLD().'/'.Config::GetValue('root_path').'/'.$css;
-			}
-		}
-
-		$cssExternal = array_reverse($cssExternal);
-		$cssInternal = array_reverse($cssInternal);
-
-		return array_merge($cssExternal, $cssInternal);
+	public function GetCss() {
+		return $this->_stylesheets->AsArray();
+	}
+	
+	public function GetDoctype(){
+		return $this->_doctype;
+	}
+	
+	public function SetDoctype($doctype){
+		$this->_doctype = $doctype;
 	}
 	
 	/**
@@ -175,27 +157,5 @@ class Response {
 		}
 		
 		ob_end_flush();
-		
-		/*echo '<html>'."\r\n";
-			echo "\t".'<head>'."\r\n";
-				echo "\t"."\t".'<title>'.$this->Title.'</title>'."\r\n"."\r\n";
-
-				foreach($this->GetCss() as $css) {
-					echo "\t"."\t".'<link rel="stylesheet" type="text/css" href="'.$css.'" />'."\r\n";	
-				}
-				echo "\r\n";
-				
-				foreach($this->GetJs() as $js) {
-					echo "\t"."\t".'<script type="text/javascript" src="'.$js.'"></script>'."\r\n";	
-				}
-				echo "\r\n";
-		
-				echo $this->MetaData->Output();
-			echo "\t".'</head>'."\r\n";
-			
-			echo "\t".'<body>'."\r\n";
-			echo $this->_content;
-			echo "\t".'</body>'."\r\n";
-		echo '</html>'."\r\n";*/
 	}
 }

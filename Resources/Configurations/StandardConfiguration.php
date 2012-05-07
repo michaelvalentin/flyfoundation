@@ -9,7 +9,7 @@ class StandardConfiguration{
 		Config::Set(array(
 			'root_path' => 'root-path-is-not-set',
 			"debug"=>false,
-			'default_language' => 'da',
+			'default_language' => 'en',
 			'default_component' => 'SigniflyComingSoon',
 			'notfound_component' => 'Standard404',
 			'error_component' => 'StandardError',

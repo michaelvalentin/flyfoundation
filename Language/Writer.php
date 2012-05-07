@@ -8,7 +8,7 @@ class Writer {
 	 * Translate this string if necessary
 	 * @param string $string
 	 */
-	public static function _($string, array $parts = array()){
+	public static function Write($string, array $parts = array()){
 		$output = "";
 		if(isset(self::$language[self::IniFormat($string)])){
 			$output = self::$language[self::IniFormat($string)];

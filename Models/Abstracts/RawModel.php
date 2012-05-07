@@ -8,7 +8,6 @@ use Flyf\Util\Debug;
 use Flyf\Exceptions\ModelException;
 use Flyf\Exceptions\InvalidModelException;
 use Flyf\Exceptions\UnexpectedStateException;
-use Flyf\Language\LanguageSettings;
 use Flyf\Models\Core\Translation;
 use Flyf\Database\TableBuilder;
 
@@ -242,11 +241,12 @@ abstract class RawModel {
 	 * 
 	 * @param string $key
 	 * @param mixed $value
-	 * @param string $language (optional)
+	 * @param \Flyf\Models\Core\Language $language (optional)
 	 * @throws NonExistantPropertyException (thrown if the given key does not exists in the model)
 	 */
-	public function Set($key, $value, $language = null) {
-		$language = $language ? : LanguageSettings::GetCurrentLanguage();
+	public function Set($key, $value, \Flyf\Models\Core\Language $language = null) {
+		$language = $language ? : Language::GetCurrent();
+		$language = $language->iso;
 		$method = 'Set'.str_replace(' ', '', ucfirst(str_replace('_', ' ', $key)));
 
 		// First look after a set method. Pass the value and the language to it
@@ -260,7 +260,7 @@ abstract class RawModel {
 		}
 		
 		// If we are in default langauge or the field is not translated, we just write to the value object
-		elseif($language == LanguageSettings::GetDefaultLanguage() || !in_array($key, $this->valueObject->GetTranslatableFieldsNames())){
+		elseif($language == \Flyf\Language::GetDefault() || !in_array($key, $this->valueObject->GetTranslatableFieldsNames())){
 			$this->valueObject->$key = $value;
 		}
 		
@@ -298,14 +298,14 @@ abstract class RawModel {
 	 * an exception saying so.
 	 * 
 	 * @param string $key
-	 * @param string $language (optional)
+	 * @param \Flyf\Models\Core\Language $language (optional)
 	 * @throws NonExistantPropertyException (thrown if the given key does not exists in the model)
 	 */
-	public function Get($key, $language = null) {
-		$language = $language ? : LanguageSettings::GetCurrentLanguage();
-		$method = 'Get'.str_replace(' ', '', ucfirst(str_replace('_', ' ', $key)));
+	public function Get($key, \Flyf\Models\Core\Language $language = null) {
+		$language = $language ? : \Flyf\Language::GetCurrent();
 	
 		// First look for at method to match the key. Pass the language to the method to decide translation.
+		$method = 'Get'.str_replace(' ', '', ucfirst(str_replace('_', ' ', $key)));
 		if (method_exists($this, $method)) {
 			return $this->$method($language);
 		}
@@ -315,16 +315,17 @@ abstract class RawModel {
 			throw new \Flyf\Exceptions\NonExistantPropertyException('The property "'.$key.'" does not exists in class '.get_class($this));
 		}
 		
-		// If language is default or the field is not translated, return from the value object
-		if($language == LanguageSettings::GetDefaultLanguage() || ! in_array($key,$this->valueObject->GetTranslatableFieldsNames())){
+		// If th field is not translated or language is deafult, return from the value object
+		$translate = in_array($key,$this->valueObject->GetTranslatableFieldsNames());
+		if(!$translate || $language->iso == \Flyf\Language::GetDefault()->iso){
 			return $this->valueObject->$key;
 		}
 		
 		// If language is not default language and if there is an available translation, then return that value
 		$this->loadTranslation($language);
 		//!!TODO Make sure that the valueObject returns null if value haven't been set..
-		if($this->translations[$language]->$key !== null || $this->translations[$language]->$key === ""){
-			return $this->translations[$language]->$key;
+		if($this->translations[$language->iso]->$key !== null || $this->translations[$language->iso]->$key === ""){
+			return $this->translations[$language->iso]->$key;
 		} 
 		
 		// If we don't have a translation, we return the default language..
@@ -361,13 +362,15 @@ abstract class RawModel {
 	}
 
 	/**
-	 * Load this translation for this language
+	 * Load a translation in this language
+	 * 
+	 * @param \Flyf\Models\Core\Language $language
 	 */
-	private function loadTranslation($language) {
+	private function loadTranslation(\Flyf\Models\Core\Language $language) {
 		if(!count($this->valueObject->GetTranslatableFieldsDefinitions())) return;
-		if (!isset($this->translations[$language])) {
+		if (!isset($this->translations[$language->iso])) {
 			$translationModel = new Translation($this);
-			$languageData  = array_merge(array("language_iso"=>$language),$this->valueObject->GetPrimaryKey());
+			$languageData  = array_merge(array("language_iso"=>$language->iso),$this->valueObject->GetPrimaryKey());
 			$result = $translationModel->LoadModel($languageData);
 			if(!$result){
 				$result = $translationModel->CreateModel($languageData);
