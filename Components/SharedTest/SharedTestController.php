@@ -1,23 +1,22 @@
 <?php
 namespace Flyf\Components\SharedTest;
 
-use Flyf\AbstractController;
+use Flyf\Components\Abstracts\AbstractController;
 
 class SharedTestController extends AbstractController{
-	public function Process(){
-		parent::Process();
-		#\Flyf\Language\Writer::Load(__DIR__);
-	}
-	
 	/* (non-PHPdoc)
-	 * @see Flyf.AbstractController::Render()
+	 * @see Flyf\Components\Abstracts.AbstractController::collectData()
 	 */
-	public function Render() {
-		return 'hello1';
-		#return '<p>Hello world from Flyf Shared</p><p>'.\Flyf\Language\Writer::_("Test 2").'</p>';
+	protected function collectData() {
+		// TODO Auto-generated method stub
 	}
 
-
+	/* (non-PHPdoc)
+	 * @see Flyf\Components\Abstracts.AbstractController::selectTemplate()
+	 */
+	 protected function selectTemplate() {
+		// TODO Auto-generated method stub
+	}
 }
 
 ?>

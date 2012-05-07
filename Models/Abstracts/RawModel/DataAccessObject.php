@@ -58,27 +58,25 @@ class DataAccessObject {
 	 * @param array $data An associative array of columns=>values)
 	 * @return mixed The result as an associative array, false if no result is found
 	 */
-	public function Load(array $data) {
-		if (is_array($data)) {
-			$this->queryBuilder->SetType('select');
-			$this->queryBuilder->SetTable($this->table);
-			$this->queryBuilder->SetFields($this->fields);
-			
-			$this->queryBuilder->SetLimit(1);
+	public function Load($data) {
+		if(!is_array($data)) throw new \Flyf\Exceptions\InvalidArgumentException("When loading on a RawModel, data must be supplied as an associative array.");
+		
+		$this->queryBuilder->SetType('select');
+		$this->queryBuilder->SetTable($this->table);
+		$this->queryBuilder->SetFields($this->fields);
+		
+		$this->queryBuilder->SetLimit(2);
 
-			foreach ($data as $key => $value) {
-				if(DEBUG && !in_array($key,$this->fields)) Debug::Hint('The field "'.$key.'" is not defined. This might be the reason that the Load method is returning unexpected results.');
-				$this->queryBuilder->AddCondition('`'.$key.'` = :'.$key);
-				$this->queryBuilder->BindParam($key, $value);
-			}
+		foreach ($data as $key => $value) {
+			if(DEBUG && !in_array($key,$this->fields)) Debug::Hint('The field "'.$key.'" is not defined. This might be the reason that the Load method is returning unexpected results.');
+			$this->queryBuilder->AddCondition('`'.$key.'` = :'.$key);
+			$this->queryBuilder->BindParam($key, $value);
+		}
 
-			if (count($result = $this->queryBuilder->Execute())) {
-				return $result[0];
-			} else {
-				return false;	
-			}
-		}else{
-			throw new InvalidArgumentException("The input data for the Load method must be an array of fields to search for.");
+		if (count($result = $this->queryBuilder->Execute())==1) {
+			return $result[0];
+		} else {
+			return false;	
 		}
 	}
 
@@ -106,6 +104,10 @@ class DataAccessObject {
 		
 		$this->queryBuilder->SetTable($this->table);
 
+		foreach($data as $column=>$value){
+			if($value===null) unset($data[$column]);
+		}
+		
 		$this->queryBuilder->SetFields(array_keys($data));
 		$this->queryBuilder->SetValues(array_values($data));
 		
@@ -113,10 +115,9 @@ class DataAccessObject {
 
 		//Try to give the InsertID back to through the data..
 		$id = $this->queryBuilder->Execute();
-		if ($id !== null && !isset($data['id'])) {
+		if ($id !== null) {
 			$data['id'] = $id;
 		}
-
 		return $data;
 	}
 
@@ -132,7 +133,7 @@ class DataAccessObject {
 		$this->queryBuilder->SetLimit(1);
 		foreach($this->PrimaryKey as $field){
 			$value = isset($data[$field]) ? $data[$field] : false;
-			if(!$value)	throw new DangerousQueryException("To delete a entry, the FULL primaryKey must be specified.");
+			if(!$value)	throw new DangerousQueryException("To delete an entry, the FULL primaryKey must be specified.");
 			$this->queryBuilder->AddCondtion('`'.$field.'` = :'.field);
 			$this->queryBuilder->BindParam($field, $value);
 		}
@@ -151,16 +152,6 @@ class DataAccessObject {
 	 */
 	public function Exists(array $primaryKey){
 		$data = $primaryKey;
-		$this->queryBuilder->SetType('select');
-		$this->queryBuilder->SetTable($this->table);
-		$this->queryBuilder->SetFields($this->PrimaryKey[0]);
-		$this->queryBuilder->SetLimit(1);
-		foreach($this->PrimaryKey as $field){
-			$value = isset($data[$field]) ? $data[$field] : false;
-			if(!$value)	return false;
-			$this->queryBuilder->AddCondtion('`'.$field.'` = :'.field);
-			$this->queryBuilder->BindParam($field, $value);
-		}
-		return count($this->queryBuilder->Execute()) > 0;
+		return $this->Load($primaryKey) ? true : false;
 	}
 }

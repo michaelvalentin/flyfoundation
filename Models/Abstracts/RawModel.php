@@ -1,6 +1,8 @@
 <?php
 namespace Flyf\Models\Abstracts;
 
+use Flyf\Exceptions\InvalidArgumentException;
+
 use Flyf\Models\Core\Language;
 use Flyf\Util\Debug;
 use Flyf\Exceptions\ModelException;
@@ -26,16 +28,13 @@ use Flyf\Database\TableBuilder;
  * @author Michael Valentin <mv@signifly.com>
  */
 abstract class RawModel {
-	private $dataAccessObject = null; // The DataAccessObject of the model (see the DataAccessObject for documentation). 
-	private $valueObject = null;	// The ValueObject of the model (see the ValueObject for documentation).
-	private $translations = array(); // The loaded translations of a model.
-	private $resource = null; // The resource object for this model.
+	protected $dataAccessObject = null; // The DataAccessObject of the model (see the DataAccessObject for documentation). 
+	protected $valueObject = null;	// The ValueObject of the model (see the ValueObject for documentation).
+	protected $translations = array(); // The loaded translations of a model.
+	protected $resource = null; // The resource object for this model.
 
-	/**
-	 * Protected constructor to emphasize the objects SHOULD be created
-	 * from the static methods (Class is it's own Factory).
-	 */
 	protected function __construct() {
+		$var = get_called_class();
 		$this->valueObject = $this->loadValueObject();
 		$this->dataAccessObject = $this->loadDataAccessObject();
 		if(DEBUG)
@@ -70,8 +69,14 @@ abstract class RawModel {
 		//Step backward the inheritance-chain until a DataAccessObject is found...
 		while($valueObject==null && $class){
 			$voClass = '\\'.$class.'\\ValueObject';
-			if(class_exists($voClass)) $valueObject = new $voClass();
-			$class = get_parent_class($class);
+			if(class_exists($voClass))
+			{ 
+				$valueObject = new $voClass(); 
+			}
+			else
+			{
+				$class = get_parent_class($class);
+			}
 		}
 		return $valueObject;
 	}
@@ -81,7 +86,7 @@ abstract class RawModel {
 	 * 
 	 * @return \Flyf\Models\Abstracts\RawModel\ValueObject
 	 */
-	public function GetValueObject(){
+	protected function GetValueObject(){
 		return $this->valueObject;
 	}
 	
@@ -103,7 +108,7 @@ abstract class RawModel {
 		$dataAccessObject->SetTable($this->GetTable());
 		$dataAccessObject->SetPrimaryKey(array_keys($this->valueObject->GetPrimaryKey()));
 		$dataAccessObject->SetFields($this->valueObject->GetFieldDefinitions());
-		$dataAccessObject->SetModel($this->valueObject->GetModelDefinition());
+		$dataAccessObject->SetModel($this->valueObject->GetModelProperties());
 		return $dataAccessObject;
 	}
 
@@ -112,7 +117,7 @@ abstract class RawModel {
 	 * 
 	 * @return \Flyf\Models\Abstracts\RawModel\DataAccessObject
 	 */
-	public function GetDataAccessObject(){
+	protected function GetDataAccessObject(){
 		return $this->dataAccessObject;
 	}
 
@@ -139,7 +144,11 @@ abstract class RawModel {
 	 * What should the name for this models database table be?
 	 */
 	public function GetTable(){
-		return "flyf_".preg_replace("/\\\/","_",str_replace("flyf\\models\\","",strtolower(get_called_class())));
+		$tablename = strtolower(get_called_class());
+		$tablename = str_replace("flyf\\","",$tablename);
+		$tablename = str_replace("models\\","",$tablename);
+		$tablename = str_replace("\\","_",$tablename);
+		return \Flyf\Core\Config::GetValue("database_table_prefix").$tablename;
 	}
 	
 	
@@ -149,10 +158,15 @@ abstract class RawModel {
 	 */
 	public function Save() {
 		if(!$this->Valid()) throw new InvalidModelException("It is not allowed to save an invalid model. Please make all fields valid before saving.");
-		$data = $this->GetValues();
-		$data = $this->dataAccessObject->Save($data);
+		$data = $this->valueObject->GetTextValues();
+		$data = $this->dataAccessObject->Save($data,!$this->Exists());
+		if(!$this->HasField("id")) unset($data["id"]);
 		$this->valueObject->SetValues($data);
 		foreach($this->translations as $translation){
+			foreach($this->valueObject->GetPrimaryKey() as $column=>$value){
+				$fieldname = "model_".$column;
+				$translation->$fieldname = $value;
+			}
 			$translation->Save();
 		}
 	}
@@ -173,6 +187,10 @@ abstract class RawModel {
 		}
 	}
 	
+	public function HasField($name){
+		return in_array($name,array_keys($this->valueObject->GetFieldDefinitions()));
+	}
+	
 	/**
 	 * Tells whether the model exists in the persitent storage.
 	 * 
@@ -186,7 +204,11 @@ abstract class RawModel {
 	 * @return bool (whether the model exists or not)
 	 */
 	public function Exists() {
-		return $this->dataAccessObejct->Exists($this->valueObject->GetPrimaryKey());
+		return $this->dataAccessObject->Exists($this->valueObject->GetPrimaryKey());
+	}
+	
+	public function GetEmptyValueObject() {
+		return $this->loadValueObject();
 	}
 	
 	/**
@@ -234,11 +256,11 @@ abstract class RawModel {
 		
 		// If there is no method and the value is not defined in the value object, we throw an exception..
 		elseif(!in_array($key,array_keys($this->valueObject->GetValues()))){
-			throw new \Flyf\Exceptions\NonExistantPropertyException('The property "'.$key.'" does not exists in class '.get_class($this));			
+			throw new \Flyf\Exceptions\NonExistantPropertyException('The property "'.$key.'" does not exists in class '.get_called_class());			
 		}
 		
 		// If we are in default langauge or the field is not translated, we just write to the value object
-		elseif($language == LanguageSettings::GetDefaultLanguage() || !in_array($key, $this->TranslationFields())){
+		elseif($language == LanguageSettings::GetDefaultLanguage() || !in_array($key, $this->valueObject->GetTranslatableFieldsNames())){
 			$this->valueObject->$key = $value;
 		}
 		
@@ -294,7 +316,7 @@ abstract class RawModel {
 		}
 		
 		// If language is default or the field is not translated, return from the value object
-		if($language == LanguageSettings::GetDefaultLanguage() || ! in_array($key,$this->TranslationFields())){
+		if($language == LanguageSettings::GetDefaultLanguage() || ! in_array($key,$this->valueObject->GetTranslatableFieldsNames())){
 			return $this->valueObject->$key;
 		}
 		
@@ -333,7 +355,7 @@ abstract class RawModel {
 	 */
 	public function AsArray() {
 		$values = array('model' => strtolower(get_class($this)));
-		$values = array_merge($values, $this->valueObject->getValues());
+		$values = array_merge($values, $this->valueObject->getValues()); //!!TODO: We should rather implement a "GetValues" method on model.
 		
 		return $values;
 	}
@@ -342,13 +364,13 @@ abstract class RawModel {
 	 * Load this translation for this language
 	 */
 	private function loadTranslation($language) {
-		if(!count($this->valueObject->GetTranslationFieldDefinitions())) return;
+		if(!count($this->valueObject->GetTranslatableFieldsDefinitions())) return;
 		if (!isset($this->translations[$language])) {
-			$languageModel = new Language($this);
-			$languageData  = array_merge(array("language"=>$language),$this->valueObject->GetPrimaryKey());
-			$result = $languageModel::Load($languageData);
+			$translationModel = new Translation($this);
+			$languageData  = array_merge(array("language_iso"=>$language),$this->valueObject->GetPrimaryKey());
+			$result = $translationModel->LoadModel($languageData);
 			if(!$result){
-				$result = $languageModel::Create($languageData);
+				$result = $translationModel->CreateModel($languageData);
 			} 
 			$this->translations[$language] = $result;
 		}
@@ -368,12 +390,13 @@ abstract class RawModel {
 	 * @param array $data
 	 * @return \Flyf\Models\Abstracts\RawModel A model that match
 	 */
-	public static function Load(array $data) {
+	public static function Load($data) {
+		if(!is_array($data)) throw new InvalidArgumentException("Load on a RawModel must be perfromed with an array of data.");
 		$model = static::Create();
 		
 		$result = $model->dataAccessObject->Load($data);
 		
-		if(!$result) throw new ModelException("No model with the given data exists. Use create instead.");
+		if(!$result) return false;
 		
 		$model->valueObject->SetValues($result);
 

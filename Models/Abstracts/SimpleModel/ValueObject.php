@@ -2,12 +2,8 @@
 namespace Flyf\Models\Abstracts\SimpleModel;
 
 class ValueObject extends \Flyf\Models\Abstracts\RawModel\ValueObject {
-	public $id;
-	
 	public function __construct() {
-		parent::__construct();
-		$this->addAnnotations(array(
-				"id" => array(
+		$this->addField("id", array(
 					"type" => "integer",
 					"maxLength" => false,
 					"primaryKey" => true,
@@ -15,8 +11,8 @@ class ValueObject extends \Flyf\Models\Abstracts\RawModel\ValueObject {
 					"autoIncrement" => true,
 					"unsigned" => true
 				)
-			)
 		);
+		parent::__construct();
 	}
 }
 

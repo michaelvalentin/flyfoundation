@@ -1,16 +1,15 @@
 <?php
 
 /**
- * A model to produce HTTP reponses
- * @author MV     
+ * A general model for composing http responses
+ * 
+ * @author Michael Valentin <mv@signifly.com>    
  */
 namespace Flyf\Core;
 
 use \Flyf\Core\Request as Request;
-
-#require_once __DIR__.'/ResponseHeaders.php';
-#require_once __DIR__.'/ResponseMetaData.php';
-#require_once __DIR__.'/../util/Set.php';
+use \Flyf\Core\Response\ResponseHeaders;
+use \Flyf\Core\Response\ResponseMetaData;
 
 use Flyf\Util\Set as Set;
 
@@ -21,7 +20,7 @@ class Response {
 	private $_javascripts;
 	private $_stylesheets;
 	public $CompressOutput = true;
-	private $_content;	
+	private $_controller;	
 	private static $_responses = array();
 	
 	
@@ -31,15 +30,17 @@ class Response {
 	private function __construct(){
 		$this->Headers = new ResponseHeaders();
 		$this->MetaData = new ResponseMetaData();
-		$this->_content = "";
 		$this->_javascripts = new Set();
 		$this->_stylesheets = new Set();
+		$defaultComponent = Config::GetValue("default_component");
+		$this->_controller = \Flyf\Util\ComponentLoader::LoadController($defaultComponent); 
 	}
 	
 	
 	/**
 	 * Response factory. Returns a Response corresponding to the given key; a new Response
 	 * if no response has been made for this key yet.
+	 * 
 	 * @param string $key The key.
 	 * @return \Flyf\Core\Response Response corresponding to the given key.
 	 */
@@ -54,23 +55,38 @@ class Response {
 	}
 	
 	/**
-	 * Get the current content (html-body) of the response
-	 * @return string $_content
+	 * Set the content type in both headers and metadata
+	 * 
+	 * @param string $type (The type eg. text/html)
+	 * @param string $charset (The charset eg. utf-8)
 	 */
-	public function GetContent() {
-		return $this->_content;
+	public function SetContentType($type="text/html",$charset="utf-8"){
+		$this->Headers->SetHeader("Content-Type",$type."; ".$charset);
+		$this->MetaData->SetType($type);
+		$this->MetaData->SetCharset(strtoupper($charset));
+	}
+	
+	/**
+	 * Get the front controller of the response
+	 * 
+	 * @return Flyf\Components\Abstracts\AbstractController 
+	 */
+	public function GetController() {
+		return $this->_controller;
 	}
 
 	/**
-	 * Set the current content (html-body) of the response
-	 * @param string $_content
+	 * Set the front controller of the response
+	 * 
+	 * @param Flyf\Components\Abstracts\AbstractController $_controller
 	 */
-	public function SetContent($_content) {
-		$this->_content = $_content;
+	public function SetController(\Flyf\Components\Abstracts\AbstractController $_controller) {
+		$this->_controller = $_controller;
 	}
 
 	/**
 	 * Add this script to the response
+	 * 
 	 * @param string $js
 	 */
 	public function AddJs($js) {
@@ -79,6 +95,7 @@ class Response {
 	
 	/**
 	 * Remove this script from the response
+	 * 
 	 * @param string $js
 	 */
 	public function RemoveJs($js) {
@@ -87,6 +104,7 @@ class Response {
 
 	/**
 	 * Add this stylesheet to the response
+	 * 
 	 * @param string $css
 	 */
 	public function AddCss($css) {
@@ -95,6 +113,7 @@ class Response {
 	
 	/**
 	 * Remove this stylesheet from the response
+	 * 
 	 * @param string $script
 	 */
 	public function RemoveCss($css){
@@ -150,8 +169,14 @@ class Response {
 		}
 		
 		$this->Headers->Output();
+		if($this->_controller)
+		{
+			echo $this->_controller->Render();	
+		}
 		
-		echo '<html>'."\r\n";
+		ob_end_flush();
+		
+		/*echo '<html>'."\r\n";
 			echo "\t".'<head>'."\r\n";
 				echo "\t"."\t".'<title>'.$this->Title.'</title>'."\r\n"."\r\n";
 
@@ -171,8 +196,6 @@ class Response {
 			echo "\t".'<body>'."\r\n";
 			echo $this->_content;
 			echo "\t".'</body>'."\r\n";
-		echo '</html>'."\r\n";
-		
-		ob_end_flush();
+		echo '</html>'."\r\n";*/
 	}
 }

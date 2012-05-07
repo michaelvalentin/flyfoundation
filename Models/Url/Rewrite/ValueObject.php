@@ -6,8 +6,7 @@ class ValueObject extends \Flyf\Models\Abstracts\SimpleModel\ValueObject{
 	public $system;
 	
 	public function __construct(){
-		parent::__construct();
-		$this->addAnnotations(array(
+		$this->addFields(array(
 				"seo" => array(
 						"type" => "string",
 						"maxLength" => 255,
@@ -19,6 +18,7 @@ class ValueObject extends \Flyf\Models\Abstracts\SimpleModel\ValueObject{
 						"required" => true
 				)
 		));
+		parent::__construct();
 	}
 }
 ?>

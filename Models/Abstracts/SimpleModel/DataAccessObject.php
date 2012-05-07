@@ -57,9 +57,10 @@ class DataAccessObject extends \Flyf\Models\Abstracts\RawModel\DataAccessObject{
 	 * newly created id into the data, before returning it.
 	 *
 	 * @param array $data (an associative array of the data to be saved)
+	 * @param boolen $insert (legacy param from parent - ignored)
 	 * @return array $data (the data after saving)
 	 */
-	public function Save($data) {
+	public function Save(array $data,$insert = false) {
 		if (isset($data['id']) && $data['id']) {
 			return parent::Save($data,false);
 		}else{

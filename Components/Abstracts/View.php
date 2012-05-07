@@ -1,46 +1,68 @@
 <?php
-namespace Flyf;
+namespace Flyf\Components\Abstracts;
 
 use Flyf\Core\Config;
 
 /**
  * The default view in Flyf. A collection of data and rules 
  * on how to format it. Can be parsed with a template to html.
- * @author MV
+ * 
+ * @author Michael Valentin
  */
 class View {
 	private $values = array();
 	
 	/**
 	 * Add value on this label
+	 * 
 	 * @param string $label
 	 * @param mixed $value
 	 */
 	public function AddValue($label, $value){
-		$this->values[$label] = $value;
+		if(is_array($value) && false){
+			$this->AddArrayValue($label,$value);
+		}else{
+			$this->values[$label] = $value;
+		}
+	}
+	
+	/**
+	 * Add multiple values to the view
+	 * 
+	 * @param array $data (Array on the form $label=>$value)
+	 */
+	public function AddValues(array $data){
+		foreach($data as $label=>$value){
+			$this->AddValue($label, $value);
+		}
 	}
 	
 	/**
 	 * Add an array of values
+	 * 
 	 * @param string $label
 	 * @param array $array
 	 */
-	public function AddArray($label, array $array){
-		array_merge($this->values,array($label=>$array));
+	private function AddArrayValue($label, array $array){
+		//$this->values[$label] = $array;
 	}
 	
-	private function Process(array $array){
+	/**
+	 * 
+	 * @param array $array
+	 */
+	private function Process(array $values){
 		$output = array();
-		foreach($array as $l=>$v){
+		foreach($values as $l=>$v){
 			if(is_array($v)){
-				$output[$l] = $this->Process($v);
+				$output[$l] = $this->Process($v); //Work recursively through the array..
 				continue;
 			}
 			if($v instanceof \Flyf\Models\Abstracts\RawModel){
 				$output[$l] = $v->AsArray();
 				continue;
 			}
-			if($v instanceof Util\HtmlString){
+			if($v instanceof \Flyf\Util\HtmlString){
 				//if(!$v->Validate()) Debug::Hint("Malformed html in".get_called_class()); //TODO: Implement
 				$output[$l] = $v->Output();
 				continue;
@@ -66,8 +88,11 @@ class View {
 		return $output;
 	}
 	
+	public function GetStringValues(){
+		return $this->Process($this->values); //Convert all values to strings before outputting.
+	}
+	
 	public function GetValues(){
-		$this->values = $this->Process($this->values);
 		return $this->values;
 	}
 }

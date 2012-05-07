@@ -1,6 +1,8 @@
 <?php
 namespace Flyf\Database;
 
+use Flyf\Exceptions\InvalidAnnotationException;
+
 use \Flyf\Util\Debug;
 
 class TableBuilder {
@@ -44,7 +46,7 @@ class TableBuilder {
 		$query = "CREATE TABLE IF NOT EXISTS ".$this->tableName."(";
 		$query .= implode(" , ",array_merge($columns,$constraints,$indexes));
 		$query .= ");";
-		echo $query;
+		echo "#####".$query."#####";
 		$connection = Connection::GetConnection();
 		$connection->Prepare($query);
 		$connection->ExecuteNonQuery();
@@ -52,38 +54,38 @@ class TableBuilder {
 	
 	private function GetColumns(){
 		$columns = array();
-		foreach($this->fields as $l => $v){
+		foreach($this->fields as $column => $options){
 			//Create the column
-			$column = "";
-			$column .= $l;
-			$column .= " ".$this->Convert($v["type"],$v["maxLength"]);
-			if($v["required"]) $column .= " NOT NULL";
-			if($v["default"]) $column .= " DEFAULT '".$v["default"]."'";
-			if($v["autoIncrement"]) $column .= " AUTO_INCREMENT";
-			if($v["unique"]) $column .= " UNIQUE";
-			if($v["primaryIndex"]) $this->primaryKeys[] = $l;
-			$columns[] = $column;
+			$output = "";
+			$output .= $column;
+			$output .= " ".$this->ConvertType($options["type"],$options["maxLength"]);
+			if($options["required"]) $output .= " NOT NULL";
+			if($options["default"]) $output .= " DEFAULT '".$options["default"]."'";
+			if($options["autoIncrement"]) $output .= " AUTO_INCREMENT";
+			if($options["unique"]) $output .= " UNIQUE";
+			if($options["primaryKey"]) $this->primaryKeys[] = $column;
+			$columns[] = $output;
 			
 			//Setup references
-			if($v["reference"] && $v["reference_column"]){
-				$table = $v["reference"]->GetTable();
-				$reference = "COSNTRAINT FOREIGN KEY ".$l."-rel (".$l.") REFERENCES ".$table." (".$v["reference_column"].")";
-				if(in_array($v["reference_table"],array("MATCH FULL","MATCH PARTIAL","MATCH SIMPEL"))){
-					$reference .= " ".$v["reference_match"];
-				}elseif($v["reference_match"]){
-					Debug::Hint("Illegal reference_table \"".$v["reference_match"]."\" for \"".$l."\" in table \"".$this->tableName."\".");
+			if($options["reference"] && $options["reference_column"]){
+				$table = $options["reference"]->GetTable();
+				$reference = "CONSTRAINT FOREIGN KEY ".$column."_rel (".$column.") REFERENCES ".$table." (".$options["reference_column"].")";
+				if(in_array($options["reference_match"],array("MATCH FULL","MATCH PARTIAL","MATCH SIMPEL"))){
+					$reference .= " ".$options["reference_match"];
+				}elseif($options["reference_match"]){
+					Debug::Hint("Illegal reference_table \"".$options["reference_match"]."\" for \"".$column."\" in table \"".$this->tableName."\".");
 				}
 				$refoptions = array("RESTRICT","CASCADE","SET NULL","NO ACTION");
-				if(!in_array($v["reference_on_delete"],$refoptions)){
-					Debug::Error("Illegal reference_on_delete \"".$v["reference_on_delete"]."\" for \"".$l."\" in table \"".$this->tableName."\".");
+				if(!in_array($options["reference_on_delete"],$refoptions)){
+					Debug::Error("Illegal reference_on_delete \"".$options["reference_on_delete"]."\" for \"".$column."\" in table \"".$this->tableName."\".");
 					continue;
 				}
-				if(!in_array($v["reference_on_update"],$refoptions)){
-					Debug::Error("Illegal reference_on_update \"".$v["reference_on_update"]."\" for \"".$l."\" in table \"".$this->tableName."\".");
+				if(!in_array($options["reference_on_update"],$refoptions)){
+					Debug::Error("Illegal reference_on_update \"".$options["reference_on_update"]."\" for \"".$column."\" in table \"".$this->tableName."\".");
 					continue;
 				}
-				$reference .= " ".$v["reference_on_delete"];
-				$reference .= " ".$v["reference_on_update"];
+				$reference .= " ON DELETE ".$options["reference_on_delete"];
+				$reference .= " ON UPDATE ".$options["reference_on_update"];
 				$columns[] = $reference;
 			}
 		}
@@ -92,10 +94,11 @@ class TableBuilder {
 	
 	private function GetIndexes(){
 		$indexes = array();
-		foreach($this->indexes as $l=>$v){
+		foreach($this->indexes as $indexNumber=>$options){
+			$indexName = $options["name"];
 			//Verify index and continue if not valid..
-			$allowed = array("
-					index"=>array(
+			$allowed = array(
+					"index"=>array(
 							"INDEX",
 							"KEY",
 							"UNIQUE INDEX",
@@ -111,25 +114,27 @@ class TableBuilder {
 							)
 					);
 			foreach($allowed as $la=>$va){
-				if($v[$la] && !in_array($v[$la],$va)){
-					Debug::Error("Malformed index declaration when creating table \"".$this->tableName."\". The option \"".$la."\" can't be \"".$v[$la]."\" for the index ".$l);
+				if($options[$la] && !in_array($options[$la],$va)){
+					Debug::Error("Malformed index declaration when creating table \"".$this->tableName."\". The option \"".$la."\" can't be \"".$options[$la]."\" for the index ".$indexName);
 					continue;
 				}
 			}
-			if(!$v["type"]){
-				Debug::Error("Malformed index declaration when creating table \"".$this->tableName."\". Index property can't be false in ".$l);
+			if(!$options["type"]){
+				Debug::Error("Malformed index declaration when creating table \"".$this->tableName."\". Index property can't be false in ".$indexName);
 			}
-			if(!count($v["columns"])){
-				Debug::Error("Malformed index declaration when creating table \"".$this->tableName."\". One or more tables must defined when creating the index ".$l);
+			if(!count($options["columns"])){
+				Debug::Error("Malformed index declaration when creating table \"".$this->tableName."\". One or more tables must defined when creating the index ".$indexName);
 				continue;
 			}
 			
 			//Make the index
-			if($v["fulltext"]) $index = $v["fulltext"];
-			$index .= " ".$v["index"];
-			$index .= " ".$l;
-			if($v["type"]) $index .= " ".$v["type"];
-			$index .= " (".implode(",",$v["columns"]).")";
+			$index = "";
+			if($options["fulltext"]) $index .= $options["fulltext"];
+			$index .= " ".$options["index"];
+			if(strlen($indexName)<3) throw new InvalidAnnotationException("Name of index should be at least 3 chars for index: ".$indexName);
+			$index .= " ".$indexName;
+			if($options["type"]) $index .= " ".$options["type"];
+			$index .= " (".implode(",",$options["columns"]).")";
 			$indexes[] = $index;
 		}
 		return $indexes;
@@ -205,18 +210,18 @@ class TableBuilder {
 		return $constraints;
 	}
 	
-	private function Convert($className, $limit){
+	private function ConvertType($type, $limit){
 		$limText = $limit ? "(".$limit.")" : "";
-		switch(strtolower($className)){
+		switch(strtolower($type)){
 			case "boolean" :
 				return "TINYINT(1)";
 				break;
 			case "string" :
-				if($limit < 255 && $limit) return "VARCHAR".$limText;
+				if($limit && $limit < 255) return "VARCHAR(".$limit.")";
 				return "TEXT".$limText;
 				break;
 			case "varchar" :
-				if(!$limit || $limit > 255) $limit = 255;
+				if(!$limit || $limit > 255) $limText = "(255)";
 				return "VARCHAR".$limText;
 			case "integer" :
 				return "INT".$limText;
@@ -224,7 +229,7 @@ class TableBuilder {
 			case "datetime" :
 				return "DATETIME";
 			default :
-				throw new \Flyf\Exceptions\InvalidArgumentException("Unexpected className for conversion to DatabaseType");
+				throw new \Flyf\Exceptions\InvalidArgumentException('Unexpected className "'.$type.'" for conversion to DatabaseType');
 				break;
 		}
 	}
@@ -232,17 +237,18 @@ class TableBuilder {
 	/**
 	 * Build a database table for this model
 	 * 
-	 * @param \Flyf\Models\Abstracts\RawModel $model
+	 * @param string $table The name of the table to build
+	 * @param \Flyf\Models\Abstracts\RawModel\ValueObject $valueObject The ValueObject to build the table from
 	 */
 	public static function BuildFromModel(\Flyf\Models\Abstracts\RawModel $model){
 		if(!DEBUG) return; //Can only be used in debug mode!
 		$class = get_called_class();
 		$table = new $class($model->GetTable());
-		$vo = $model->GetValueObject();
-		foreach($vo->GetFieldDefinitions() as $column=>$options){
+		$valueObject = $model->GetEmptyValueObject();
+		foreach($valueObject->GetFieldDefinitions() as $column=>$options){
 			$table->AddField($column, $options);
 		}
-		foreach($vo->GetModelDefinition() as $column=>$options){
+		foreach($valueObject->GetModelProperties() as $column=>$options){
 			if($options["index"]){
 				$table->AddIndex($column,$options);
 			}elseif($options["constraint"]){

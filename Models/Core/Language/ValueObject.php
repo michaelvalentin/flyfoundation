@@ -1,28 +1,24 @@
 <?php
 namespace Flyf\Models\Core\Language;
 
-class ValueObject extends \Flyf\Models\Abstracts\ValueObject{
-	public $iso;
-	public $url;
-	public $name;
-	public $active;
-	
+class ValueObject extends \Flyf\Models\Abstracts\RawModel\ValueObject{
 	public function __construct(){
-		$this->addAnnotations(array(
-			"iso2" => array(
+		$this->addFields(array(
+			"iso" => array(
 				"type" => "string",
-				"maxlength" => 2,
-				"primaryIndex" => true,
+				"maxLength" => 2,
+				"primaryKey" => true,
 				"required" => true
 			),
 			"url" => array(
 				"type" => "string",
-				"maxlength" => 255
+				"maxLength" => 255
 			),
 			"name" => array(
 				"type" => "string",
-				"maxlength" => 55,
-				"required" => true
+				"maxLength" => 55,
+				"required" => true,
+				"translate" => true
 			),
 			"active" => array(
 				"type" => "boolean",

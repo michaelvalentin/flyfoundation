@@ -6,13 +6,13 @@ use \Flyf\Core\Request as Request;
 
 class LanguageSettings {
 	public static function GetDefaultLanguage(){
+		return "en"; //!!TODO Implement!
 		return Config::GetValue("default_language");
 	}
 	
 	public static function GetCurrentLanguage(){
-		return 'da';
-		#return Request::GetRequest()->GetLanguage();
-		// What the fuck
+		return "en"; //!!TODO Implement!
+		return Request::GetRequest()->GetLanguage();
 	}
 }
 

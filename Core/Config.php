@@ -40,6 +40,10 @@ class Config {
 	}
 	
 	public static function Lock(){
-		
+		self::$_locked = true;
+	}
+	
+	public static function IsLocked(){
+		return self::$_locked;
 	}
 }

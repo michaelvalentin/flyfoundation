@@ -5,7 +5,7 @@ use \Flyf\Models\Url\Rewrite as Rewrite;
 use \Flyf\Util\Debug as Debug;
 
 /**
- *	The Request class interprets and arranges
+ * The Request class interprets and arranges
  * the request sent from the client to the server.
  *
  * It's primary focus is to interpret the global
@@ -13,22 +13,17 @@ use \Flyf\Util\Debug as Debug;
  * access POST, SERVER and SESSION variables throughout
  * the application for consistensy.
  * 
- * @author Henrik Haugbølle <hh@signifly.com>
- * @version 2012-01-06
- * @dependencies Config
+ * @author Michael Valentin <mv@signifly.com>
  */
 class Request {
 	// Used to hold the different request instances
 	private static $_requests = array();
 
-	// The request
-	private $request;
-	// The language of the request
-	private $language;
-	// THe components of the request
-	private $components;
-	// The parameters of the request
-	private $parameters;
+	
+	private $_request; // The full request
+	private $_component; // The called component
+	private $_parameters; // The parameters of the request
+	private $_lang_iso;
 
 	/**
 	 * Initially call the Configure method to
@@ -36,7 +31,8 @@ class Request {
 	 *
 	 */
 	private function __construct() {
-		$this->Configure();
+		$this->_parameters = array();
+		$this->Parse();
 	}
 
 	/**
@@ -45,8 +41,7 @@ class Request {
 	 * the instance under.
 	 *
 	 * @param string $key (the key to store the instance by)
-	 * @return a instance
-	 *
+	 * @return \Flyf\Core\Request (a request instance corresponding to the given key)
 	 */
 	public static function GetRequest($key = 'default') {
 		if (!isset(self::$_requests[$key])) {
@@ -56,6 +51,10 @@ class Request {
 		return self::$_requests[$key];
 	}
 
+	public function GetFrontController(){
+		return \Flyf\Util\ComponentLoader::LoadController($this->GetComponent(),$this->_parameters);
+	}
+	
 	/**
 	 * The method taking care of interpreting and 
 	 * rearranging the request in the way we want.
@@ -68,60 +67,37 @@ class Request {
 	 * the components used, and the parameters belonging
 	 * to each component.
 	 */
-	public function Configure() {
-		$base = $this->GetProtocol().$this->GetDomain().$this->GetTLD().'/'.Config::GetValue('root_path').'/';
-	
-		$this->language = $this->GetGetParam('language') ? : Config::GetValue('default_language');
-		$this->request = $this->GetGetParam('request') ? : Config::GetValue('default_request');
-
-		$this->components = array();
-		$this->parameters = array();
-
-		$seoRequest = $base.$this->request;
-
-		$rewrite = Rewrite::Load(array(
-			'seo' => $seoRequest
-		));
-
-		if ($rewrite->Exists()) {
-			$request = $rewrite->Get('system');
-			$request = str_replace($base, '', $request);
-		} else {
-			Debug::Hint('Rewrite "'.$seoRequest.'" does not exists in database, using request as raw');
-
-			$request = $this->request;
+	private function Parse() {
+		//Get the raw request
+		$this->_request = $this->GetGetParam('request');
+		
+		//Get the parameters
+		$parts = preg_split("&/&",$this->_request);
+		$parts = array_filter($parts);
+		foreach($parts as $l=>$p)
+		{
+			$parameter = preg_split("/=/",$p);
+			if(count($parameter)>1)
+			{
+				$this->_parameters[$parameter[0]] = $parameter[1];
+				unset($parts[$l]);
+			}
 		}
-
-		if ($count = count($components = explode('/', $request))) {
-			$components = array_filter($components);
-			$prevComponent = 'root';
-
-			if (count($components) == 0) {
-				$components = array('root', Config::getValue('root_controller_key'));
+		
+		//Find out what the language is...
+		if(count($parts) && isset($parts[0])){
+			if(preg_match("/^[a-z]{2}$/",$parts[0])){ //There is only a language..
+				$this->_lang_iso = $parts[0];
+				unset($parts[0]);
 			}
-			
-			foreach ($components as $component) {
-				$parameters = array();
-				
-				if (preg_match_all('/\((.+?)\)/ismu', $component, $matches)) {
-					$component = str_replace($matches[0][0], '', $component);
-
-					if ($count = count($fragments = explode('&', $matches[1][0]))) {
-						foreach ($fragments as $fragment) {
-							$split = explode('=', $fragment);
-							$key = $split[0];
-							$value = $split[1];
-
-							$parameters[$key] = $value;
-						}
-					}
-				}
-
-				$this->components[$prevComponent] = $component;
-				$prevComponent = $component;
-
-				$this->parameters[$component] = $parameters;
-			}
+		}
+		
+		//Find out what the component is...
+		if(count($parts)){
+			$component = implode("\\",$parts);
+			$this->_component = \Flyf\Util\ComponentLoader::ComponentExists($component) ? $component : Config::GetValue("notfound_component");
+		}else{
+			$this->_component = Config::GetValue("default_component");
 		}
 	}
 
@@ -176,21 +152,6 @@ class Request {
 	public function GetLanguage() {
 		return $this->language;
 	}
-
-	/**
-	 * Will return all components specified in a request
-	 * as an associative array. Each component will be the
-	 * next components key (see example below).
-	 *
-	 * @example
-	 * $components = $request->getComponents();
-	 * // could return root => shop, shop => product
-	 *
-	 * @return array
-	 */
-	public function getComponents() {
-		return $this->components;
-	}
 	
 	/**
 	 * Returns a specific component from a request, given
@@ -203,14 +164,8 @@ class Request {
 	 * @param string $index (the key of the component)
 	 * @return string
 	 */
-	public function GetComponent($index = 'root') {
-		return isset($this->components[$index]) ? $this->components[$index] : null;
-	}
-
-	public function GetCurrentComponent() {
-		$keys = array_keys($this->components);
-
-		return $this->components[array_pop($keys)];
+	public function GetComponent() {
+		return $this->_component;
 	}
 
 	/**

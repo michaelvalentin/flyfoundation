@@ -78,7 +78,8 @@ class Debug {
 	 * @param string $output
 	 */
 	public static function Error($output) {
-		self::Init();
+		//!TODO: Implement a better solution..
+		/*self::Init();
 		
 		if (in_array('error', self::$consoleLevel)) {
 			self::Console('Error: '.$output);
@@ -86,7 +87,7 @@ class Debug {
 
 		if (in_array('error', self::$fileLevel)) {
 			self::Buffer('Error: '.$output);
-		}
+		}*/
 	}
 
 	/**
@@ -97,7 +98,8 @@ class Debug {
 	 * @param string $output
 	 */
 	public static function Log($output) {
-		self::Init();
+		//!TODO: Implement a better solution..
+		/*self::Init();
 		
 		if (in_array('log', self::$consoleLevel)) {
 			self::Console('Log: '.$output);
@@ -105,7 +107,7 @@ class Debug {
 
 		if (in_array('log', self::$fileLevel)) {
 			self::Buffer('Log: '.$output);
-		}
+		}*/
 	}
 
 	/**
@@ -117,7 +119,8 @@ class Debug {
 	 * @param string $output
 	 */
 	public static function Hint($output) {
-		self::Init();
+		//!TODO: Implement a better solution..
+		/*self::Init();
 		
 		if (in_array('hint', self::$consoleLevel)) {
 			self::Console('Hint: '.$output);
@@ -125,7 +128,7 @@ class Debug {
 
 		if (in_array('hint', self::$fileLevel)) {
 			self::Buffer('Hint: '.$output);
-		}
+		}*/
 	}
 
 	/**

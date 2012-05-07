@@ -1,6 +1,8 @@
 <?php
 namespace Flyf\Core;
 
+use Flyf\Exceptions\InvalidOperationException;
+
 use \Flyf\Database\Connection as Connection;
 use \Flyf\Util\Debug as Debug;
 
@@ -14,29 +16,23 @@ class Dispatcher {
 	 * @author Michael Valentin <mv@signifly.com>
 	 */
 	public static function Run(){
+		if(!Config::IsLocked()) throw new InvalidOperationException("Configuration file must be locked, before the application can be run!");
+		
 		//Constants
 		define('DEBUG', Config::GetValue("debug"));
-		
-		//Setup a database connection
-		$connection = Connection::GetConnection();
-		$connection->Connect();
 
-		//Find the root controller to process
-		$controller = \Flyf\Util\ComponentLoader::FromRequest();
-
-		//Process the root controller and collect data
-		$controller->Process();
-		$controller->CollectData();
+		//What is the request?
+		$request = Request::GetRequest();
 		
-		//Output the response
-		$response = Response::GetResponse();	
-		$response->SetContent($controller->Render()); 
+		//What is the requested controller?
+		$controller = $request->GetFrontController();
+		
+		//Output the response for the request
+		$response = Response::GetResponse();
+		$response->SetController($controller); 
 		$response->Output();
 
-		//Make sure to disconnect the database..
-		$connection->Disconnect();
-		
-		//Flush the debug to finish of..
+		//Flush the debugger to finish of..
 		Debug::Flush();
 	}
 	
@@ -48,13 +44,12 @@ class Dispatcher {
 		//Constants
 		define("DS",DIRECTORY_SEPARATOR);
 		
-		//Load custom functions
-		require_once 'Flyf/functions.php';
+		//Load Flyf utility functions
+		require_once 'Flyf/Util/functions.php';
 		
 		//Autoloader for flyf lib files
-		require_once 'Autoloader.php'; 
+		require_once 'Autoloader.php';
 		
-		//Standard configuration
-		require_once 'Flyf/Resources/DefaultConfig/stdConfig.php';
+		\Flyf\Resources\Configurations\StandardConfiguration::Apply();
 	}
 }
