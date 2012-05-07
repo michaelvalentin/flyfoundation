@@ -46,5 +46,9 @@ class Set {
 	public function AsArray(){
 		return array_keys($this->_data);
 	}
+	
+	public function IsEmpty(){
+		return count($this->_data) < 1;
+	}
 }
 ?>
