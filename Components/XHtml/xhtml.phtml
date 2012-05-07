@@ -3,12 +3,8 @@
 	<head>
 		<title>{{title}}</title>
 		{{metadata}}
-		{{#css}}
-		<link rel="stylesheet" type="text/css" href="{{.}}" />
-		{{/css}}
-		{{#js}}
-		<script type="text/javascript" src="{{.}}"></script>
-		{{/js}}
+		{{#css}}<link rel="stylesheet" type="text/css" href="{{css}}" />{{/css}}
+		{{#js}}<script type="text/javascript" src="{{js}}"></script>{{/js}}
 	</head>
 	<body>
 		{{content}}

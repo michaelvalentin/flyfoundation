@@ -18,8 +18,8 @@ class XHtmlController extends AbstractLayout {
 				"doctype" => new HtmlString($response->GetDoctype()),
 				"lang_iso" => \Flyf\Language::GetCurrent()->iso,
 				"metadata" => new HtmlString($response->MetaData->HtmlOutput()),
-				"css" => $response->GetCss(),
-				"js" => $response->GetJs()
+				"css" => "CssCompiler/in=".urlencode(base64_encode(implode(",",$response->GetCss()))),
+				"js" => "JsCompiler/in=".urlencode(base64_encode(implode(",",$response->GetJs())))
 				));
 	}
 

@@ -144,6 +144,7 @@ class Response {
 	 * Output all current contents and send the response
 	 */
 	public function Output(){
+		$output = $this->_controller->Render();
 		if ($this->CompressOutput && !DEBUG) { //Never compress in debug mode
 			ob_start("ob_gzhandler");
 		} else {
@@ -153,7 +154,7 @@ class Response {
 		$this->Headers->Output();
 		if($this->_controller)
 		{
-			echo $this->_controller->Render();	
+			echo $output;
 		}
 		
 		ob_end_flush();
