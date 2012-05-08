@@ -23,7 +23,13 @@ class CssCompilerController extends AbstractController {
 				ob_start();
 					require $css;
 				$less = ob_get_clean();
-				$output .= \Flyf\Util\LessCssParser::Parse($less);
+				try{
+					$output .= \Flyf\Util\LessCssParser::Parse($less);
+				}
+				catch(\Exception $ex){
+					$output .= "/* file: ".$css." had a parsing-error.*/";
+					\Flyf\Util\Debug::Hint('Css-file: "'.$css.'" couldn\'t be parsed as .less file, and was ignored.');
+				}
 			}else{
 				\Flyf\Util\Debug::Hint('Trying to load nonexisting css file: "'.$css.'"');
 			}

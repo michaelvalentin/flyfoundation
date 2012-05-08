@@ -20,6 +20,7 @@ class Dispatcher {
 		
 		//Constants
 		define('DEBUG', Config::GetValue("debug"));
+		define('FLYF_ROOT', str_replace(DS."Core","",__DIR__));
 
 		//What is the request?
 		$request = Request::GetRequest();

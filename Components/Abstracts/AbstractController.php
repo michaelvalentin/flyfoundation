@@ -1,6 +1,8 @@
 <?php
 namespace Flyf\Components\Abstracts;
 
+use Flyf\Exceptions\InvalidArgumentException;
+
 use Flyf\Core\Config;
 
 use \Flyf\Core\Response as Response;
@@ -89,6 +91,44 @@ abstract class AbstractController {
 			$output = $this->_layout->WrapContent($output);
 		}
 		return $output;
+	}
+	
+	protected function AddJs($script, $folder = false){
+		$files = $this->GetPossibleFiles($script, $folder, "js");
+		foreach($files as $file){
+			if(is_file($file)){
+				$response = \Flyf\Core\Response::GetResponse();
+				$response->AddJs($file);
+				return;
+			}
+		}
+		throw new InvalidArgumentException('None of the files "'.implode(" or ",$files).'" exists, and can\'t be included as js.."');
+	}
+	
+	protected function AddCss($css, $folder = false){
+		$files = $this->GetPossibleFiles($css, $folder, "css");
+		foreach($files as $file){
+			if(is_file($file)){
+				$response = \Flyf\Core\Response::GetResponse();
+				$response->AddCss($file);
+				return;
+			}
+		}
+		throw new InvalidArgumentException('None of the files "'.implode(" or ",$files).'" exists, and can\'t be included as css.."');
+	}
+		
+	private function GetPossibleFiles($file, $folder, $subfolder){
+		if(!$folder){
+			$class = get_called_class();
+			$parts = explode("\\",$class);
+			array_shift($parts);
+			array_pop($parts);
+			$folder = implode(DS,$parts).DS.$subfolder;
+		}
+		$options = array();
+		$options[] = LOCAL_ROOT.DS.$folder.DS.$file;
+		$options[] = FLYF_ROOT.DS.$folder.DS.$file;
+		return $options;
 	}
 }
 
