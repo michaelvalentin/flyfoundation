@@ -36,6 +36,7 @@ class SigniflyComingSoonController extends AbstractController {
 		$response->Title = $domain." : Hosted by Signifly";
 		$response->AddCss(__DIR__.DS."css".DS."style.css");
 		$response->AddCss(__DIR__.DS."css".DS."style2.css");
+		\Flyf\Resources\Javascript::AddJquery();
 		$response->AddJs(__DIR__.DS."js".DS."onload.js");
 		$this->setLayout(new \Flyf\Components\XHtml\XHtmlController());
 	}

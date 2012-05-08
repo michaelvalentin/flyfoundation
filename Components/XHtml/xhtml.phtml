@@ -4,6 +4,9 @@
 		<title>{{title}}</title>
 		{{metadata}}
 		{{#css}}<link rel="stylesheet" type="text/css" href="{{css}}" />{{/css}}
+		{{#ext_js}}
+		<script type="text/javascript" src="{{.}}"></script>
+		{{/ext_js}}
 		{{#js}}<script type="text/javascript" src="{{js}}"></script>{{/js}}
 	</head>
 	<body>

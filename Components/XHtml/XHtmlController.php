@@ -8,10 +8,6 @@ use Flyf\Util\HtmlString;
 
 class XHtmlController extends AbstractLayout {
 	protected function collectData() {
-		// TODO Auto-generated method stub
-	}
-
-	protected function prepare() {
 		$response = Response::GetResponse();
 		$this->_view->AddValues(array(
 				"title" => $response->Title,
@@ -19,8 +15,12 @@ class XHtmlController extends AbstractLayout {
 				"lang_iso" => \Flyf\Language::GetCurrent()->iso,
 				"metadata" => new HtmlString($response->MetaData->HtmlOutput()),
 				"css" => "CssCompiler/in=".urlencode(base64_encode(implode(",",$response->GetCss()))),
-				"js" => "JsCompiler/in=".urlencode(base64_encode(implode(",",$response->GetJs())))
+				"js" => "JsCompiler/in=".urlencode(base64_encode(implode(",",$response->GetJs()))),
+				"ext_js" => $response->GetExternalJs()
 				));
+	}
+
+	protected function prepare() {
 	}
 
 	protected function selectTemplate() {

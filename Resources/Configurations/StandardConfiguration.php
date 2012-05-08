@@ -26,7 +26,10 @@ class StandardConfiguration{
 			'debug_console_level' => array('error', 'log', 'hint'),
 			'debug_file_level' => array('error', 'log', 'hint'),
 			'debug_file_write' => array('multiple', 'single'),
-			'debug_file_path' => 'Var/'
+			'debug_file_path' => 'Var/',
+			
+			'javascript_jquery' => 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js',
+			'javascript_jquery_ui' => 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js'
 		));
 	}
 }

@@ -19,6 +19,7 @@ class Response {
 	public $Title;
 	private $_doctype;
 	private $_javascripts;
+	private $_externalJavascript;
 	private $_stylesheets;
 	public $CompressOutput = true;
 	private $_controller;	
@@ -33,6 +34,7 @@ class Response {
 		$this->MetaData = new ResponseMetaData();
 		$this->_javascripts = new Set();
 		$this->_stylesheets = new Set();
+		$this->_externalJavascript = new Set();
 		$defaultComponent = Config::GetValue("default_component");
 		$this->_controller = \Flyf\Util\ComponentLoader::LoadController($defaultComponent);
 		$this->_doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -105,6 +107,24 @@ class Response {
 	public function RemoveJs($js) {
 		$this->_javascripts->Remove($js);
 	}
+	
+	/**
+	 * Add this external script to the response
+	 * 
+	 * @param string $js
+	 */
+	public function AddExternalJs($js){
+		$this->_externalJavascript->Add($js);
+	}
+	
+	/**
+	 * Remove this external script from the response
+	 * 
+	 * @param string $js
+	 */
+	public function RemoveExternalJs($js){
+		$this->_externalJavascript->Remove($js);
+	}
 
 	/**
 	 * Add this stylesheet to the response
@@ -130,6 +150,10 @@ class Response {
 
 	public function GetCss() {
 		return $this->_stylesheets->AsArray();
+	}
+	
+	public function GetExternalJs(){
+		return $this->_externalJavascript->AsArray();
 	}
 	
 	public function GetDoctype(){
