@@ -19,18 +19,17 @@ class JsCompilerController extends AbstractController {
 		\Flyf\Core\Response::GetResponse()->SetContentType("text/javascript");
 		$list = isset($this->_params["in"]) ? urldecode(base64_decode($this->_params["in"])) : "";
 		$files = explode(",",$list);
-		ob_start();
+		$output = "";
 		foreach($files as $js){
-			if(is_file($js)){
-				if(DEBUG) echo "/* ".$js." */"."\n";
-				require $js;
-				echo "\n";
-				if(DEBUG) echo "/* EOF ".$js." */"."\n"."\n";
+			if(is_file($js) && preg_match("/\.js$/",$js)){
+				if(DEBUG) $output .= "/* ".$js." */"."\n";
+				$output .= file_get_contents($js);
+				$output .= "\n";
+				if(DEBUG) $output .= "/* EOF ".$js." */"."\n"."\n";
 			}else{
-				Debug::Hint('Trying to load nonexisting javascript file: "'.$js.'"');
+				Debug::Hint('Trying to load nonexisting javascript file: "'.$js.'". File extension must be .js');
 			}
 		}
-		$output = ob_get_clean();
 		return $output;
 	}
 }

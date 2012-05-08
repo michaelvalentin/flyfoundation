@@ -19,7 +19,7 @@ class CssCompilerController extends AbstractController {
 		$files = explode(",",$list);
 		$output = "";
 		foreach($files as $css){
-			if(is_file($css)){
+			if(is_file($css) && preg_match("/(\.css|\.less)$/",$css)){
 				ob_start();
 					require $css;
 				$less = ob_get_clean();
@@ -31,7 +31,7 @@ class CssCompilerController extends AbstractController {
 					\Flyf\Util\Debug::Hint('Css-file: "'.$css.'" couldn\'t be parsed as .less file, and was ignored.');
 				}
 			}else{
-				\Flyf\Util\Debug::Hint('Trying to load nonexisting css file: "'.$css.'"');
+				\Flyf\Util\Debug::Hint('Trying to load nonexisting css file: "'.$css.'". Css files must have the extension .css or .less');
 			}
 		}
 		return $output;

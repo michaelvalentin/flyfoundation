@@ -105,9 +105,9 @@ class ResponseMetaData {
 	public function SetKeywords($keywords){
 		$words = explode(",",$keywords);
 		foreach($words as $l=>$word){
-			$words[$l] = trim($word);
+			$this->_keyWords = new Set();
+			$this->_keyWords->Add(trim($word));
 		}
-		$this->_keyWords = $words;
 	}
 
 	/**
@@ -120,7 +120,7 @@ class ResponseMetaData {
 		if(!in_array($robotsStatement,$this->_allowedRobots)){
 			throw new \Flyf\Exceptions\InvalidArgumentException('Robots statement "'.$robotsStatement.'" is not valid.');
 		}
-		$this->_robots = $robotsStatement;
+		$this->_meta["robots"] = $robotsStatement;
 	}
 
 	/**
@@ -131,7 +131,7 @@ class ResponseMetaData {
 	public function SetDescription($description) {
 		if(strlen($description)>150) Debug::Hint("Descriptions longer than 150 charachters are not shown in Google.");
 		if(strlen($description)>260) Debug::Hint("Descriptions longer than 150 charachters are not shown in Google. It's recommended that descriptions doesn't exceed 260 charachters");
-		$this->_description = $description;
+		$this->_meta["description"] = $description;
 	}
 	
 	/**
@@ -142,7 +142,7 @@ class ResponseMetaData {
 	public function HtmlOutput() {
 		$output = '';
 		
-		if (!$this->_keyWords->IsEmpty()) $output .= '<meta name="keywords" content="'.implode(', ', $this->_keyWords->AsArray()).'" />';
+		if (!$this->_keyWords->IsEmpty()) $output .= '<meta name="keywords" content="'.implode(', ', $this->_keyWords->AsArray()).'" />'."\n";
 		foreach($this->_meta as $label=>$value){
 			if(trim($value)){
 				$output.= '<meta name="'.$label.'" content="'.$value.'" />'."\n";

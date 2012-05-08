@@ -34,6 +34,8 @@ class SigniflyComingSoonController extends AbstractController {
 		$request = Request::GetRequest();
 		$domain = $request->GetDomain();
 		$response->Title = $domain." : Hosted by Signifly";
+		$response->MetaData->SetDescription($domain." is hosted by Signifly. There is no");
+		$response->MetaData->AddKeywords(array("Hosted","Hosting","Signifly","Online bureau","Webbureau","Reklamebureau"));
 		$this->AddCss("style.css");
 		$this->AddCss("style2.css");
 		\Flyf\Resources\Javascript::AddJquery();
