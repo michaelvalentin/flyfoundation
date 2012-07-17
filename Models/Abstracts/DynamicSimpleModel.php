@@ -41,5 +41,3 @@ abstract class DynamicSimpleModel extends SimpleModel {
 		throw new DynamicModelException("Model is dynamic, and static methods doesn't make sense to call.");
 	}
 }
-
-?>

@@ -20,7 +20,7 @@ abstract class Model extends SimpleModel {
 		return parent::Save();
 	}
 	
-	//!TODO We must implement features to ensure that trashed elements aren't returned in.. Say the resource-object...
+	//!TODO We must implement features to ensure that trashed elements aren't returned in.. Say the resource-object... And cannot be loaded..
 	public function Trash(){
 		$this->Set("trashed",new \DateTime());
 		return parent::Save();

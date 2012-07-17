@@ -23,7 +23,7 @@ use \Flyf\Util\Validate as Validate;
 abstract class ValueObject {
 	private $fieldDefinitions = array(); //array: FieldName => array(<<FieldAnnotations>>)
 	private $fieldsSimplified = array(); //array: Simplfied FieldName => FieldName
-	private $modelProperties = array(); //array: PropartyName => array(<<ModelPropertyAnnotations>>)
+	private $modelProperties = array(); //array: PropertyName => array(<<ModelPropertyAnnotations>>)
 	private $objectData = array();
 	private $constructed = false;
 	protected $defaultFieldAnnotations = array(
@@ -35,7 +35,7 @@ abstract class ValueObject {
 			"default" => false,
 			"unique" => false,
 			"reference" => false,
-			"reference_column" => false,
+			"reference_column" => "id",
 			"reference_match" => false,
 			"reference_on_delete" => "NO ACTION",
 			"reference_on_update" => "NO ACTION",
@@ -396,4 +396,3 @@ abstract class ValueObject {
 		}
 	}
 }
-?>

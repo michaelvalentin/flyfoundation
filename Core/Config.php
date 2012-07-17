@@ -2,8 +2,9 @@
 namespace Flyf\Core;
 
 /**
- * Static configuration class for the Flyf platform
- * @author MV
+ * Static configuration class for the Flyf platfor
+ * 
+ * @author Michael Valentin <mv@signifly.com>
  */
 
 class Config {

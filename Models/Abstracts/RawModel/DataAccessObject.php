@@ -131,11 +131,11 @@ class DataAccessObject {
 		$this->queryBuilder->SetType('delete');
 		$this->queryBuilder->SetTable($this->table);
 		$this->queryBuilder->SetLimit(1);
-		foreach($this->PrimaryKey as $field){
+		foreach($this->primaryKey as $field){
 			$value = isset($data[$field]) ? $data[$field] : false;
 			if(!$value)	throw new DangerousQueryException("To delete an entry, the FULL primaryKey must be specified.");
-			$this->queryBuilder->AddCondtion('`'.$field.'` = :'.field);
-			$this->queryBuilder->BindParam($field, $value);
+			$this->queryBuilder->AddCondition('`'.$field.'` = :'.$field);
+			$this->queryBuilder->BindParam(":".$field, $value);
 		}
 		$this->queryBuilder->Execute();
 	}

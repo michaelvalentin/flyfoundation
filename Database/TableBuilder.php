@@ -46,7 +46,7 @@ class TableBuilder {
 		$query = "CREATE TABLE IF NOT EXISTS ".$this->tableName."(";
 		$query .= implode(" , ",array_merge($columns,$constraints,$indexes));
 		$query .= ");";
-		echo "#####".$query."#####";
+		//echo "#####".$query."#####";
 		$connection = Connection::GetConnection();
 		$connection->Prepare($query);
 		$connection->ExecuteNonQuery();

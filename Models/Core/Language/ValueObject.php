@@ -25,5 +25,6 @@ class ValueObject extends \Flyf\Models\Abstracts\RawModel\ValueObject{
 				"required" => true
 			)
 		));
+		parent::__construct();
 	}
 }

@@ -20,6 +20,14 @@ class Language {
 	public static function GetDefault(){
 		return LanguageSettings::GetDefaultLanguage();
 	}
+	
+	public static function IsDefault(\Flyf\Models\Core\Language $lang){
+		return self::GetDefault()->iso == $lang->iso;
+	}
+	
+	public static function IsCurrent(\Flyf\Models\Core\Language $lang){
+		return self::GetCurrent()->iso == $lang->iso;
+	}
 }
 
 ?>

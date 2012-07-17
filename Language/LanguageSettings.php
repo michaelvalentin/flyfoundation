@@ -34,6 +34,7 @@ class LanguageSettings {
 		self::$_default = $default;
 		
 		//Load current language
+		$current = false;
 		if($current_iso){
 			$current = \Flyf\Models\Core\Language::Load(array("iso"=>$current_iso));
 		}elseif($current_domain){

@@ -96,5 +96,3 @@ class View {
 		return $this->values;
 	}
 }
-
-?>

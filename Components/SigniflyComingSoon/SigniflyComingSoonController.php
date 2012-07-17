@@ -12,8 +12,10 @@ class SigniflyComingSoonController extends AbstractController {
 	 * @see Flyf\Components\Abstracts.AbstractController::collectData()
 	 */
 	protected function collectData() {
+		$request = Request::GetRequest();
+		$domain = $request->GetDomain();
 		$this->_view->AddValues(array(
-				"title"=>"Hosted by Signifly",
+				"title"=> $domain." : Hosted by Signifly",
 				"text"=>"Coming soon! :-)",
 				"show"=>true,
 				"advantages"=>array(

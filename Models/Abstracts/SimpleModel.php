@@ -31,7 +31,7 @@ abstract class SimpleModel extends RawModel {
 	 * (non-PHPdoc)
 	 * @see Flyf\Models\Abstracts.RawModel::Set()
 	 */
-	public function Set($key, $value, $language = null){
+	public function Set($key, $value, \Flyf\Models\Core\Language $language = null){
 		if($key=="id") throw new ModelException("You cannot set the id of a model. The id is assigned by the database.");
 		parent::Set($key,$value,$language);
 	}
@@ -60,5 +60,3 @@ abstract class SimpleModel extends RawModel {
 		return parent::Load($data);
 	}
 }
-
-?>

@@ -27,6 +27,9 @@ use Flyf\Database\TableBuilder;
  * @author Michael Valentin <mv@signifly.com>
  */
 abstract class RawModel {
+	/**
+	 * @var \Flyf\Models\Abstracts\RawModel\DataAccessObject
+	 */
 	protected $dataAccessObject = null; // The DataAccessObject of the model (see the DataAccessObject for documentation). 
 	protected $valueObject = null;	// The ValueObject of the model (see the ValueObject for documentation).
 	protected $translations = array(); // The loaded translations of a model.
@@ -158,6 +161,7 @@ abstract class RawModel {
 	public function Save() {
 		if(!$this->Valid()) throw new InvalidModelException("It is not allowed to save an invalid model. Please make all fields valid before saving.");
 		$data = $this->valueObject->GetTextValues();
+		print_r($data);
 		$data = $this->dataAccessObject->Save($data,!$this->Exists());
 		if(!$this->HasField("id")) unset($data["id"]);
 		$this->valueObject->SetValues($data);
@@ -179,10 +183,12 @@ abstract class RawModel {
 	 */
 	public function DeleteThis() {
 		if ($this->Exists()) {
-			$this->dataAccessObject->Delete($this->valueObject->GetValues());
+			//TODO: Consider if it's better to just delete translations via CASCADE option in DB
+			$this->LoadAllTranslations(); //Make sure that all translations are loaded			
 			foreach($this->translations as $translation){
 				$translation->DeleteThis();
 			}
+			$this->dataAccessObject->Delete($this->valueObject->GetValues());
 		}
 	}
 	
@@ -245,8 +251,7 @@ abstract class RawModel {
 	 * @throws NonExistantPropertyException (thrown if the given key does not exists in the model)
 	 */
 	public function Set($key, $value, \Flyf\Models\Core\Language $language = null) {
-		$language = $language ? : Language::GetCurrent();
-		$language = $language->iso;
+		$language = $language ? : \Flyf\Language::GetCurrent();
 		$method = 'Set'.str_replace(' ', '', ucfirst(str_replace('_', ' ', $key)));
 
 		// First look after a set method. Pass the value and the language to it
@@ -260,14 +265,14 @@ abstract class RawModel {
 		}
 		
 		// If we are in default langauge or the field is not translated, we just write to the value object
-		elseif($language == \Flyf\Language::GetDefault() || !in_array($key, $this->valueObject->GetTranslatableFieldsNames())){
+		elseif(\Flyf\Language::IsDefault($language) || !in_array($key, $this->valueObject->GetTranslatableFieldsNames())){
 			$this->valueObject->$key = $value;
 		}
 		
 		// If language is not default language and field is translated (which is given by statement one above), we add the value to translations
 		else {
 			$this->loadTranslation($language);
-			$this->translations[$language]->$key = $value;
+			$this->translations[$language->iso]->$key = $value;
 		} 
 	}
 
@@ -375,8 +380,17 @@ abstract class RawModel {
 			if(!$result){
 				$result = $translationModel->CreateModel($languageData);
 			} 
-			$this->translations[$language] = $result;
+			$this->translations[$language->iso] = $result;
 		}
+	}
+	
+	public function LoadAllTranslations() {
+		/*$translation = new \Flyf\Models\Core\Translation($this);
+		$translationResource = $lang->GetResource();
+		$translations = $translationResource->FindAll($this->valueObject->GetPrimaryKey());
+		foreach($translations as $t){
+			$this->translations[$t->language_iso] = $t;
+		}*/
 	}
 	
 	/**

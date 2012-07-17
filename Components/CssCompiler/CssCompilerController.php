@@ -19,7 +19,7 @@ class CssCompilerController extends AbstractController {
 		$files = explode(",",$list);
 		$output = "";
 		foreach($files as $css){
-			if(is_file($css) && preg_match("/(\.css|\.less)$/",$css)){
+			if(is_file($css) && preg_match("/(\\.css|\\.less)$/",$css)){
 				ob_start();
 					require $css;
 				$less = ob_get_clean();

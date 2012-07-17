@@ -44,5 +44,3 @@ class Translation extends DynamicSimpleModel {
 		return new \Flyf\Models\Core\Translation\ValueObject($this->vo);
 	}
 }
-
-?>

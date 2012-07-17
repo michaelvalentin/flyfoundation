@@ -34,7 +34,8 @@ class Resource {
 	protected $QueryBuilder;
 	// The model which the Resource should construct instances of
 	private $model;
-
+	private $fieldDefinitions;
+	
 	/**
 	 * Constructing the Resource with the an instance of the model 
 	 * to be constructed as parameter. Initializes a QueryBuilder
@@ -42,7 +43,7 @@ class Resource {
 	 *
 	 * @param $model (the model to be constructed)
 	 */
-	public function __construct($model) {
+	public function __construct(\Flyf\Models\Abstracts\RawModel $model) {
 		$this->model = get_class($model);
 		
 		$this->QueryBuilder = new \Flyf\Database\QueryBuilder();

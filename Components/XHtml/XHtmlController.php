@@ -27,5 +27,3 @@ class XHtmlController extends AbstractLayout {
 		$this->_template = TemplateParser::BufferTemplate(__DIR__.DS."xhtml.phtml");
 	}
 }
-
-?>
