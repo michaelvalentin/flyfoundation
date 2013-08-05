@@ -1,0 +1,77 @@
+*Modules
+    Shop
+        Product.php
+        Product.css
+        Product.js
+        Product.phtml
+        ProductController.php
+        ProductEditController.php
+        ProductView.php
+        Review.php
+        Review.css
+        Review.phtml
+        ReviewCreate.phtml
+        ReviewEdit.phtml
+    Base
+        iModel.php
+        RawModel.php
+        Model.php
+        IdModel.php
+        DatedModel.php
+        PublishedModel.php
+    CMS
+        Menu.php
+        MenuItem.php
+        MenuItem.phtml
+        MenuItemListController.php
+        MenuItemEdit.php
+*Database
+    MySQL
+        Shop
+            Product.php
+        Base
+            RawModel.php
+            Model.php
+        CMS
+            MenuItem.php
+    PGSQL
+        Shop
+            Product.php
+        Base
+            RawModel.php
+            Model.php
+        CMS
+            MenuItem.php
+*Themes
+    BasicTheme
+        assets.json
+        index.phtml
+        index.css
+        index.js
+        Shop
+            Product.css
+            Product.en.ini
+            Product.da.ini
+            Product.js
+            Product.phtml
+            Review.phtml
+        Images
+            sprite.png
+            logo.png
+            example.jpg
+*Config
+    database.php
+    settings.php
+    routes.php
+    substitutions.php
+Tests
+External
+Exceptions
+Util
+Resources
+Language
+Core
+            
+         
+        
+        
