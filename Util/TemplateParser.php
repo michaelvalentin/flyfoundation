@@ -8,7 +8,15 @@ use Flyf;
  * 
  * @author Michael Valentin <mv@signifly.com>
  */
-class TemplateParser {
+class TemplateParser extends Implementation {
+
+    /**
+     * @return TemplateParser
+     */
+    public static function I(){
+        return parent::I();
+    }
+
 	/**
 	 * Render this template with this view
 	 * 
@@ -16,7 +24,7 @@ class TemplateParser {
 	 * @param Flyf\View $view (The view to use when populating the template)
 	 * @return string (The parsed template)
 	 */
-	public static function ParseTemplate($template, Flyf\Components\Abstracts\View $view){
+	public function ParseTemplate($template, Flyf\Components\Abstracts\View $view){
 		$options = array(
 			       'pragmas' => array(
            				Mustache::PRAGMA_UNESCAPED => true
@@ -26,7 +34,7 @@ class TemplateParser {
 		return $m->render($template, $view->GetStringValues());
 	}
 
-	public static function BufferTemplate($template) {
+	public function BufferTemplate($template) {
 		ob_start();
 		require $template;
 		return ob_get_clean();

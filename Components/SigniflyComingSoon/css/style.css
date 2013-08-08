@@ -1,8 +1,0 @@
-@test : #cccccc;
-body{
-	background-color: @test;
-}
-p{
-	background-color: #555555;
-	color: #ffffff;
-}

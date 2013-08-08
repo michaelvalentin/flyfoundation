@@ -15,7 +15,7 @@ class HtmlString {
 	}
 	
 	/**
-	 * Check wether the html content is valid (eg. tags are valid and all tags are properly nested and closed)
+	 * Check if the html content is valid (eg. tags are valid and all tags are properly nested and closed)
 	 * @return boolean True if the content is valid html
 	 */
 	public function Validate(){
@@ -28,7 +28,7 @@ class HtmlString {
 		if(isset($this->allowedTags[0]) && $this->allowedTags[0] == "all"){
 			return $this->content;
 		}else{
-			return $this->content; //TODO: Implement with exclusion of not allowed tags...
+			return strip_tags($this->content,$this->allowedTags);
 		}
 	}
 }

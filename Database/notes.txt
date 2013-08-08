@@ -1,0 +1,12 @@
+If we ignore the namespace conventions, we can make the Autoloader not work, and that way make it more
+attractive to load via the MANDATORY factory :-)
+
+We can also make constructor private, and let the "create" method load via the Factory. This forces all loads to be
+done via the factory and enforces code completion...
+
+SOLUTION:
+Make an abstract class with the method-signatures (empty) in base class, a private constructor and
+a factory method that loads the relevant implementation.
+
+Implementations inherits from base class, so they can only be created through the factory method,
+and must implement all the relevant methods
