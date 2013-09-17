@@ -21,19 +21,40 @@ class App {
 	 * @author Michael Valentin <mv@signifly.com>
 	 */
 	public static function Run(){
-		if(!Config::IsLocked()) throw new InvalidOperationException("Configuration file must be locked, before the application can be run!");
+		//Check necessary preconditions
+        if(!Config::IsLocked()) throw new InvalidOperationException("Configuration file must be locked, before the application can be run!");
 		if(!self::$init) throw new InvalidOperationException("Application must be initialized with App::Init() before calling App::Run()");
 
-		//Constants
-		define('DEBUG', Config::Get("debug"));
-		define('FLYF_ROOT', str_replace(DS."Core","",__DIR__));
+        //Catch debug input before we process futher
+        if(isset($_GET["debug"])){
+            define('DEBUG_CMD', $_GET["debug"]);
+            unset($_GET["debug"]);
+        }else{
+            define('DEBUG_CMD', false);
+        }
 
-		//What is the request?
-		$request = Request::GetRequest();
+		//Define relevant constants
+		if(DEBUG_CMD == "nodebug"){
+            define('DEBUG', false);
+        }else{
+            define('DEBUG', Config::Get("debug"));
+        }
 
-        //echo '<pre>';
-        //print_r($request->AsArray());
-        //echo '</pre>';
+        //All errors should be shown when the app is in debug mode!
+        if(DEBUG){
+            error_reporting(E_ALL);
+        }
+
+		//Get the request
+		if(DEBUG && DEBUG_CMD == "request"){
+		    $request = Request::GetRequest();
+            echo '<pre>';
+            print_r($request->AsArray());
+            echo '</pre>';
+            die();
+        }else{
+            $request = Request::GetRequest();
+        }
 
 		//What is the requested controller?
 		$controller = $request->GetController();
