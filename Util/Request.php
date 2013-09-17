@@ -123,7 +123,11 @@ class Request {
 
 	protected function Parse()
     {
-        $this->_protocol = $_SERVER["REQUEST_SCHEME"];
+        if(preg_match("/HTTPS/",$_SERVER["SERVER_PROTOCOL"])){
+            $this->_protocol = "HTTPS";
+        }else{
+            $this->_protocol = "HTTP";
+        }
 
         //Save the request string
         $this->_requestString = isset($_GET["q"]) ? $_GET["q"] : "";
