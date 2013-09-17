@@ -54,6 +54,13 @@ $Title:string {
     #Required
 }
 
+$Alias:string
+    Translate
+    ~String
+    #MinLength : 8
+    #MaxLength : 100
+    #Unique
+
 $Text:string
     Translate
     Version
@@ -81,8 +88,6 @@ $FirstLanguage:Language
 
 $Published:DateTime
     @Write
-
-!Title
 
 
 ###############################
