@@ -7,8 +7,7 @@ namespace Flyf\Util;
  * @author Michael Valentin
  */
 class Request {
-	// Used to hold the request instance
-	private static $_request = null;
+	private static $_request = null; // Used to hold the request instance
 
 	private $_controller = null;  // The requested controller - if any
     private $_controllerName;     // The interpreted controller
@@ -123,8 +122,6 @@ class Request {
 
 	protected function Parse()
     {
-        print_r($_SERVER);
-
         if(preg_match("/HTTPS/",$_SERVER["SERVER_PROTOCOL"])){
             $this->_protocol = "HTTPS";
         }else{

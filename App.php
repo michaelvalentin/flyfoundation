@@ -21,62 +21,65 @@ class App {
 	 * @author Michael Valentin <mv@signifly.com>
 	 */
 	public static function Run(){
-		//Check necessary preconditions
-        if(!Config::IsLocked()) throw new InvalidOperationException("Configuration file must be locked, before the application can be run!");
-		if(!self::$init) throw new InvalidOperationException("Application must be initialized with App::Init() before calling App::Run()");
+        try {
+            //Check necessary preconditions
+            if(!Config::IsLocked()) throw new InvalidOperationException("Configuration file must be locked, before the application can be run!");
+            if(!self::$init) throw new InvalidOperationException("Application must be initialized with App::Init() before calling App::Run()");
 
-        //Catch debug input before we process futher
-        if(isset($_GET["debug"])){
-            define('DEBUG_CMD', $_GET["debug"]);
-            unset($_GET["debug"]);
-        }else{
-            define('DEBUG_CMD', false);
-        }
+            //Catch debug input before we process futher
+            if(isset($_GET["debug"])){
+                define('DEBUG_CMD', $_GET["debug"]);
+                unset($_GET["debug"]);
+            }else{
+                define('DEBUG_CMD', false);
+            }
 
-		//Define relevant constants
-		if(DEBUG_CMD == "nodebug"){
-            define('DEBUG', false);
-        }else{
-            define('DEBUG', Config::Get("debug"));
-        }
+            //Define relevant constants
+            if(DEBUG_CMD == "nodebug"){
+                define('DEBUG', false);
+            }else{
+                define('DEBUG', Config::Get("debug"));
+            }
 
-        //All errors should be shown when the app is in debug mode!
-        if(DEBUG){
-            error_reporting(E_ALL);
-        }
+            //All errors should be shown when the app is in debug mode!
+            if(DEBUG){
+                error_reporting(E_ALL);
+            }
 
-		//Get the request
-		if(DEBUG && DEBUG_CMD == "request"){
-		    $request = Request::GetRequest();
-            echo '<pre>';
-            print_r($request->AsArray());
-            echo '</pre>';
-            die();
-        }else{
+            //Get the request
             $request = Request::GetRequest();
+            //Print the request as debug?
+            if(DEBUG && DEBUG_CMD == "request"){
+                echo '<pre>';
+                print_r($request->AsArray());
+                echo '</pre>';
+                die();
+            }
+
+            //What is the requested controller?
+            $controller = $request->GetController();
+
+            //What is the action
+            $action = $request->GetAction();
+
+            //Handle non existing controllers or actions
+            if(empty($controller) || !method_exists($controller,$action)){
+                $controller = new \Flyf\Modules\SystemController();
+                $action = "PageNotFound";
+            }
+
+            $controller->$action();
+
+            //Output the response for the request
+            //$response = Response::GetResponse();
+            //$response->SetController($controller);
+            //$response->Output();
+
+            //Flush the debugger to finish of..
+            //Debug::Flush();
+        } catch(\Exception $e){
+
         }
-
-		//What is the requested controller?
-		$controller = $request->GetController();
-
-        //What is the action
-        $action = $request->GetAction();
-
-        //Handle non existing controllers or actions
-        if(empty($controller) || !method_exists($controller,$action)){
-            $controller = new \Flyf\Modules\SystemController();
-            $action = "PageNotFound";
-        }
-
-        $controller->$action();
-
-		//Output the response for the request
-		//$response = Response::GetResponse();
-		//$response->SetController($controller);
-		//$response->Output();
-
-		//Flush the debugger to finish of..
-		//Debug::Flush();
 	}
 
     /**
