@@ -10,7 +10,7 @@ class Request {
 	// Used to hold the request instance
 	private static $_request = null;
 
-	private $_controller = true;// The requested controller - if any
+	private $_controller = null;// The requested controller - if any
     private $_controllerName;   // The interpreted controller
     private $_action;           // The interpreted action
 	private $_parameters;       // The interpreted parameters of the request
@@ -33,7 +33,7 @@ class Request {
     public function getProtocol()
     {
         return $this->_protocol;
-    }         // The protocol of the request
+    }
 
     /**
      * @return mixed
@@ -68,14 +68,14 @@ class Request {
     }
 
     /**
-     * Return the requested controller
+     * Return the requested controller. False if no controller!
      *
      * @return \Flyf\Modules\iController
      */
     public function getController()
     {
         //If we haven't checked the controller yet, it is neither NULL and no instance of iController
-        if($this->_controller !== null && !$this->_controller instanceof \Flyf\Modules\iController)
+        if($this->_controller === null)
         {
             //If a class exists with the given name, instansiate it
             if(class_exists($this->_controllerName))
@@ -86,7 +86,7 @@ class Request {
             //If it does not implement the iController interface, it is not a valid answer
             if(!$this->_controller instanceof \Flyf\Modules\iController)
             {
-                $this->_controller = null;
+                $this->_controller = false;
             }
         }
         return $this->_controller;

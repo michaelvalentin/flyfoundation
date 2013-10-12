@@ -76,5 +76,3 @@ class Autoloader {
 
 //Define this class ass the autoloader for the application...
 spl_autoload_register(__NAMESPACE__."\\Autoloader::LoadClass");
-
-?>

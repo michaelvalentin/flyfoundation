@@ -1,6 +1,6 @@
+_examples
 _tests
 _thoughts
-_examples
 *Modules
     Shop
         Product.php //Model loads relevant Database

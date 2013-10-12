@@ -38,64 +38,72 @@ indexes                     #What indexes exist?
             direction       #Ascending or descending?
 
 ####### EXAMPLE SYNTAX ########
-//Options
-TableName : my_blog_posts
-UserEdit
-@PostToFacebook
+AppName : CrazyBlog
+Charset : UTF-8
+Translate : false
 
-//Fields ****SHOULD WE USE "VERBOSE" JSON LIKE, OR PURE INDENTATION???
-$Title:string {
-    Translate,
-    Version,
-    ~String,
-    #MinLength : 8,
-    #MaxLength : 255,
-    #RegExp "/^[a-zA-Z0-9\s]*$/" "Only letters a-z and numbers allowed.",
-    #Required
-}
+!BlogPost
+    //Options
+    TableName : my_blog_posts
+    UserEdit
+    @PostToFacebook
 
-$Alias:string
-    Translate
-    ~String
-    #MinLength : 8
-    #MaxLength : 100
-    #Unique
+    $Title:String
+        Translate
+        Version
+        ~String
+        #MinLength : 8
+        #MaxLength : 255
+        #RegExp "/^[a-zA-Z0-9\s]*$/"
+            ErrorMessage : "Only letters a-z and numbers allowed."
+        #Required
 
-$Text:string
-    Translate
-    Version
-    #Required
-    ~SafeHtml
+    $Alias:String
+        Translate
+        ~String
+        #MinLength : 8
+        #MaxLength : 100
+        #Unique
 
->Image:Image
-    Version
-    OnUpdate : nothing
-    OnDelete : cascade
-    #Required
+    $Text:String
+        Translate
+        Version
+        #Required
+        ~SafeHtml
 
->MainAuthor:User
-    #Required
-    @Write
+    <Image:Image
+        Version
+        OnUpdate : nothing
+        OnDelete : cascade
+        #Required
 
-<>Authors:User
+    <MainAuthor:User
+        #Required
+        @Write
 
-<Comments:Comment
+    <>Authors:User
 
-$FirstLanguage:Language
-    #Required
-    @Read
-    @Write
+    >Comments:Comment
 
-$Published:DateTime
-    @Write
+    $FirstLanguage:Language
+        #Required
+        @Read
+        @Write
+
+    $Published:DateTime
+        @Write
+
+!Author
+    $Name:String
 
 
 ###############################
 PREFIXES:
 "nothing" : an option
-$  : Independendent variable
->  : Has a - "Points to a"
-<  : Has many - "These point to this"
+!  : Class file
+$  : Independendent, object variable
+<  : Has a - "Points to a"    //The entity will point out towards something else..
+>  : Has many - "These point to this"   //Something will point to the integer, the integer will spread out towards many..
 <> : Many-to-many relation
 #  : Validation
 @  : Access Control
@@ -103,7 +111,6 @@ $  : Independendent variable
 &  :
 %  :
 ?  :
-!  :
 
 MAKING DATABASE: -> This should get rid of problems with circular dependencies...
 - Setup all tables with fields...

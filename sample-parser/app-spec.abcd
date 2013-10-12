@@ -1,0 +1,5 @@
+&BlogPost
+    $Test:String
+        Option : Value
+
+    <Relation:Image
