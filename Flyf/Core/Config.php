@@ -1,5 +1,5 @@
 <?php
-namespace Flyf\Util;
+namespace Flyf\Core;
 
 /**
  * Configuration for the FlyFoundation platform. The config is the BARE MINIMUM needed to start the application, and

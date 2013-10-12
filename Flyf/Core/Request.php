@@ -1,5 +1,5 @@
 <?php
-namespace Flyf\Util;
+namespace Flyf\Core;
 
 /**
  * An interpretation of the current request
@@ -78,7 +78,7 @@ class Request {
     /**
      * Return the requested controller. False if no controller!
      *
-     * @return \Flyf\Modules\iController
+     * @return \Flyf\Controllers\iController
      */
     public function getController()
     {
@@ -92,7 +92,7 @@ class Request {
             }
 
             //If it does not implement the iController interface, it is not a valid answer
-            if(!$this->_controller instanceof \Flyf\Modules\iController)
+            if(!$this->_controller instanceof \Flyf\Controllers\iController)
             {
                 $this->_controller = false;
             }
@@ -207,7 +207,8 @@ class Request {
             "requestFileType" => $this->getRequestFileType(),
             "domain" => $this->getDomain(),
             "tld" => $this->getTLD(),
-            "parameters" => $this->getParameters()
+            "parameters" => $this->getParameters(),
+            "controller-name" => $this->_controllerName
         ];
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Flyf\Core\Response;
+namespace Flyf\Core;
 
 use Flyf\Util\Debug;
 

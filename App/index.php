@@ -1,8 +1,8 @@
 <?php
-require_once '../App.php';
+require_once '../Flyf/App.php';
 
 $app = new Flyf\App();
 $app->Init();
-Flyf\Util\Config::Set(["debug" => true]);
-Flyf\Util\Config::Lock();
+Flyf\Core\Config::Set(["debug" => true]);
+Flyf\Core\Config::Lock();
 $app->Run();

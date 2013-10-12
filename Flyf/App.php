@@ -3,9 +3,8 @@ namespace Flyf;
 
 use \Flyf\Exceptions\InvalidOperationException;
 use \Flyf\Database\Connection as Connection;
-use \Flyf\Util\Debug as Debug;
-use \Flyf\Util\Config as Config;
-use \Flyf\Util\Request as Request;
+use \Flyf\Core\Config as Config;
+use \Flyf\Core\Request as Request;
 use Flyf\Util\Session;
 
 /**
@@ -64,7 +63,7 @@ class App {
 
             //Handle non existing controllers or actions
             if(empty($controller) || !method_exists($controller,$action)){
-                $controller = new \Flyf\Modules\SystemController();
+                $controller = new \Flyf\Controllers\SystemController();
                 $action = "PageNotFound";
             }
 
@@ -91,7 +90,7 @@ class App {
         define("FLYFDIR",__DIR__);
 
         //Autoloader for flyf lib files and define flyf dir
-        require_once __DIR__ . "/Util/Autoloader.php";
+        require_once __DIR__ . "/Core/Autoloader.php";
 
         //Mark that we have successfully done the initialization
         self::$init = true;

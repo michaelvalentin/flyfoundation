@@ -1,6 +1,6 @@
 <?php
 
-namespace Flyf\Modules;
+namespace Flyf\Controllers;
 use Flyf\Util\HtmlString;
 use Flyf\Util\Implementation;
 

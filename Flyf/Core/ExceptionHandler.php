@@ -1,6 +1,6 @@
 <?php
 
-namespace Flyf\Util;
+namespace Flyf\Core;
 
 class ExceptionHandler {
     public function Handle(\Exception $exception){

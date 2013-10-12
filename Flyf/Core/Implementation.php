@@ -1,6 +1,6 @@
 <?php
 
-namespace Flyf\Util;
+namespace Flyf\Core;
 
 /**
  * Base implementation, for the easy override of implemented classes, based on configuration

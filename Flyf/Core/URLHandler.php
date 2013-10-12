@@ -1,6 +1,6 @@
 <?php
 
-namespace Flyf\Util;
+namespace Flyf\Core;
 use Flyf\Exceptions\InvalidArgumentException;
 
 /**
@@ -51,7 +51,7 @@ class URLHandler extends Implementation{
         //Load from the standard Flyf url-structure
         $parts = explode("/",$request);
         $res["action"] = array_pop($parts);
-        $res["controller"] = "\\Flyf\\Modules\\".implode("\\",$parts)."Controller";
+        $res["controller"] = "\\Flyf\\Controllers\\".implode("\\",$parts)."Controller";
 
         return $res;
     }

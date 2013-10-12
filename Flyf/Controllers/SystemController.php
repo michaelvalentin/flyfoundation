@@ -1,11 +1,11 @@
 <?php
 
-namespace Flyf\Modules;
+namespace Flyf\Controllers;
 
 /**
  * TODO: Write class description
  * 
- * @Package: Flyf\Modules
+ * @Package: Flyf\Controllers
  * @Author: Michael Valentin
  * @Created: 07-08-13 - 17:51
  */

@@ -1,12 +1,12 @@
 <?php
 
-namespace Flyf\Modules;
-use Flyf\Util\Request;
+namespace Flyf\Controllers;
+use Flyf\Core\Request;
 
 /**
  * TODO: Write class description
  * 
- * @Package: Flyf\Modules
+ * @Package: Flyf\Controllers
  * @Author: Michael Valentin
  * @Created: 07-08-13 - 22:46
  */

@@ -1,5 +1,5 @@
 <?php
-namespace Flyf\Core\Response;
+namespace Flyf\Core;
 
 /**
  * A class to represent and output http-headers for a response
