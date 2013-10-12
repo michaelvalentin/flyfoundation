@@ -50,8 +50,8 @@ class URLHandler extends Implementation{
 
         //Load from the standard Flyf url-structure
         $parts = explode("/",$request);
-        $res["controller"] = "\\Flyf\\Modules\\".str_replace("-","\\",$parts[0])."Controller";
-        $res["action"] = isset($parts[1]) ? $parts[1] : "Default";
+        $res["action"] = array_pop($parts);
+        $res["controller"] = "\\Flyf\\Modules\\".implode("\\",$parts)."Controller";
 
         return $res;
     }

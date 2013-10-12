@@ -10,14 +10,23 @@ class Request {
 	// Used to hold the request instance
 	private static $_request = null;
 
-	private $_controller = null;// The requested controller - if any
-    private $_controllerName;   // The interpreted controller
-    private $_action;           // The interpreted action
-	private $_parameters;       // The interpreted parameters of the request
-    private $_baseUrl;          // The base URL for the request (before identifier), might be subdirectory
-    private $_requestString;    // The request, after the base URL
-    private $_protocol;         // The protocol of the request
-    private $_requestFileType;  // The file type of the request
+	private $_controller = null;  // The requested controller - if any
+    private $_controllerName;     // The interpreted controller
+    private $_action;             // The interpreted action
+	private $_parameters;         // The interpreted parameters of the request
+    private $_baseUrl;            // The base URL for the request (before identifier), might be subdirectory
+    private $_requestString;      // The request, after the base URL
+    private $_protocol;           // The protocol of the request
+    private $_requestFileType;    // The file type of the request
+    private $_requestMethod;      // The request method
+
+    /**
+     * @return mixed
+     */
+    public function getRequestMethod()
+    {
+        return $this->_requestMethod;
+    }
 
     /**
      * @return mixed
@@ -92,15 +101,6 @@ class Request {
         return $this->_controller;
     }
 
-    /**
-     * Get the Class name of the requested controller - existence isn't guaranteed
-     *
-     * @return string
-     */
-    public function getControllerName(){
-        return $this->_controllerName;
-    }
-
 	/**
 	 * Private constructor for setting things up
 	 */
@@ -123,10 +123,18 @@ class Request {
 
 	protected function Parse()
     {
+        print_r($_SERVER);
+
         if(preg_match("/HTTPS/",$_SERVER["SERVER_PROTOCOL"])){
             $this->_protocol = "HTTPS";
         }else{
             $this->_protocol = "HTTP";
+        }
+
+        if($_SERVER["REQUEST_METHOD"] == "POST"){
+            $this->_requestMethod = "POST";
+        }else{
+            $this->_requestMethod = "GET";
         }
 
         //Save the request string
@@ -157,7 +165,11 @@ class Request {
         $this->_action = $ParseResult["action"];
         $this->_requestFileType = $ParseResult["filetype"];
         if(!empty($ParseResult["parameters"])){
-            $this->_parameters = array_merge($this->_parameters, $ParseResult["parameters"]);
+            //Combine the parameters
+            //Explicit parameters should override URL-based once...
+            //You could argue that this enables people to change default parameters, but that shouldn't be a problem
+            //if it's an issue (like security) the parameter shouldn't be available at all!
+            $this->_parameters = array_merge($ParseResult["parameters"], $this->_parameters);
         }
 	}
 
@@ -166,8 +178,8 @@ class Request {
 	 * 
 	 * @return the host domain
 	 */
-	public function GetDomain() {
-		$fragments = explode('.', $_SERVER["http_host"]);
+	public function getDomain() {
+		$fragments = explode('.', $_SERVER["HTTP_HOST"]);
 		if (count($fragments) > 1) {
 			array_pop($fragments);
 		}
@@ -180,8 +192,8 @@ class Request {
 	 * 
 	 * @return the tld of the domain
 	 */
-	public function GetTLD() {
-		$fragments = explode('.', $_SERVER["http_host"]);
+	public function getTLD() {
+		$fragments = explode('.', $_SERVER["HTTP_HOST"]);
 		if (count($fragments) > 1) {
 			return '.'.array_pop($fragments);
 		}
@@ -193,11 +205,12 @@ class Request {
         return [
             "baseURL" => $this->getBaseUrl(),
             "requestString" => $this->getRequestString(),
-            "controller" => $this->getController(),
+            "controller" => get_class($this->getController()),
             "action" => $this->getAction(),
-            "parameters" => $this->getParameters(),
-            "controllerName" => $this->getControllerName(),
-            "requestFileType" => $this->getRequestFileType()
+            "requestFileType" => $this->getRequestFileType(),
+            "domain" => $this->getDomain(),
+            "tld" => $this->getTLD(),
+            "parameters" => $this->getParameters()
         ];
     }
 }
