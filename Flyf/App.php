@@ -40,6 +40,11 @@ class App {
                 define('DEBUG', Config::Get("debug"));
             }
 
+            //Start profile-timer if necessary
+            if(DEBUG_CMD == "profile" && DEBUG){
+                $starttime = microtime();
+            }
+
             //All errors should be shown when the app is in debug mode!
             if(DEBUG){
                 error_reporting(E_ALL);
@@ -76,6 +81,10 @@ class App {
 
             //Flush the debugger to finish of..
             //Debug::Flush();
+            if(DEBUG_CMD == "profile" && DEBUG){
+                $now = microtime();
+                echo sprintf("<p><b>Total time in seconds:</b> %f</p>", $now-$starttime);
+            }
         } catch(\Exception $e){
 
         }
