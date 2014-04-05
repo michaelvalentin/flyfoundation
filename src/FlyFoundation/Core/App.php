@@ -16,6 +16,11 @@ use Util\Profiler;
 class App {
     private static $init = false;
 
+
+    public function __construct(){
+
+    }
+
     /**
      * Server this request
      *
