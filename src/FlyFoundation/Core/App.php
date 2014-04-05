@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace FlyFoundation\Core;
 
 use Controllers\Abstracts\IController;
 use Exceptions\InvalidArgumentException;
