@@ -1,5 +1,5 @@
 <?php
-namespace Util;
+namespace FlyFoundation\Util;
 
 /**
  * Class Set
@@ -8,30 +8,30 @@ namespace Util;
  *
  * @package Util
  */
-class Set {
-	private $_data;
+class Set implements Collection{
+	private $data;
 	
 	/**
 	 * Initiate a new, empty set
 	 */
 	public function __construct(){
-		$this->_data = array(); 
+		$this->data = array();
 	}
 	
 	/**
 	 * Add an element to the set
 	 * @param mixed $element The element to add
 	 */
-	public function Add($element){
-		$this->_data[$element] = true;
+	public function add($element){
+		$this->data[$element] = true;
 	}
 	
 	/**
 	 * Remove an element from the set
 	 * @param mixed $element The element to remove
 	 */
-	public function Remove($element){
-		if(isset($this->_data[$element])) unset($this->_data[$element]);
+	public function remove($element){
+		if(isset($this->data[$element])) unset($this->data[$element]);
 	}
 	
 	/**
@@ -39,15 +39,15 @@ class Set {
 	 * @param mixed $element The element to search for
 	 * @return boolean True if the element is contained in the set
 	 */
-	public function Contains($element){
-		return array_key_exists($element, $this->_data);
+	public function contains($element){
+		return array_key_exists($element, $this->data);
 	}
 	
 	/**
 	 * @return array: All elements from the set as array
 	 */
-	public function AsArray(){
-		return array_keys($this->_data);
+	public function asArray(){
+		return array_keys($this->data);
 	}
 
     /**
@@ -55,8 +55,16 @@ class Set {
      *
      * @return bool
      */
-    public function IsEmpty(){
-		return count($this->_data) < 1;
+    public function isEmpty(){
+		return count($this->data) < 1;
 	}
+
+    /**
+     * @return int
+     */
+    public function size()
+    {
+        return count($this->data);
+    }
 }
 ?>

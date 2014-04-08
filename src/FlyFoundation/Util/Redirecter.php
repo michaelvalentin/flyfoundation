@@ -1,6 +1,6 @@
 <?php
 
-namespace Util;
+namespace FlyFoundation\Util;
 
 /**
  * Class Redirecter
@@ -17,7 +17,7 @@ class Redirecter{
      * @param $url URL to redirect to
      * @param int $type The type of redirect to be done
      * @param array|mixed $urlParameters The URL-parameters to add
-     * @throws \Flyf\Exceptions\InvalidArgumentException
+     * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      */
     public static function Redirect($url, $type = RedirectType::MovedPermanently, $urlParameters = false){
         switch($type){
