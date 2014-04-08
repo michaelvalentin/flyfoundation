@@ -14,7 +14,9 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "lichtner/fluentpdo": "dev-master"
+        "lichtner/fluentpdo": "dev-master",
+        "znarkus/postmark": "dev-master",
+        "mustache/mustache": "dev-dev"
     },
     "autoload": {
         "psr-0": {
