@@ -1,9 +1,9 @@
 <?php
 
-namespace Core;
+namespace FlyFoundation\Core;
 
-use Core\Response\ResponseHeaders;
-use Core\Response\ResponseMetaData;
+use FlyFoundation\Core\Response\ResponseHeaders;
+use FlyFoundation\Core\Response\ResponseMetaData;
 
 use Exceptions\InvalidArgumentException;
 use Exceptions\InvalidOperationException;

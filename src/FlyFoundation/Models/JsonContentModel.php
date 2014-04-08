@@ -1,6 +1,7 @@
 <?php
 
-namespace Models;
+namespace FlyFoundation\Models;
+use Exceptions\InvalidArgumentException;
 
 /**
  * Class JsonContentModel
@@ -9,9 +10,10 @@ namespace Models;
  *
  * @package Models
  */
-class JsonContentModel implements \Models\Abstracts\IModel{
+class JsonContentModel implements Model{
 
-    protected $model_file;
+    private $model_file;
+    private $data;
 
     /**
      * @param bool $model_name The name of the json file to load without extension
@@ -35,12 +37,28 @@ class JsonContentModel implements \Models\Abstracts\IModel{
      *
      * @return array
      */
-    public function AsArray()
+    public function asArray()
     {
-        if($this->model_file){
-            return json_decode(file_get_contents($this->model_file),true);
-        }else{
-            return array();
+        if($this->data == null){
+            $this->readDataFromJsonModel();
+        }
+        return $this->data;
+    }
+
+    public function fromArray(array $data)
+    {
+        $this->data = $data;
+    }
+
+    private function readDataFromJsonModel()
+    {
+        if(file_exists($this->model_file)){
+            throw new InvalidArgumentException('File: "'.$this->model_file.'" does not exist, and the JSON model '+
+            'can not render as expected.');
+        }
+        $this->data = json_decode(file_get_contents($this->model_file),true);
+        if(json_last_error() != JSON_ERROR_NONE){
+            //TODO: Set debug warning with json_last_error_msg() included
         }
     }
 }

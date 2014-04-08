@@ -1,7 +1,12 @@
 <?php
 
-namespace Models\Abstracts;
+namespace FlyFoundation\Models;
 
 interface Model {
-    public function AsArray();
+    /**
+     * @return array
+     */
+    public function asArray();
+
+    public function fromArray(array $data);
 } 

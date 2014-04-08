@@ -1,5 +1,5 @@
 <?php
-namespace Core\Response;
+namespace FlyFoundation\Core\Response;
 
 
 /**
