@@ -1,0 +1,12 @@
+Basic URL's consists of:
+ * A Controller
+ * An Action
+ * An array of Parameters
+
+Like this: http://jokerdomain.tld/root/for/project/{Controller}/{Action}?Param1=Param1Value&Param2=Param2Value
+
+If the request does not match a basic URL, it is tested against routes like this:
+
+GET /blog-posts/$1/extended <=> /blog-posts/show?id=$1&extended=true
+
+POST /blog-posts/$1 <=> /blog-posts/update?id=$1
