@@ -1,5 +1,5 @@
 <?php
-namespace Core;
+namespace FlyFoundation\Core;
 
 /**
  * Class Request
@@ -9,7 +9,7 @@ namespace Core;
  *
  * @package Core
  */
-class Request {
+class Context {
 	private static $_request = null;    // Used to hold the request instance
     private $_uri;                      // The request, after the base URL
     private $_baseUrl;                  // The base URL for the request (before identifier), might be subdirectory
@@ -74,7 +74,7 @@ class Request {
      */
     public static function Init($query){
         if (self::$_request !== null) throw new \Exceptions\InvalidOperationException("Request can only be initialized once per call.");
-        self::$_request = new Request($query);
+        self::$_request = new Context($query);
     }
 
 	protected function parse($query)
