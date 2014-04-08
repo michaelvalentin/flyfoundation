@@ -69,5 +69,5 @@ trait Environment {
         return $this->factory;
     }
 
-    
+
 } 

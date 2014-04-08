@@ -1,5 +1,5 @@
 <?php
-namespace Exceptions;
+namespace FlyFoundation\Exceptions;
 
 /**
  * Class InvalidArgumentException
@@ -8,7 +8,7 @@ namespace Exceptions;
  *
  * @package Exceptions
  */
-class InvalidArgumentException extends \Exception {
+class InvalidArgumentException extends FlyFoundationException {
 	
 }
 ?>

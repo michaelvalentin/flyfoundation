@@ -25,6 +25,12 @@ class App {
      */
     public function getResponse($query, Context $context = null){
         //!TODO: Implement
+        // Build configuration
+        // Instansiate factory
+        // Load router
+        // Get controller
+        // Get response
+        // Return response
     }
 
     public function getDefaultContext(){

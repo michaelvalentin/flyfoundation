@@ -4,7 +4,11 @@
 namespace FlyFoundation;
 
 
+use FlyFoundation\Core\Environment;
+
 class Factory {
+    use Environment;
+
     public function load($className){
         //TODO: Implement :-)
     }

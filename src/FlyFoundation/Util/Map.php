@@ -28,7 +28,9 @@ class Map implements Collection{
     }
 
     public function putAll(array $data){
-        $this->data = array_merge($this->data, $data);
+        foreach($data as $k=>$v){
+            $this->put($k,$v);
+        }
     }
 
     public function remove($key){
@@ -49,7 +51,7 @@ class Map implements Collection{
     }
 
     public function isEmpty(){
-        return count($this->data) > 0;
+        return count($this->data) < 1;
     }
 
     public function asArray(){
