@@ -45,15 +45,6 @@ class Context {
         return isset($this->_parameters[$key]) ? $this->_parameters[$key] : false;
     }
 
-	/**
-	 * Private constructor for setting things up
-	 */
-	private function __construct($query)
-    {
-		$this->_parameters = array();
-		$this->Parse($query);
-	}
-
     /**
      * What is the current request? (Singleton factory)
      *

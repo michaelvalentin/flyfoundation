@@ -2,7 +2,7 @@
 
 namespace FlyFoundation;
 
-use Controllers\Abstracts\IController;
+use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Util\DirectoryList;
 use FlyFoundation\Core\Router;
@@ -33,6 +33,10 @@ class App {
     public function getResponse($query, Context $context = null){
         $config = $this->getConfiguration();
 
+        if($context == null){
+            $context = $this->getDefaultContext();
+        }
+
         $factory = new Factory($config, $context);
 
         /** @var Router $router */
@@ -45,11 +49,16 @@ class App {
     }
 
     public function getDefaultContext(){
-
+        $context = new Context();
+        $context->loadFromEnvironment();
+        return $context;
     }
 
     public function getConfiguration(){
         //TODO: Implement
+        //Run through the configurators and apply them in the right order...
+        $config = new Config();
+        return $config;
     }
 
     public function addConfigurator($path){
