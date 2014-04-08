@@ -9,6 +9,10 @@ use FlyFoundation\Core\Environment;
 class Factory {
     use Environment;
 
+    /**
+     * @param $className
+     * @return mixed
+     */
     public function load($className){
         //TODO: Implement :-)
     }

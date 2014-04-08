@@ -40,7 +40,7 @@ class Map implements Collection{
     }
 
     public function get($key){
-        if(!$this->containsKey($key)){
+        if(!$this->hasKey($key)){
             return null;
         }
         return $this->data[$key];

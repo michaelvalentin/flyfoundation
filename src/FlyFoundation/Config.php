@@ -51,11 +51,6 @@ class Config {
     /**
      * @var Util\DirectoryList
      */
-    public $configuratorDirectories;
-
-    /**
-     * @var Util\DirectoryList
-     */
     public $templateDirectories;
 
     public function __construct(){
@@ -67,7 +62,6 @@ class Config {
         $this->viewSearchPaths = new ValueList();
         $this->controllerSearchPaths = new ValueList();
         $this->databaseSearchPaths = new ValueList();
-        $this->configuratorDirectories = new DirectoryList();
         $this->templateDirectories = new DirectoryList();
     }
 

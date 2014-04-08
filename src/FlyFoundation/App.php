@@ -3,12 +3,19 @@
 namespace FlyFoundation;
 
 use Controllers\Abstracts\IController;
-use Exceptions\InvalidArgumentException;
 use FlyFoundation\Core\Response;
-use Util\Profiler;
-
+use FlyFoundation\Util\DirectoryList;
+use FlyFoundation\Core\Router;
 
 class App {
+
+    private $configuratorPaths;
+
+    public function __construct(){
+        $this->configuratorPaths = new DirectoryList([
+            __DIR__."/configs"
+        ]);
+    }
 
     /**
      * @param string $query
@@ -24,20 +31,28 @@ class App {
      * @return Response
      */
     public function getResponse($query, Context $context = null){
-        //!TODO: Implement
-        // Build configuration
-        // Instansiate factory
-        // Load router
-        // Get controller
-        // Get response
-        // Return response
+        $config = $this->getConfiguration();
+
+        $factory = new Factory($config, $context);
+
+        /** @var Router $router */
+        $router = $factory->load("\\FlyFoundation\\Core\\Router");
+
+        $controller = $router->getController($query);
+        $arguments = $router->getArguments($query);
+
+        return $controller->render($arguments);
     }
 
     public function getDefaultContext(){
 
     }
 
-    public function addConfigs($path){
+    public function getConfiguration(){
+        //TODO: Implement
+    }
 
+    public function addConfigurator($path){
+        $this->configuratorPaths->add($path);
     }
 }
