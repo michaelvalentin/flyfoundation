@@ -68,7 +68,12 @@ class Context {
         self::$_request = new Context($query);
     }
 
-	protected function parse($query)
+    public function loadFromEnvironment()
+    {
+        //TODO: Implement based on previous methods!
+    }
+
+    protected function parse($query)
     {
         $this->_uri = $query;
 

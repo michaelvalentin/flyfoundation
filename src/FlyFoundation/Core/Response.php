@@ -236,7 +236,7 @@ class Response {
 	/**
 	 * Output all current contents and send the response
 	 */
-	public function Output($ResponseType = "Html"){
+	public function output($ResponseType = "Html"){
 		if ($this->CompressOutput && !DEBUG) { //Never compress in debug mode
 			ob_start("ob_gzhandler");
 		} else {
