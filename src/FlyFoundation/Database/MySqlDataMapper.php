@@ -42,7 +42,7 @@ class MySqlDataMapper implements DataMapper
      */
     public function save($data)
     {
-        $tableName = $this->entityDefinition->getDatabaseName();
+        $tableName = $this->entityDefinition->getTableName();
         $fields = $this->entityDefinition->getFields();
         $isUpdate = FALSE;
 
@@ -94,7 +94,7 @@ class MySqlDataMapper implements DataMapper
      */
     public function delete($id)
     {
-        $tableName = $this->entityDefinition->getDatabaseName();
+        $tableName = $this->entityDefinition->getTableName();
 
         $result = $this->fpdo->delete($tableName, $id)->execute();
 
@@ -113,8 +113,8 @@ class MySqlDataMapper implements DataMapper
      */
     public function load($id)
     {
-        $className = $this->entityDefinition->getName();
-        $tableName = $this->entityDefinition->getDatabaseName();
+        $className = $this->entityDefinition->getClassName();
+        $tableName = $this->entityDefinition->getTableName();
 
         $result = $this->fpdo->from($tableName, $id)->fetch();
 

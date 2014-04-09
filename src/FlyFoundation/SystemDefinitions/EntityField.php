@@ -6,36 +6,48 @@
 
 namespace FlyFoundation\SystemDefinitions;
 
-interface EntityField
+class EntityField
 {
-    public function __construct();
+    private $columnName;
+    private $type;
+
+    /**
+     * @param $columnName
+     * @param $type
+     */
+    public function __construct($columnName, $type)
+    {
+        $this->columnName = $columnName;
+        $this->type = $type;
+    }
 
     /**
      * @return string
      */
-    public function getName();
+    public function getColumnName()
+    {
+        return $this->columnName;
+    }
 
     /**
      * @return string
      */
-    public function getDatabaseName();
-
-    /**
-     * @param string $name
-     * @return void
-     */
-    public function setName($name);
+    public function getPropertyName()
+    {
+        $name = str_replace('_', ' ', $this->columnName);
+        $name = ucwords($name);
+        $name = lcfirst($name);
+        $name = str_replace(' ', '', $name);
+        return $name;
+    }
 
     /**
      * @return string
      */
-    public function getType();
+    public function getType(){
+        return $this->type;
+    }
 
-    /**
-     * @param string $type
-     * @return void
-     */
-    public function getValidations($type);
 }
 
 /**

@@ -11,18 +11,18 @@ interface EntityDefinition
     /**
      * @return string
      */
-    public function getName();
+    public function getTableName();
+
+    /**
+     * @param string $tableName
+     * @return void
+     */
+    public function setTableName($tableName);
 
     /**
      * @return string
      */
-    public function getDatabaseName();
-
-    /**
-     * @param string $name
-     * @return void
-     */
-    public function setName($name);
+    public function getClassName();
 
     /**
      * @return EntityField[]
