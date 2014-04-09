@@ -2,7 +2,9 @@
 
 namespace FlyFoundation\Models;
 
-interface Model {
+
+interface Model
+{
     /**
      * @return array
      */

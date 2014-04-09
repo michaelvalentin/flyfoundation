@@ -6,12 +6,17 @@ namespace FlyFoundation\SystemDefinitions;
 
 interface EntityDefinition
 {
-    public function __contstruct();
+    public function __construct();
 
     /**
      * @return string
      */
     public function getName();
+
+    /**
+     * @return string
+     */
+    public function getDatabaseName();
 
     /**
      * @param string $name

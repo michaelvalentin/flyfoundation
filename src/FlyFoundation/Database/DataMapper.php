@@ -3,7 +3,6 @@
 
 namespace FlyFoundation\Database;
 
-use FlyFoundation\Models\Model;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 interface DataMapper {
@@ -11,20 +10,22 @@ interface DataMapper {
     public function __construct(EntityDefinition $entityDefinition);
 
     /**
-     * @param Model $model
-     * @return Model
+     * @param array $data
+     *
+     * @return void
      */
-    public function save(Model $model);
-
-    /**
-     * @param Model $model
-     */
-    public function delete(Model $model);
-
-    public function deleteById($id);
+    public function save($data);
 
     /**
      * @param $id
+     *
+     * @return
+     */
+    public function delete($id);
+
+    /**
+     * @param $id
+     *
      * @return Model
      */
     public function load($id);

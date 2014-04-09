@@ -16,6 +16,11 @@ interface EntityField
     public function getName();
 
     /**
+     * @return string
+     */
+    public function getDatabaseName();
+
+    /**
      * @param string $name
      * @return void
      */
