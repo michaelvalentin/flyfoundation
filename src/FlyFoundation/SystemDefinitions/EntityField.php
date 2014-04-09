@@ -47,10 +47,10 @@ interface EntityField
  */
 class EntityFieldType
 {
-    const String = 'string';
-    const Text = 'text';
-    const Int = 'int';
-    const Float = 'float';
-    const Boolean = 'boolean';
-    const DateTime = 'datetime';
+    const STRING = 'string';
+    const TEXT = 'text';
+    const INTEGER = 'integer';
+    const FLOAT = 'float';
+    const BOOLEAN = 'boolean';
+    const DATETIME = 'datetime';
 }

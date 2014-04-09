@@ -10,7 +10,6 @@ namespace FlyFoundation\Database;
 use FluentPDO;
 use FlyFoundation\Core\Environment;
 use FlyFoundation\Exceptions\InvalidArgumentException;
-use FlyFoundation\Models\Model;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class MySqlDataMapper implements DataMapper
@@ -38,36 +37,59 @@ class MySqlDataMapper implements DataMapper
     /**
      * @param array $data
      *
-     * @return bool|int|void
+     * @return int
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      */
     public function save($data)
     {
         $tableName = $this->entityDefinition->getDatabaseName();
+        $fields = $this->entityDefinition->getFields();
+        $isUpdate = FALSE;
+
+        foreach($data as $dataKey => $dataValue){
+            $isFound = FALSE;
+
+            foreach($fields as $field){
+                if($field->getDatabaseName() == $dataKey){ $isFound = TRUE; break; }
+            }
+
+            if(!$isFound){
+                $dataItem = '[' . $dataKey . ' => ' . $dataValue . ']';
+                throw new InvalidArgumentException(
+                    'Could not save data '
+                    . $dataItem
+                    . ' to the table '
+                    . $tableName
+                    . ', because the column '
+                    . $dataKey
+                    . ' does not exist.'
+                );
+            }
+        }
 
         if(isset($data['id'])){
+            $isUpdate = TRUE;
             $query = $this->fpdo->update($tableName, $data);
         } else {
             $data['id'] = NULL;
             $query = $this->fpdo->insertInto($tableName, $data);
         }
-
         $result = $query->execute();
 
         if(!$result){
             $dataString = '[' . implode(', ', $data) . ']';
             throw new InvalidArgumentException(
-                'Could not save a row to the table ' . $tableName . ' with the data ' . $dataString . ' in the database'
+                'Could not save data to the table ' . $tableName . ', using data ' . $dataString . ' in the database.'
             );
         }
 
-        return $result;
+        return $isUpdate ? $data['id'] : $result;
     }
 
     /**
      * @param integer $id
      *
-     * @return bool
+     * @return void
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      */
     public function delete($id)
@@ -87,7 +109,7 @@ class MySqlDataMapper implements DataMapper
      * @param $id
      *
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
-     * @return Model
+     * @return array
      */
     public function load($id)
     {
@@ -102,9 +124,6 @@ class MySqlDataMapper implements DataMapper
             );
         }
 
-        $factory = $this->getFactory();
-        $model  = $factory->loadModel($className, [$this->entityDefinition,  $result]);
-
-        return $model;
+        return $result;
     }
 }

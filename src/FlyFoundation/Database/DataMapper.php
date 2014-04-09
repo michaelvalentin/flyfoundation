@@ -19,14 +19,14 @@ interface DataMapper {
     /**
      * @param $id
      *
-     * @return
+     * @return void
      */
     public function delete($id);
 
     /**
      * @param $id
      *
-     * @return Model
+     * @return array
      */
     public function load($id);
 } 
