@@ -2,6 +2,7 @@
 
 namespace FlyFoundation;
 
+use FlyFoundation\Core\ConfigurationFactory;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Util\DirectoryList;
@@ -9,13 +10,15 @@ use FlyFoundation\Core\Router;
 
 class App {
 
-    private $configuratorDirectories;
+    private $configurationFactory;
 
     public function __construct()
     {
-        $this->configuratorDirectories = new DirectoryList([
-            __DIR__."/configurators"
-        ]);
+        $baseConfig = new Config();
+        $this->configurationFactory = new ConfigurationFactory($baseConfig);
+
+        $defaultConfigurators = __DIR__."/configurators";
+        $this->configurationFactory->addConfiguratorDirectory($defaultConfigurators);
     }
 
     /**
@@ -60,62 +63,11 @@ class App {
 
     public function getConfiguration()
     {
-        $config = new Config();
-
-        $configurators = [];
-
-        foreach($this->configuratorDirectories->asArray() as $directory)
-        {
-            $directoryConfigurators = $this->readConfiguratorDirectory($directory);
-            $configurators = array_merge($configurators, $directoryConfigurators);
-        }
-
-        foreach($configurators as $configurator)
-        {
-            /** @var Configurator $configurator */
-            $config = $configurator->apply($config);
-        }
-
-        return $config;
+        return $this->configurationFactory->getConfiguration();
     }
 
     public function addConfigurator($path)
     {
-        $this->configuratorDirectories->add($path);
-    }
-
-    private function readConfiguratorDirectory($directory)
-    {
-        $files = scandir($directory);
-        $configurators = [];
-
-        foreach($files as $file){
-            $configurator = $this->configuratorFromFile($file,$directory);
-
-            if($configurator){
-                $configurators[] = $configurator;
-            }
-        }
-
-        return $configurators;
-    }
-
-    private function configuratorFromFile($file,$directory)
-    {
-        $matches = [];
-        $phpFile = preg_match("/^(.*)(\.php)$/",$file,$matches);
-        $className = $matches[1];
-
-        if(!$phpFile){
-            return false;
-        }
-
-        require $directory."/".$file;
-
-        if(!class_exists($className)){
-            return false;
-        }
-
-        return new $className();
+        $this->configurationFactory->addConfiguratorDirectory($path);
     }
 }
