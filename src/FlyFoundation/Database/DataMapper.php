@@ -4,11 +4,11 @@
 namespace FlyFoundation\Database;
 
 use FlyFoundation\Models\Model;
-use FlyFoundation\SystemDefinitions\ClassDefinition;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 interface DataMapper {
 
-    public function __construct(ClassDefinition $classDefinition);
+    public function __construct(EntityDefinition $entityDefinition);
 
     /**
      * @param Model $model
