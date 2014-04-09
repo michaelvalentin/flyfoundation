@@ -9,11 +9,12 @@ use FlyFoundation\Core\Router;
 
 class App {
 
-    private $configuratorPaths;
+    private $configuratorDirectories;
 
-    public function __construct(){
-        $this->configuratorPaths = new DirectoryList([
-            __DIR__."/configs"
+    public function __construct()
+    {
+        $this->configuratorDirectories = new DirectoryList([
+            __DIR__."/configurators"
         ]);
     }
 
@@ -21,8 +22,9 @@ class App {
      * @param string $query
      * @param Context $context
      */
-    public function serve($query, Context $context = null){
-        $this->getResponse($query, $context)->Output();
+    public function serve($query, Context $context = null)
+    {
+        $this->getResponse($query, $context)->output();
     }
 
     /**
@@ -30,7 +32,8 @@ class App {
      * @param Context $context
      * @return Response
      */
-    public function getResponse($query, Context $context = null){
+    public function getResponse($query, Context $context = null)
+    {
         $config = $this->getConfiguration();
 
         if($context == null){
@@ -48,20 +51,71 @@ class App {
         return $controller->render($arguments);
     }
 
-    public function getDefaultContext(){
+    public function getDefaultContext()
+    {
         $context = new Context();
         $context->loadFromEnvironment();
         return $context;
     }
 
-    public function getConfiguration(){
-        //TODO: Implement
-        //Run through the configurators and apply them in the right order...
+    public function getConfiguration()
+    {
         $config = new Config();
+
+        $configurators = [];
+
+        foreach($this->configuratorDirectories->asArray() as $directory)
+        {
+            $directoryConfigurators = $this->readConfiguratorDirectory($directory);
+            $configurators = array_merge($configurators, $directoryConfigurators);
+        }
+
+        foreach($configurators as $configurator)
+        {
+            /** @var Configurator $configurator */
+            $config = $configurator->apply($config);
+        }
+
         return $config;
     }
 
-    public function addConfigurator($path){
-        $this->configuratorPaths->add($path);
+    public function addConfigurator($path)
+    {
+        $this->configuratorDirectories->add($path);
+    }
+
+    private function readConfiguratorDirectory($directory)
+    {
+        $files = scandir($directory);
+        $configurators = [];
+
+        foreach($files as $file){
+            $configurator = $this->configuratorFromFile($file,$directory);
+
+            if($configurator){
+                $configurators[] = $configurator;
+            }
+        }
+
+        return $configurators;
+    }
+
+    private function configuratorFromFile($file,$directory)
+    {
+        $matches = [];
+        $phpFile = preg_match("/^(.*)(\.php)$/",$file,$matches);
+        $className = $matches[1];
+
+        if(!$phpFile){
+            return false;
+        }
+
+        require $directory."/".$file;
+
+        if(!class_exists($className)){
+            return false;
+        }
+
+        return new $className();
     }
 }
