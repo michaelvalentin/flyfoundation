@@ -11,6 +11,7 @@ use FluentPDO;
 use FlyFoundation\Core\Environment;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
+use PDO;
 
 class MySqlDataMapper implements DataMapper
 {
@@ -24,14 +25,26 @@ class MySqlDataMapper implements DataMapper
 
     public function __construct(EntityDefinition $entityDefinition)
     {
-       $config = $this->getConfig();
-       $pdo = new PDO(
-           'mysql:dbname=' . $config->get('database_name') . ';host=' . $config->get('database_host'),
-           $config->get('database_user'),
-           $config->get('database_password')
-       );
-       $this->fpdo = new FluentPDO($pdo);
-       $this->entityDefinition = $entityDefinition;
+        $this->entityDefinition = $entityDefinition;
+    }
+
+    /**
+     * @return FluentPDO
+     */
+    public function getPdo()
+    {
+        if($this->fpdo !== NULL){
+            return $this->fpdo;
+        } else {
+            $config = $this->getConfig();
+            $pdo = new PDO(
+                'mysql:dbname=' . $config->get('database_name') . ';host=' . $config->get('database_host'),
+                $config->get('database_user'),
+                $config->get('database_password')
+            );
+            $this->fpdo = new FluentPDO($pdo);
+            return $this->fpdo;
+        }
     }
 
     /**
@@ -69,10 +82,10 @@ class MySqlDataMapper implements DataMapper
 
         if(isset($data['id'])){
             $isUpdate = TRUE;
-            $query = $this->fpdo->update($tableName, $data);
+            $query = $this->getPdo()->update($tableName, $data);
         } else {
             $data['id'] = NULL;
-            $query = $this->fpdo->insertInto($tableName, $data);
+            $query = $this->getPdo()->insertInto($tableName, $data);
         }
         $result = $query->execute();
 
@@ -96,7 +109,7 @@ class MySqlDataMapper implements DataMapper
     {
         $tableName = $this->entityDefinition->getTableName();
 
-        $result = $this->fpdo->delete($tableName, $id)->execute();
+        $result = $this->getPdo()->delete($tableName, $id)->execute();
 
         if(!$result){
             throw new InvalidArgumentException(
@@ -116,7 +129,7 @@ class MySqlDataMapper implements DataMapper
         $className = $this->entityDefinition->getClassName();
         $tableName = $this->entityDefinition->getTableName();
 
-        $result = $this->fpdo->from($tableName, $id)->fetch();
+        $result = $this->getPdo()->from($tableName, $id)->fetch();
 
         if(!$result){
             throw new InvalidArgumentException(
