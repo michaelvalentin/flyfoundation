@@ -4,6 +4,8 @@
 namespace FlyFoundation\Database;
 
 
+use FlyFoundation\SystemDefinitions\EntityDefinition;
+
 interface DataFinder {
     public function __construct(EntityDefinition $entityDefinition);
 
@@ -13,12 +15,7 @@ interface DataFinder {
     public function fetch();
 
     /**
-     * @return DataFinder
-     */
-    public function findDefault();
-
-    /**
-     * @param QueryType $queryType
+     * @param QueryType $queryType | NULL
      * @return DataFinder
      */
     public function find(QueryType $queryType);
