@@ -10,11 +10,6 @@ interface DataMapper {
     public function __construct(EntityDefinition $entityDefinition);
 
     /**
-     * @return FluentPDO
-     */
-    public function getPdo();
-
-    /**
      * @param array $data
      *
      * @return void

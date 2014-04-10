@@ -63,28 +63,22 @@ class MySqlDataMapper implements DataMapper
             $isFound = FALSE;
 
             foreach($fields as $field){
-                if($field->getDatabaseName() == $dataKey){ $isFound = TRUE; break; }
+                if($field->getColumnName() == $dataKey){ $isFound = TRUE; break; }
             }
 
             if(!$isFound){
                 $dataItem = '[' . $dataKey . ' => ' . $dataValue . ']';
                 throw new InvalidArgumentException(
-                    'Could not save data '
-                    . $dataItem
-                    . ' to the table '
-                    . $tableName
-                    . ', because the column '
-                    . $dataKey
-                    . ' does not exist.'
+                    'Could not save data ' . $dataItem . ' to the table: "' . $tableName . '", because the column: "'
+                    . $dataKey . '" does not exist.'
                 );
             }
         }
 
         if(isset($data['id'])){
             $isUpdate = TRUE;
-            $query = $this->getPdo()->update($tableName, $data);
+            $query = $this->getPdo()->update($tableName, $data, $data['id']);
         } else {
-            $data['id'] = NULL;
             $query = $this->getPdo()->insertInto($tableName, $data);
         }
         $result = $query->execute();
@@ -92,7 +86,8 @@ class MySqlDataMapper implements DataMapper
         if(!$result){
             $dataString = '[' . implode(', ', $data) . ']';
             throw new InvalidArgumentException(
-                'Could not save data to the table ' . $tableName . ', using data ' . $dataString . ' in the database.'
+                'Could not save data to the table: "' . $tableName . '", using data ' . $dataString
+                . ' in the database.'
             );
         }
 
@@ -126,14 +121,13 @@ class MySqlDataMapper implements DataMapper
      */
     public function load($id)
     {
-        $className = $this->entityDefinition->getClassName();
         $tableName = $this->entityDefinition->getTableName();
 
         $result = $this->getPdo()->from($tableName, $id)->fetch();
 
         if(!$result){
             throw new InvalidArgumentException(
-                'Could not load a row from the table ' . $tableName . ' with the ID ' . $id . ' in the database.'
+                'Could not load a row from the table: "' . $tableName . '" with the ID: ' . $id . ' in the database.'
             );
         }
 
