@@ -4,6 +4,6 @@
 namespace FlyFoundation\Database;
 
 
-interface DataQueryObject {
+interface DataMethods {
 
 } 

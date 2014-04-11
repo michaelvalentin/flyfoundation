@@ -46,7 +46,7 @@ class App {
         $factory = new Factory($config, $context);
 
         /** @var Router $router */
-        $router = $factory->load("\\FlyFoundation\\Core\\Router");
+        $router = $factory->load("\\FlyFoundation\\Core\\Router",[$context]);
 
         $controller = $router->getController($query);
         $arguments = $router->getArguments($query);
