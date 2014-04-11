@@ -23,6 +23,10 @@ class ValueList implements Collection{
         $this->data = array();
     }
 
+    public function contains($element){
+        return in_array($element,$this->data);
+    }
+
     /**
      * @return int
      */
