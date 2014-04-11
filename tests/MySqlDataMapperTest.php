@@ -24,8 +24,10 @@ class MySqlDataMapperTest extends \PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        $pdo = new PDO("mysql:dbname=flyfoundation_test", "root", "root");
-        $pdo->query('TRUNCATE TABLE local_region_site')->execute();
+        $settings = json_decode(file_get_contents(__DIR__."/mysql-test-database.json"),true);
+        $pdo = new PDO("mysql:host=".$settings["host"].";dbname=".$settings["database"], $settings["user"], $settings["password"]);
+        $pdo->query('DROP TABLE local_region_site')->execute();
+        $pdo->query("CREATE TABLE IF NOT EXISTS `local_region_site` (`id` int NOT NULL PRIMARY KEY AUTO_INCREMENT, `location_name` varchar(255) NOT NULL,  `region_site` varchar(255) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;")->execute();
     }
 
     protected function setUp()
@@ -53,11 +55,12 @@ class MySqlDataMapperTest extends \PHPUnit_Framework_TestCase
         $this->entityDefinition->addField($fieldC);
 
         $config = new Config();
+        $settings = json_decode(file_get_contents(__DIR__."/mysql-test-database.json"),true);
         $config->setMany([
-             "database_host" => "localhost",
-             "database_user" => "root",
-             "database_password" => "root",
-             "database_name" => "flyfoundation_test"
+             "database_host" => $settings["host"],
+             "database_user" => $settings["user"],
+             "database_password" => $settings["password"],
+             "database_name" => $settings["database"]
         ]);
 
         $this->dataMapper = new MySqlDataMapper($this->entityDefinition);

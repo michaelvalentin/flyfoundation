@@ -25,6 +25,4 @@ class AppTest extends \PHPUnit_Framework_TestCase {
         $test2 = $config->get("test2");
         $this->assertSame("This is a demo",$test2);
     }
-
-
 }
