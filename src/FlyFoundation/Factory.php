@@ -7,6 +7,7 @@ namespace FlyFoundation;
 use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Environment;
+use FlyFoundation\Core\Factories\AbstractFactory;
 use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
@@ -14,8 +15,7 @@ use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
-class Factory {
-    use Environment;
+class Factory extends AbstractFactory{
 
     public function __construct(Config $config, Context $context)
     {
@@ -30,18 +30,80 @@ class Factory {
      */
     public function load($className, $arguments = array())
     {
-        $className = $this->getOverride($className);
 
-        $classNameParts = $this->explodeClassName($className);
-        $isFlyFoundationClass = $classNameParts[0] == "FlyFoundation";
-
-        if($isFlyFoundationClass){
-            return $this->loadFlyFoundationClass($className,$arguments);
+        $implementation = $this->getOverride($className);
+        if($implementation == $className){
+            $className = $this->findImplementation($className,$this->getConfig()->baseSearchPaths);
         }else{
-            return $this->loadClass($className, $arguments);
+            $className = $implementation;
+        }
+
+        $specializedFactory = $this->findSpecializedFactory($className);
+
+        if($specializedFactory){
+            return $specializedFactory->load($className, $arguments);
+        }else{
+            return $this->loadWithoutOverridesAndDecoration($className, $arguments);
         }
 
     }
+
+
+    private function findSpecializedFactory($className)
+    {
+        $factorySearchPathsMap = [
+            "ControllerFactory" => $this->getConfig()->controllerSearchPaths,
+            "DatabaseFactory" => $this->getConfig()->databaseSearchPaths,
+            "ModelFactory" => $this->getConfig()->modelSearchPaths,
+            "ViewFactory" => $this->getConfig()->viewSearchPaths
+        ];
+
+        foreach($factorySearchPathsMap as $factory=>$paths)
+        {
+            $partialClassName = $this->findPartialClassNameInPaths($className,$paths);
+
+            if($partialClassName){
+                return $this->load("\\FlyFoundation\\Core\\Factories\\".$factory);
+            }
+        }
+
+        return false;
+    }
+
+    public function loadWithoutOverridesAndDecoration($className, $arguments)
+    {
+        if(!class_exists($className)){
+            throw new InvalidArgumentException('Class "'.$className.'" was not found by the auto-loading mechanism');
+        }
+
+        $reflectionObject = new \ReflectionClass($className);
+        $classInstance = $reflectionObject->newInstanceArgs($arguments);
+
+        $classInstance = $this->setEnvironmentVariables($classInstance);
+
+        return $classInstance;
+    }
+
+    private function setEnvironmentVariables($instance)
+    {
+        $traits = class_uses($instance);
+        if(in_array("\\FlyFoundation\\Core\\Environment",$traits)){
+            /** @var Environment $instance */
+            $instance->setFactory($this);
+            $instance->setConfig($this->getConfig());
+            $instance->setContext($this->getContext());
+        }
+        return $instance;
+    }
+
+    /*****
+     *****
+     *
+     * FROM HERE:
+     * Specialized methods for easy type management...
+     *
+     *****
+     *****/
 
     /**
      * @param string $viewName
@@ -120,125 +182,4 @@ class Factory {
         $fullClassName = "\\FlyFoundation\\Database\\".$dqoName;
         return $this->load($fullClassName, $arguments);
     }
-
-    private function getOverride($className){
-        $config = $this->getConfig();
-        while($config->classOverrides->hasKey($className))
-        {
-            $className = $config->get($className);
-        }
-        return $className;
-    }
-
-    private function loadFlyFoundationClass($className, $arguments)
-    {
-        $parts = $this->explodeClassName($className);
-        switch($parts[1]){
-            case "Controllers" :
-                return $this->loadControllerClass($className,$arguments);
-            case "Database" :
-                return $this->loadDatabaseClass($className, $arguments);
-            case "Models" :
-                return $this->loadModelClass($className, $arguments);
-            case "Views" :
-                return $this->loadViewClass($className, $arguments);
-            default :
-                return $this->loadClass($className, $arguments);
-        }
-    }
-
-    private function loadClass($className, $arguments)
-    {
-        if(!is_class($className)){
-            throw new InvalidArgumentException('Class "'.$className.'" was not found by the auto-loading mechanism');
-        }
-
-        $reflectionObject = new \ReflectionClass($className);
-        $classInstance = $reflectionObject->newInstanceArgs($arguments);
-
-        $classInstance = $this->setEnvironmentVariables($classInstance);
-
-        return $classInstance;
-    }
-
-    private function setEnvironmentVariables($instance)
-    {
-        $traits = class_uses($instance);
-        if(in_array("\\FlyFoundation\\Core\\Environment",$traits)){
-            /** @var Environment $instance */
-            $instance->setFactory($this);
-            $instance->setConfig($this->getConfig());
-            $instance->setContext($this->getContext());
-        }
-        return $instance;
-    }
-
-    private function explodeClassName($className)
-    {
-        $parts = explode("\\",$className);
-        if($parts[0]==""){
-            array_shift($parts);
-        }
-        return $parts;
-    }
-
-    private function loadControllerClass($className, $arguments)
-    {
-        if(!class_exists($className)){
-            $className = $this->getDefaultController($className);
-            $this->getEntityDefinition()
-        }
-
-        $controller = $this->loadClass($className, $arguments);
-
-        if($controller instanceof Controller){
-            $controller = $this->decorateController($controller, $className);
-        }
-
-        return $controller;
-
-    }
-
-    private function decorateController(Controller $controller, $className)
-    {
-        $controllerNaming = "/^(.*)\\\\(.*)Controller/";
-        $matches = [];
-        $hasControllerNaming = preg_match($controllerNaming, $className, $matches);
-
-        if($hasControllerNaming){
-            $controllerName = $matches[2];
-
-            $view = $this->loadView($controllerName);
-            $controller->setView($view);
-
-            $model = $this->loadModel($controllerName);
-            $controller->setModel($model);
-        }
-
-        return $controller;
-    }
-
-    private function loadDatabaseClass($className, $arguments)
-    {
-        $dataInteractorNaming = "/^(.*)\\\\(.*)(DataMapper|DataFinder|DataMethods)$/";
-        $matches = [];
-        $hasDataInteractorNaming = preg_match($dataInteractorNaming, $className, $matches);
-
-        if($hasDataInteractorNaming){
-            $base = $matches[1];
-            $modelName = $matches[2];
-            $type = $matches[3];
-            $modelNameWithPrefix = $this->getConfig()->get("database_type_class_prefix").$modelName;
-
-            $className = $base.$modelNameWithPrefix.$type;
-        }
-
-        $object = $this->loadClass($className, $arguments);
-
-        if($hasDataInteractorNaming){
-
-        }
-
-        return $object;
-    }
-} 
+}
