@@ -12,6 +12,7 @@ use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
@@ -73,7 +74,7 @@ class Factory extends AbstractFactory{
     public function loadWithoutOverridesAndDecoration($className, $arguments)
     {
         if(!class_exists($className)){
-            throw new InvalidArgumentException('Class "'.$className.'" was not found by the auto-loading mechanism');
+            throw new UnknownClassException('Class "'.$className.'" was not found by the auto-loading mechanism');
         }
 
         $reflectionObject = new \ReflectionClass($className);
