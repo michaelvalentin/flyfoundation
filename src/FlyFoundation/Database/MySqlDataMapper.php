@@ -9,7 +9,9 @@ namespace FlyFoundation\Database;
 
 use FluentPDO;
 use FlyFoundation\Core\Environment;
+use FlyFoundation\Exceptions\FlyFoundationException;
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Models\PersistentEntity;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 use PDO;
 
@@ -48,89 +50,108 @@ class MySqlDataMapper implements DataMapper
     }
 
     /**
-     * @param array $data
-     *
-     * @return int
-     * @throws \FlyFoundation\Exceptions\InvalidArgumentException
-     */
-    public function save($data)
-    {
-        $tableName = $this->entityDefinition->getTableName();
-        $fields = $this->entityDefinition->getFields();
-        $isUpdate = FALSE;
-
-        foreach($data as $dataKey => $dataValue){
-            $isFound = FALSE;
-
-            foreach($fields as $field){
-                if($field->getColumnName() == $dataKey){ $isFound = TRUE; break; }
-            }
-
-            if(!$isFound){
-                $dataItem = '[' . $dataKey . ' => ' . $dataValue . ']';
-                throw new InvalidArgumentException(
-                    'Could not save data ' . $dataItem . ' to the table: "' . $tableName . '", because the column: "'
-                    . $dataKey . '" does not exist.'
-                );
-            }
-        }
-
-        if(isset($data['id'])){
-            $isUpdate = TRUE;
-            $query = $this->getPdo()->update($tableName, $data, $data['id']);
-        } else {
-            $query = $this->getPdo()->insertInto($tableName, $data);
-        }
-        $result = $query->execute();
-
-        if(!$result){
-            $dataString = '[' . implode(', ', $data) . ']';
-            throw new InvalidArgumentException(
-                'Could not save data to the table: "' . $tableName . '", using data ' . $dataString
-                . ' in the database.'
-            );
-        }
-
-        return $isUpdate ? $data['id'] : $result;
-    }
-
-    /**
-     * @param integer $id
+     * @param PersistentEntity $persistentEntity
      *
      * @return void
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      */
-    public function delete($id)
+    public function save(PersistentEntity $persistentEntity)
+    {
+        $tableName = $this->entityDefinition->getTableName();
+        $isUpdate = $persistentEntity->getId() ? true : false;
+
+        if($isUpdate){
+            
+        } else {
+
+        }
+
+    }
+
+    /**
+     * @param int | array $primaryKey
+     *
+     * @return void
+     * @throws \FlyFoundation\Exceptions\InvalidArgumentException
+     */
+    public function delete($primaryKey)
     {
         $tableName = $this->entityDefinition->getTableName();
 
-        $result = $this->getPdo()->delete($tableName, $id)->execute();
+        if(is_int($primaryKey)){
 
-        if(!$result){
+            $query = $this->getPdo()->delete($tableName, $primaryKey);
+
+        } elseif(is_array($primaryKey)){
+
+            $definedPrimaryKey = $this->entityDefinition->getPrimaryKey();
+            $diff = array_diff_key($definedPrimaryKey, $primaryKey);
+            if(!empty($diff)){
+                throw new InvalidArgumentException(
+                    'Failed to delete data from ' . $tableName
+                    . ', because the keys in $primaryKey did not match the entity definition\'s primary key columns.'
+                );
+            }
+            $query = $this->getPdo()->delete($tableName)->where($primaryKey);
+
+        } else {
             throw new InvalidArgumentException(
-                'Could not delete a row from the table ' . $tableName . ' with the ID ' . $id . ' in the database.'
+                'Failed to delete data from ' . $tableName
+                . ', because the type of $primaryKey was ' . gettype($primaryKey) . ', expected integer or array.'
+            );
+        }
+
+        $data = $query->execute();
+        if(!$data){
+            throw new InvalidArgumentException(
+                'Failed to delete data from ' . $tableName
+                . ', because the query failed.'
             );
         }
     }
 
     /**
-     * @param $id
+     * @param int | array $primaryKey
      *
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
-     * @return array
+     * @return PersistentEntity
      */
-    public function load($id)
+    public function load($primaryKey)
     {
         $tableName = $this->entityDefinition->getTableName();
 
-        $result = $this->getPdo()->from($tableName, $id)->fetch();
+        if(is_int($primaryKey)){
 
-        if(!$result){
+            $query = $this->getPdo()->from($tableName, $primaryKey);
+
+        } elseif(is_array($primaryKey)){
+
+            $definedPrimaryKey = $this->entityDefinition->getPrimaryKey();
+            $diff = array_diff_key($definedPrimaryKey, $primaryKey);
+            if(!empty($diff)){
+                throw new InvalidArgumentException(
+                    'Failed to load data from ' . $tableName
+                    . ', because the keys in $primaryKey did not match the entity definition\'s primary key columns.'
+                );
+            }
+            $query = $this->getPdo()->from($tableName)->where($primaryKey);
+
+        } else {
             throw new InvalidArgumentException(
-                'Could not load a row from the table: "' . $tableName . '" with the ID: ' . $id . ' in the database.'
+                'Failed to load data from ' . $tableName
+                . ', because the type of $primaryKey was ' . gettype($primaryKey) . ', expected integer or array.'
             );
         }
 
-        return $result;
+        $data = $query->fetchAll();
+        if(empty($data)){
+            throw new InvalidArgumentException(
+                'Failed to load data from ' . $tableName
+                . ', because the query failed.'
+            );
+        }
+
+        $factory = $this->getFactory();
+        return $factory->loadModel($this->entityDefinition->getClassName(), $data);
     }
 }

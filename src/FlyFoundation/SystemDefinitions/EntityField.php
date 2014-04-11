@@ -10,6 +10,7 @@ class EntityField
 {
     private $columnName;
     private $type;
+    private $primaryKey;
 
     /**
      * @param $columnName
@@ -44,8 +45,25 @@ class EntityField
     /**
      * @return string
      */
-    public function getType(){
+    public function getType()
+    {
         return $this->type;
+    }
+
+    /**
+     * @param boolean $boolean
+     */
+    public function setPrimaryKey($boolean)
+    {
+        $this->primaryKey = $boolean;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPrimaryKey()
+    {
+        return $this->primaryKey;
     }
 
 }
