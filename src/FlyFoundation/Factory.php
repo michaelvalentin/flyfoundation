@@ -14,6 +14,7 @@ use FlyFoundation\Database\DataMethods;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
+use FlyFoundation\Util\ValueList;
 use FlyFoundation\Views\View;
 
 class Factory extends AbstractFactory{
@@ -56,7 +57,8 @@ class Factory extends AbstractFactory{
             "ControllerFactory" => $this->getConfig()->controllerSearchPaths,
             "DatabaseFactory" => $this->getConfig()->databaseSearchPaths,
             "ModelFactory" => $this->getConfig()->modelSearchPaths,
-            "ViewFactory" => $this->getConfig()->viewSearchPaths
+            "ViewFactory" => $this->getConfig()->viewSearchPaths,
+            "EntityDefinition" => new ValueList(["\\FlyFoundation\\SystemDefinitions"])
         ];
 
         foreach($factorySearchPathsMap as $factory=>$paths)
