@@ -39,7 +39,7 @@ abstract class AbstractFactory {
     {
         $matches = [];
 
-        foreach($searchPaths->asArray() as $path)
+        foreach(array_reverse($searchPaths->asArray()) as $path)
         {
             $regexpPath = str_replace("\\","\\\\",$path);
 
@@ -53,16 +53,16 @@ abstract class AbstractFactory {
         return false;
     }
 
-    public function findImplementation($className, ValueList $baseSearchPaths)
+    public function findImplementation($className, ValueList $searchPaths)
     {
 
-        $partialClassName = $this->findPartialClassNameInPaths($className, $baseSearchPaths);
+        $partialClassName = $this->findPartialClassNameInPaths($className, $searchPaths);
 
         if(!$partialClassName){
             return $className;
         }
 
-        foreach($baseSearchPaths->asArray() as $path){
+        foreach(array_reverse($searchPaths->asArray()) as $path){
             $fullClassName = $path."\\".$partialClassName;
             if(class_exists($fullClassName)){
                 return $fullClassName;

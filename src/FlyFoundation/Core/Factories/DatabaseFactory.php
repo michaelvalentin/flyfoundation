@@ -19,7 +19,7 @@ class DatabaseFactory extends AbstractFactory{
         $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->databaseSearchPaths);
         $dbPrefix = $this->getConfig()->get("database_data_object_prefix");
 
-        $dataObjectNaming = "/^(.*)\\\\(".$dbPrefix.")(.*)(DataMapper|DataFinder|DataMethods)$/";
+        $dataObjectNaming = "/^((.*)\\\\)?(".$dbPrefix.")?(.*)(DataMapper|DataFinder|DataMethods)$/";
         $matches = [];
         $hasDataObjectNaming = preg_match($dataObjectNaming, $partialClassName, $matches);
 
@@ -27,17 +27,19 @@ class DatabaseFactory extends AbstractFactory{
             return $this->getFactory()->loadWithoutOverridesAndDecoration($className,$arguments);
         }
 
-        $entityName = $matches[1]."\\".$matches[3];
-        $dataObjectType = $matches[4];
-        $appliedDbPrefix = $matches[2];
+        $entityName = $matches[1].$matches[4];
+        $dataObjectType = $matches[5];
+        $appliedDbPrefix = $matches[3];
 
         if($appliedDbPrefix == ""){
             $className = $this->prefixActualClassName($className, $dbPrefix);
             return $this->getFactory()->load($className, $arguments);
         }
 
-        $entityDefinition = $this->getFactory()->loadEntityDefnition($entityName);
-        array_unshift($arguments,$entityDefinition);
+        if(in_array($dataObjectType,["DataMapper","DataFinder"])){
+            $entityDefinition = $this->getFactory()->loadEntityDefinition($entityName);
+            array_unshift($arguments,$entityDefinition);
+        }
 
         if(class_exists($className)){
             return $this->getFactory()->loadWithoutOverridesAndDecoration($className,$arguments);

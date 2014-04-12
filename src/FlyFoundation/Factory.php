@@ -192,7 +192,7 @@ class Factory extends AbstractFactory{
      * @param array $arguments
      * @return DataMethods
      */
-    public function loadDataQueryObject($dqoName, $arguments = array())
+    public function loadDataMethods($dqoName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dqoName;
         return $this->load($fullClassName, $arguments);

@@ -1,5 +1,6 @@
 <?php
 
+use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Factory;
 use FlyFoundation\Models\OpenPersistentEntity;
 
@@ -16,10 +17,10 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $className3 = "\\MyOtherNamespace\\Kaki\\Demo";
 
         $paths = new \FlyFoundation\Util\ValueList([
-            "\\MyNamespace\\SomeThing",
-            "\\OtherNamespace",
+            "\\MyNamespace",
             "\\MyNamespace\\Folder\\SomeClassFolder",
-            "\\MyNamespace"
+            "\\OtherNamespace",
+            "\\MyNamespace\\SomeThing",
         ]);
 
         $result = $this->factory->findPartialClassNameInPaths($className,$paths);
@@ -63,32 +64,67 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertSame("\\SAMMyClass",$namePrefixed2);
     }
 
-    public function testLoadingClassImplementedInTestAppNotImplementedInFlyFoundation(){
+    public function testLoadingClassImplementedInTestAppNotImplementedInFlyFoundation()
+    {
         $result = $this->factory->load("\\FlyFoundation\\DemoClass");
         $this->assertInstanceOf("\\TestApp\\DemoClass",$result);
         $this->assertSame(50,$result->test());
     }
 
-    public function testLoadingExistingFlyFoundationClass(){
+    public function testLoadingExistingFlyFoundationClass()
+    {
         $result = $this->factory->load("\\FlyFoundation\\Util\\Set");
         $this->assertInstanceOf("\\FlyFoundation\\Util\\Set",$result);
     }
 
-    public function testLoadingNonExistingModel(){
+    public function testLoadingNonExistingModel()
+    {
         /** @var OpenPersistentEntity $result */
         $result = $this->factory->load("\\FlyFoundation\\Models\\MyModel");
         $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenPersistentEntity",$result);
         $def = $result->getDefinition(); //TODO: Inspect the definition to see if it's correct
     }
 
-    public function testLoadExistingModelInTestApp(){
+    public function testLoadExistingModelInTestApp()
+    {
         $result = $this->factory->load("\\FlyFoundation\\Models\\OtherTestModel");
         $this->assertInstanceOf("\\TestApp\\Models\\OtherTestModel",$result);
     }
 
-    public function testLoadingModelInExtraModelPath(){
+    public function testLoadingModelInExtraModelPath()
+    {
         $result = $this->factory->load("\\FlyFoundation\\Models\\ThirdTestModel");
         $this->assertInstanceOf("\\TestApp\\ExtraModelPath\\ThirdTestModel",$result);
+    }
+
+    public function testLoadingNonExistantDataMapper()
+    {
+        $result = $this->factory->loadDataMapper("SpecialClassDataMapper");
+        $this->assertInstanceOf("\\FlyFoundation\\Database\\MySqlDataMapper",$result);
+    }
+
+    public function testLoadingDataFinderImplementedInTestAppOnly()
+    {
+        $result = $this->factory->loadDataFinder("TestAppOnly");
+        $this->assertInstanceOf("\\TestApp\\Database\\MySqlTestAppOnlyDataFinder",$result);
+    }
+
+    public function testLoadingDataFinderImplementedInFlyFoundationAndTestApp()
+    {
+        $result = $this->factory->load("\\FlyFoundation\\Database\\DataFinder");
+        $this->assertInstanceOf("\\TestApp\\Database\\MySqlDataFinder",$result);
+    }
+
+    public function testLoadingDataMethods()
+    {
+        $result = $this->factory->loadDataMethods("MySpecialDataMethods");
+        $this->assertInstanceOf("\\TestApp\\Database\\MySqlMySpecialDataMethods", $result);
+    }
+
+    public function testLoadingNonExistingDataMethods()
+    {
+        $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
+        $this->factory->loadDataMethods("ThatDoesNotExist");
     }
 
     protected function setUp()
