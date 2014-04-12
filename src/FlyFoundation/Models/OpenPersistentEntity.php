@@ -42,4 +42,11 @@ class OpenPersistentEntity extends PersistentEntity
         $this->data[$key] = $value;
     }
 
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        // TODO: Implement getId() method.
+    }
 }

@@ -1,8 +1,9 @@
 <?php
 
 use FlyFoundation\Factory;
+use FlyFoundation\Models\OpenPersistentEntity;
 
-require_once __DIR__."/../vendor/autoload.php";
+require_once __DIR__.'/test-init.php';
 
 class FactoryTest extends PHPUnit_Framework_TestCase {
     /** @var  Factory $factory */
@@ -62,12 +63,29 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertSame("\\SAMMyClass",$namePrefixed2);
     }
 
+    public function testLoadingNonExistantModel(){
+        /** @var OpenPersistentEntity $result */
+        $result = $this->factory->load("\\FlyFoundation\\Models\\MyModel");
+        $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenPersistentEntity",$result);
+        $def = $result->getDefinition(); //TODO: Inspect the definition to see if it's correct
+    }
+
+    public function testLoadingClassImplementedInTestAppNotImplementedInFlyFoundation(){
+        $result = $this->factory->load("\\FlyFoundation\\DemoClass");
+        $this->assertInstanceOf("\\TestApp\\DemoClass",$result);
+        $this->assertSame(50,$result->test());
+    }
+
+    public function testLoadingExistingFlyFoundationClass(){
+        $result = $this->factory->load("\\FlyFoundation\\Util\\Set");
+        $this->assertInstanceOf("\\FlyFoundation\\Util\\Set",$result);
+    }
+
     protected function setUp()
     {
-        $this->factory = new \FlyFoundation\Factory(
-            new \FlyFoundation\Config(),
-            new \FlyFoundation\Core\Context()
-        );
+        $app = new \FlyFoundation\App();
+        $this->factory = $app->getFactory();
+        $this->factory->getConfig()->baseSearchPaths->add("\\TestApp");
         parent::setUp();
     }
 

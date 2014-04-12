@@ -18,7 +18,7 @@ class EntityDefinitionFactory extends AbstractFactory
         $className = $this->findImplementation($className,$this->getConfig()->entityDefinitionSearchPaths);
         $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->entityDefinitionSearchPaths);
 
-        $entityDefinitionNaming = "/^(.*)Definintion$/";
+        $entityDefinitionNaming = "/^(.*)Definition$/";
         $matches = [];
         $hasEntityDefinitionNaming = preg_match($entityDefinitionNaming, $partialClassName, $matches);
 

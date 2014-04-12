@@ -19,7 +19,7 @@ class ModelFactory extends AbstractFactory{
         if(class_exists($className)){
             return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
         }else{
-            $entityDefinition = $this->getFactory()->loadEntityDefnition($partialClassName);
+            $entityDefinition = $this->getFactory()->loadEntityDefinition($partialClassName);
             array_unshift($arguments,$entityDefinition);
             return $this->getFactory()->load("\\FlyFoundation\\Models\\OpenPersistentEntity",$arguments);
         }

@@ -14,6 +14,7 @@ use FlyFoundation\Database\DataMethods;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
+use FlyFoundation\Util\TraitInspector;
 use FlyFoundation\Util\ValueList;
 use FlyFoundation\Views\View;
 
@@ -50,7 +51,10 @@ class Factory extends AbstractFactory{
 
     }
 
-
+    /**
+     * @param $className
+     * @return bool|AbstractFactory
+     */
     private function findSpecializedFactory($className)
     {
         $factorySearchPathsMap = [
@@ -58,7 +62,7 @@ class Factory extends AbstractFactory{
             "DatabaseFactory" => $this->getConfig()->databaseSearchPaths,
             "ModelFactory" => $this->getConfig()->modelSearchPaths,
             "ViewFactory" => $this->getConfig()->viewSearchPaths,
-            "EntityDefinition" => new ValueList(["\\FlyFoundation\\SystemDefinitions"])
+            "EntityDefinitionFactory" => new ValueList(["\\FlyFoundation\\SystemDefinitions"])
         ];
 
         foreach($factorySearchPathsMap as $factory=>$paths)
@@ -89,8 +93,8 @@ class Factory extends AbstractFactory{
 
     private function setEnvironmentVariables($instance)
     {
-        $traits = class_uses($instance);
-        if(in_array("\\FlyFoundation\\Core\\Environment",$traits)){
+        $traits = TraitInspector::classUsesDeep($instance);
+        if(in_array("FlyFoundation\\Core\\Environment",$traits)){
             /** @var Environment $instance */
             $instance->setFactory($this);
             $instance->setConfig($this->getConfig());
