@@ -63,33 +63,46 @@ class Config {
         $this->entityDirectories = New DirectoryList();
     }
 
-    public function set($key,$value){
-        $this->data[$key] = $value;
-    }
-
-    public function get($key){
+    public function set($key,$value)
+    {
         if($this->isLocked()){
             throw new InvalidOperationException("Configuration is locked, and can not be modified");
         }
+        $this->data[$key] = $value;
+    }
+
+    public function setDefault($key,$value)
+    {
+        if(!isset($this->data[$key])){
+            $this->set($key,$value);
+        }
+    }
+
+    public function get($key)
+    {
         return $this->data[$key];
     }
 
-    public function setMany(array $data){
+    public function setMany(array $data)
+    {
         if($this->isLocked()){
             throw new InvalidOperationException("Configuration is locked, and can not be modified");
         }
         $this->data = array_merge($this->data,$data);
     }
 
-    public function getAll(){
+    public function getAll()
+    {
         return $this->data;
     }
 
-    public function lock(){
+    public function lock()
+    {
         $this->locked = true;
     }
 
-    public function isLocked(){
+    public function isLocked()
+    {
         return $this->locked;
     }
 }
