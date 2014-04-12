@@ -14,7 +14,7 @@ use FlyFoundation\Database\DataMethods;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
-use FlyFoundation\Util\TraitInspector;
+use FlyFoundation\Util\ClassInspector;
 use FlyFoundation\Util\ValueList;
 use FlyFoundation\Views\View;
 
@@ -22,6 +22,14 @@ class Factory extends AbstractFactory{
 
     public function __construct(Config $config, Context $context)
     {
+        foreach($config->baseSearchPaths->asArray() as $path){
+            $config->databaseSearchPaths->add($path."\\Database");
+            $config->controllerSearchPaths->add($path."\\Controllers");
+            $config->entityDefinitionSearchPaths->add($path."\\SystemDefinitions");
+            $config->viewSearchPaths->add($path."\\Views");
+            $config->modelSearchPaths->add($path."\\Models");
+        }
+
         $this->setConfig($config);
         $this->setContext($context);
     }
@@ -93,7 +101,7 @@ class Factory extends AbstractFactory{
 
     private function setEnvironmentVariables($instance)
     {
-        $traits = TraitInspector::classUsesDeep($instance);
+        $traits = ClassInspector::classUsesDeep($instance);
         if(in_array("FlyFoundation\\Core\\Environment",$traits)){
             /** @var Environment $instance */
             $instance->setFactory($this);

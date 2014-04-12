@@ -4,7 +4,7 @@
 namespace FlyFoundation\Util;
 
 
-class TraitInspector {
+class ClassInspector {
     public static function classUsesDeep($class, $autoload = true)
     {
         $traits = [];

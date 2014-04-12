@@ -63,13 +63,6 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertSame("\\SAMMyClass",$namePrefixed2);
     }
 
-    public function testLoadingNonExistantModel(){
-        /** @var OpenPersistentEntity $result */
-        $result = $this->factory->load("\\FlyFoundation\\Models\\MyModel");
-        $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenPersistentEntity",$result);
-        $def = $result->getDefinition(); //TODO: Inspect the definition to see if it's correct
-    }
-
     public function testLoadingClassImplementedInTestAppNotImplementedInFlyFoundation(){
         $result = $this->factory->load("\\FlyFoundation\\DemoClass");
         $this->assertInstanceOf("\\TestApp\\DemoClass",$result);
@@ -81,9 +74,27 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf("\\FlyFoundation\\Util\\Set",$result);
     }
 
+    public function testLoadingNonExistingModel(){
+        /** @var OpenPersistentEntity $result */
+        $result = $this->factory->load("\\FlyFoundation\\Models\\MyModel");
+        $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenPersistentEntity",$result);
+        $def = $result->getDefinition(); //TODO: Inspect the definition to see if it's correct
+    }
+
+    public function testLoadExistingModelInTestApp(){
+        $result = $this->factory->load("\\FlyFoundation\\Models\\OtherTestModel");
+        $this->assertInstanceOf("\\TestApp\\Models\\OtherTestModel",$result);
+    }
+
+    public function testLoadingModelInExtraModelPath(){
+        $result = $this->factory->load("\\FlyFoundation\\Models\\ThirdTestModel");
+        $this->assertInstanceOf("\\TestApp\\ExtraModelPath\\ThirdTestModel",$result);
+    }
+
     protected function setUp()
     {
         $app = new \FlyFoundation\App();
+        $app->addConfigurator(__DIR__."/TestApp/configurators");
         $this->factory = $app->getFactory();
         $this->factory->getConfig()->baseSearchPaths->add("\\TestApp");
         parent::setUp();
