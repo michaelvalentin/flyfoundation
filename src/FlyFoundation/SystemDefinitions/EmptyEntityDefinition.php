@@ -9,9 +9,16 @@ namespace FlyFoundation\SystemDefinitions;
 
 class EmptyEntityDefinition extends AbstractEntityDefinition {
 
+    /** @var EntityField[] $fields */
     private $fields;
+
+    /** @var EntityRelation[] $relations */
     private $relations;
+
+    /** @var EntityValidation[] $validations */
     private $validations;
+
+    /** @var EntityIndex[] $indexes */
     private $indexes;
 
     public function __construct()
@@ -89,5 +96,19 @@ class EmptyEntityDefinition extends AbstractEntityDefinition {
     public function addIndex(EntityIndex $entityIndex)
     {
         $this->indexes[] = $entityIndex;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPrimaryKey()
+    {
+        $primaryKey = [];
+        foreach($this->fields as $field){
+            if($field->isPrimaryKey()){
+                $primaryKey[$field->getColumnName()] = $field->getType();
+            }
+        }
+        return $primaryKey;
     }
 }

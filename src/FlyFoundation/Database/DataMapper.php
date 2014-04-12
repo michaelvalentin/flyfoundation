@@ -3,6 +3,7 @@
 
 namespace FlyFoundation\Database;
 
+use FlyFoundation\Models\PersistentEntity;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 interface DataMapper {
@@ -10,11 +11,11 @@ interface DataMapper {
     public function __construct(EntityDefinition $entityDefinition);
 
     /**
-     * @param array $data
+     * @param PersistentEntity $persistentEntity
      *
      * @return void
      */
-    public function save($data);
+    public function save(PersistentEntity $persistentEntity);
 
     /**
      * @param $id
@@ -24,9 +25,9 @@ interface DataMapper {
     public function delete($id);
 
     /**
-     * @param $id
+     * @param mixed $primaryKey
      *
-     * @return array
+     * @return PersistentEntity
      */
-    public function load($id);
+    public function load($primaryKey);
 } 

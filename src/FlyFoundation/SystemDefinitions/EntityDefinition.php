@@ -67,4 +67,9 @@ interface EntityDefinition
      * @return void
      */
     public function addIndex(EntityIndex $entityIndex);
+
+    /**
+     * @return array
+     */
+    public function getPrimaryKey();
 } 
