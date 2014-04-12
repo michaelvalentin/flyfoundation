@@ -70,4 +70,16 @@ abstract class AbstractFactory {
         }
         return $className;
     }
+
+
+
+    public function prefixActualClassName($className, $prefix)
+    {
+        $classNameParts = explode("\\",$className);
+        $lastClassNamePart = array_pop($classNameParts);
+        $databasePrefixedLastClassNamePart = $prefix.$lastClassNamePart;
+        array_push($classNameParts,$databasePrefixedLastClassNamePart);
+        $className = implode("\\",$classNameParts);
+        return $className;
+    }
 } 

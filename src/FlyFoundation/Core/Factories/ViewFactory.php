@@ -13,6 +13,16 @@ class ViewFactory extends AbstractFactory{
      */
     public function load($className, $arguments = array())
     {
-        // TODO: Implement load() method.
+        $className = $this->findImplementation($className,$this->getConfig()->viewSearchPaths);
+
+        $viewNaming = "/^(.*)View$/";
+        $matches = [];
+        $hasViewNaming = preg_match($viewNaming, $className, $matches);
+
+        if(!$hasViewNaming || class_exists($className)){
+            return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+        }
+
+        return $this->getFactory()->load("\\FlyFoundation\\Views\\DefaultView");
     }
 }

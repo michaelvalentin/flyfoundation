@@ -15,43 +15,39 @@ use FlyFoundation\Util\ValueList;
  * @package Core
  */
 class Config {
+
+    /** @var array  */
     private $data;
+
+    /** @var bool  */
     private $locked;
 
-    /**
-     * @var Util\ClassMap
-     */
+    /** @var \FlyFoundation\Util\ClassMap  */
     public $classOverrides;
 
-    /**
-     * @var Util\ValueList
-     */
+    /** @var \FlyFoundation\Util\ValueList  */
     public $baseSearchPaths;
 
-    /**
-     * @var Util\ValueList
-     */
+    /** @var \FlyFoundation\Util\ValueList  */
     public $modelSearchPaths;
 
-    /**
-     * @var Util\ValueList
-     */
+    /** @var \FlyFoundation\Util\ValueList  */
     public $viewSearchPaths;
 
-    /**
-     * @var Util\ValueList
-     */
+    /** @var \FlyFoundation\Util\ValueList  */
     public $controllerSearchPaths;
 
-    /**
-     * @var Util\ValueList
-     */
+    /** @var \FlyFoundation\Util\ValueList  */
     public $databaseSearchPaths;
 
-    /**
-     * @var Util\DirectoryList
-     */
+    /** @var \FlyFoundation\Util\ValueList  */
+    public $entityDefinitionSearchPaths;
+
+    /** @var Util\DirectoryList */
     public $templateDirectories;
+
+    /** @var \FlyFoundation\Util\DirectoryList  */
+    public $entityDirectories;
 
     public function __construct(){
         $this->data = array();
@@ -62,7 +58,9 @@ class Config {
         $this->viewSearchPaths = new ValueList();
         $this->controllerSearchPaths = new ValueList();
         $this->databaseSearchPaths = new ValueList();
+        $this->entityDefinitionSearchPaths = new ValueList();
         $this->templateDirectories = new DirectoryList();
+        $this->entityDirectories = New DirectoryList();
     }
 
     public function set($key,$value){

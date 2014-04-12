@@ -2,7 +2,7 @@
 
 namespace FlyFoundation;
 
-use FlyFoundation\Core\ConfigurationFactory;
+use FlyFoundation\Core\Factories\ConfigurationFactory;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Util\DirectoryList;

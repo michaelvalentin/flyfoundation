@@ -15,54 +15,48 @@ class DatabaseFactory extends AbstractFactory{
      */
     public function load($className, $arguments = array())
     {
-        $dataObjectNaming = "/^(.*)(DataMapper|DataFinder|DataMethods)$/";
+        $className = $this->findImplementation($className,$this->getConfig()->databaseSearchPaths);
+        $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->databaseSearchPaths);
+        $dbPrefix = $this->getConfig()->get("database_data_object_prefix");
+
+        $dataObjectNaming = "/^(.*)\\\\(".$dbPrefix.")(.*)(DataMapper|DataFinder|DataMethods)$/";
         $matches = [];
-        $hasDataObjectNaming = preg_match($dataObjectNaming, $className, $matches);
+        $hasDataObjectNaming = preg_match($dataObjectNaming, $partialClassName, $matches);
+
         if(!$hasDataObjectNaming){
             return $this->getFactory()->loadWithoutOverridesAndDecoration($className,$arguments);
         }
-        $dataObjectType = $matches[2];
 
-        $dbPrefix = $this->getConfig()->get("database_data_object_prefix");
-        $className = $this->prefixActualClassName($className, $dbPrefix);
+        $entityName = $matches[1]."\\".$matches[3];
+        $dataObjectType = $matches[4];
+        $appliedDbPrefix = $matches[2];
 
-        $className = $this->findImplementation($className,$this->getConfig()->databaseSearchPaths);
+        if($appliedDbPrefix == ""){
+            $className = $this->prefixActualClassName($className, $dbPrefix);
+            return $this->getFactory()->load($className, $arguments);
+        }
 
-        $modelName = "";
-        $entityDefinition = $this->getFactory()->load("\\FlyFoundation\\EntityDefinitions\\".$modelName."Definition");
+        $entityDefinition = $this->getFactory()->loadEntityDefnition($entityName);
+        array_unshift($arguments,$entityDefinition);
 
         if(class_exists($className)){
-            return $this->getFactory()->loadWithoutOverridesAndDecoration($className,[$entityDefinition]);
+            return $this->getFactory()->loadWithoutOverridesAndDecoration($className,$arguments);
         }else{
-            $dynamicClassName = $this->getDynamicClassName($className, $dataObjectType);
-            return $this->getFactory()->load($dynamicClassName, [$entityDefinition]);
+            $dynamicClassName = $this->getDynamicDatabaseClassName($className, $dataObjectType);
+            return $this->getFactory()->load($dynamicClassName, $arguments);
         }
     }
 
-    public function prefixActualClassName($className, $databasePrefix)
+    public function getDynamicDatabaseClassName($className, $dataObjectType)
     {
-        $classNameParts = explode("\\",$className);
-        $lastClassNamePart = array_pop($classNameParts);
-        $databasePrefixedLastClassNamePart = $databasePrefix.$lastClassNamePart;
-        array_push($classNameParts,$databasePrefixedLastClassNamePart);
-        $className = implode("\\",$classNameParts);
-        return $className;
-    }
-
-    public function getDynamicClassName($className, $dataObjectType)
-    {
-        if($dataObjectType == "DataMethods"){
+        if(!in_array($dataObjectType,["DataMapper", "DataFinder"])){
             throw new UnknownClassException(
-                "DataMethod objects must be implemented. Could not find object '".$className."'"
+                $dataObjectType." objects must be implemented. Could not find object '".$className."'"
             );
         }
 
         $dbPrefix = $this->getConfig()->get("database_data_object_prefix");
 
-        $dynamicClassName = "\\FlyFoundation\\Database\\".$dbPrefix.$dataObjectType;
-        $dynamicClassName = $this->findImplementation($dynamicClassName,$this->getConfig()->databaseSearchPaths);
-
-        return $dynamicClassName;
+        return "\\FlyFoundation\\Database\\".$dbPrefix.$dataObjectType;
     }
-
 }

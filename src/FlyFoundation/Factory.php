@@ -154,24 +154,24 @@ class Factory extends AbstractFactory{
     }
 
     /**
-     * @param string $modelName
+     * @param string $entityName
      * @param array $arguments
      * @return DataMapper
      */
-    public function loadDataMapper($modelName, $arguments = array())
+    public function loadDataMapper($entityName, $arguments = array())
     {
-        $fullClassName = "\\FlyFoundation\\Database\\".$modelName."DataMapper";
+        $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
         return $this->load($fullClassName, $arguments);
     }
 
     /**
-     * @param string $modelName
+     * @param string $entityName
      * @param array $arguments
      * @return DataFinder
      */
-    public function loadDataFinder($modelName, $arguments = array())
+    public function loadDataFinder($entityName, $arguments = array())
     {
-        $fullClassName = "\\FlyFoundation\\Database\\".$modelName."DataFinder";
+        $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataFinder";
         return $this->load($fullClassName, $arguments);
     }
 
@@ -183,6 +183,12 @@ class Factory extends AbstractFactory{
     public function loadDataQueryObject($dqoName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dqoName;
+        return $this->load($fullClassName, $arguments);
+    }
+
+    public function loadEntityDefinition($entityName, $arguments = array())
+    {
+        $fullClassName = "\\FlyFoundation\\SystemDefinitions\\".$entityName."Definition";
         return $this->load($fullClassName, $arguments);
     }
 }

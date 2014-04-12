@@ -15,7 +15,35 @@ class EntityDefinitionFactory extends AbstractFactory
      */
     public function load($className, $arguments = array())
     {
-        //TODO: Implement..
+        $className = $this->findImplementation($className,$this->getConfig()->entityDefinitionSearchPaths);
+        $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->entityDefinitionSearchPaths);
+
+        $entityDefinitionNaming = "/^(.*)Definintion$/";
+        $matches = [];
+        $hasEntityDefinitionNaming = preg_match($entityDefinitionNaming, $partialClassName, $matches);
+
+        if(!$hasEntityDefinitionNaming){
+            return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+        }
+
+        if(class_exists($className)){
+            return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+        }else{
+            $entityDeclarationFile = $this->findEntityDeclarationFile($matches[1]);
+            array_unshift($arguments,$entityDeclarationFile);
+            return $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\DynamicEntityDefinition",$arguments);
+        }
+    }
+
+    private function findEntityDeclarationFile($entityName)
+    {
+        foreach($this->getConfig()->entityDirectories->asArray() as $directory){
+            $filename = $directory."/".$entityName.".lsd";
+            if(file_exists($filename)){
+                return $filename;
+            }
+        }
+        return "NO_LSD_FILE_FOUND_BY_ENTITY_DEFINITION_FACTORY";
     }
 
 }

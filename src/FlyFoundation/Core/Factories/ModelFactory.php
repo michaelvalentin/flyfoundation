@@ -13,6 +13,15 @@ class ModelFactory extends AbstractFactory{
      */
     public function load($className, $arguments = array())
     {
-        // TODO: Implement load() method.
+        $className = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
+        $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->modelSearchPaths);
+
+        if(class_exists($className)){
+            return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+        }else{
+            $entityDefinition = $this->getFactory()->loadEntityDefnition($partialClassName);
+            array_unshift($arguments,$entityDefinition);
+            return $this->getFactory()->load("\\FlyFoundation\\Models\\OpenPersistentEntity",$arguments);
+        }
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace FlyFoundation\Core;
+namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Config;
