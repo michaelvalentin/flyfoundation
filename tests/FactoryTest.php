@@ -52,6 +52,16 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertSame("\\NewScope\\Testing\\DoesntExist",$result4);
     }
 
+    public function testPrefixActualClassName()
+    {
+        $name = "\\Test\\Demo\\Something";
+        $name2 = "\\MyClass";
+        $namePrefixed = $this->factory->prefixActualClassName($name, "Demo");
+        $namePrefixed2 = $this->factory->prefixActualClassName($name2, "SAM");
+        $this->assertSame("\\Test\\Demo\\DemoSomething",$namePrefixed);
+        $this->assertSame("\\SAMMyClass",$namePrefixed2);
+    }
+
     protected function setUp()
     {
         $this->factory = new \FlyFoundation\Factory(

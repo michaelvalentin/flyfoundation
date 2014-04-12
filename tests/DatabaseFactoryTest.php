@@ -20,12 +20,5 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
         parent::setUp();
     }
 
-    public function testPrefixActualClassName()
-    {
-        $name = "\\Test\\Demo\\Something";
-        $namePrefixed = $this->dbFactory->prefixActualClassName($name, "Demo");
-        $this->assertSame("\\Test\\Demo\\DemoSomething",$namePrefixed);
-    }
-
 }
  
