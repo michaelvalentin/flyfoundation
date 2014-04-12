@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Controllers;
+namespace FlyFoundation\Controllers;
 
 
 use FlyFoundation\Controllers\AbstractController;

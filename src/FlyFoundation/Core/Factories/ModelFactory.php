@@ -17,10 +17,6 @@ class ModelFactory extends AbstractFactory{
     {
         $className = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
 
-        //TODO: What happens if it's a model that doesn't use entity definintions?
-        //Suggestion: If no entity definintion is found, we load the class without... :-) Classes that expect this
-        //can throw a relevant error if this happens...
-
         $arguments = $this->prepareArguments($className,$arguments);
 
         if(class_exists($className)){

@@ -9,7 +9,7 @@ namespace FlyFoundation\Models;
 
 use FlyFoundation\Database\DataMapper;
 
-abstract class PersistentEntity implements Entity
+abstract class PersistentEntity implements Entity, Model
 {
     private $dataMapper;
     private $id;

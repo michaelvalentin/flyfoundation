@@ -49,4 +49,17 @@ class OpenPersistentEntity extends PersistentEntity
     {
         // TODO: Implement getId() method.
     }
+
+    /**
+     * @return array
+     */
+    public function asArray()
+    {
+        // TODO: Implement asArray() method.
+    }
+
+    public function fromArray(array $data)
+    {
+        // TODO: Implement fromArray() method.
+    }
 }
