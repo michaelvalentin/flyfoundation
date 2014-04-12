@@ -32,6 +32,10 @@ class MySqlDataMapperTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        $settings = json_decode(file_get_contents(__DIR__."/mysql-test-database.json"),true);
+        $pdo = new PDO("mysql:host=".$settings["host"].";dbname=".$settings["database"], $settings["user"], $settings["password"]);
+        $pdo->query("TRUNCATE TABLE `local_region_site`")->execute();
+
 
         $this->insertData = [
             ['location_name' => 'Loc 1', 'region_site' => 'Ins'],
@@ -81,12 +85,14 @@ class MySqlDataMapperTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveUpdateSuccess()
     {
+        $this->testSaveInsertSuccess();
         $returnedId = $this->dataMapper->save($this->updateData);
         $this->assertEquals($this->updateData['id'], $returnedId);
     }
 
     public function testLoadSuccess()
     {
+        $this->testSaveInsertSuccess();
         $expected = $this->insertData[0];
         $expected['id'] = $this->insertIds[0];
         $result = $this->dataMapper->load($this->insertIds[0]);
@@ -95,6 +101,7 @@ class MySqlDataMapperTest extends \PHPUnit_Framework_TestCase
 
     public function testDeleteSuccess()
     {
+        $this->testSaveInsertSuccess();
         $this->dataMapper->delete($this->insertIds[2]);
 
         $this->setExpectedException("FlyFoundation\Exceptions\InvalidArgumentException");
