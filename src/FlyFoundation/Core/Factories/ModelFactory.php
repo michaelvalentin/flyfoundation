@@ -17,9 +17,9 @@ class ModelFactory extends AbstractFactory{
     {
         $className = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
 
-        $arguments = $this->prepareArguments($className,$arguments);
 
         if(class_exists($className)){
+            $arguments = $this->prepareArguments($className,$arguments);
             $model = $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
         }else{
             $model = $this->getFactory()->load($this->defaultModel,$arguments);
@@ -43,8 +43,9 @@ class ModelFactory extends AbstractFactory{
         }
 
         $constructorFirstParameterClass = $constructorParameters[0]->getClass()->getName();
+        $takesEntityDefinitionAsFirstParameter = $constructorFirstParameterClass == "FlyFoundation\\SystemDefinitions\\EntityDefinition";
 
-        if($constructorFirstParameterClass == "FlyFoundation\\SystemDefinitions\\EntityDefinition"){
+        if($takesEntityDefinitionAsFirstParameter){
             $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->modelSearchPaths);
             $entityDefinition = $this->getFactory()->loadEntityDefinition($partialClassName);
             array_unshift($arguments,$entityDefinition);
