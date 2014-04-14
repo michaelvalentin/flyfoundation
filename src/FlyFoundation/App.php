@@ -38,13 +38,18 @@ class App {
     public function getResponse($query, Context $context = null)
     {
 
+        if($context == null){
+            $context = $this->getDefaultContext();
+        }
+
         $factory = $this->getFactory($context);
 
         /** @var Router $router */
         $router = $factory->load("\\FlyFoundation\\Core\\Router",[$context]);
 
         $controller = $router->getController($query);
-        $arguments = $router->getArguments($query);
+        //$arguments = $router->getArguments($query);
+        $arguments = array();
 
         return $controller->render($arguments);
     }

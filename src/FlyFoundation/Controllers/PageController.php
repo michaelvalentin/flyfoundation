@@ -1,10 +1,7 @@
 <?php
 
 
-namespace Controllers;
-
-
-use FlyFoundation\Controllers\AbstractController;
+namespace FlyFoundation\Controllers;
 
 class PageController extends AbstractController{
 

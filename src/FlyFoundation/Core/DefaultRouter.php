@@ -5,15 +5,18 @@ namespace FlyFoundation\Core;
 
 
 use FlyFoundation\Controllers\Controller;
+use FlyFoundation\Controllers\PageController;
 
 class DefaultRouter implements Router{
+
+    use Environment;
 
     /**
      * @param Context $context
      */
     public function __construct(Context $context)
     {
-        // TODO: Implement __construct() method.
+        $this->setContext($context);
     }
 
     /**
@@ -22,7 +25,7 @@ class DefaultRouter implements Router{
      */
     public function getController($query)
     {
-        // TODO: Implement getController() method.
+        return $this->getFactory()->load("\\FlyFoundation\\Controllers\\PageController");
     }
 
     /**

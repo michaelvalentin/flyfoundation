@@ -5,6 +5,7 @@ namespace FlyFoundation\Core;
 use FlyFoundation\Core\Response\ResponseHeaders;
 use FlyFoundation\Core\Response\ResponseMetaData;
 use FlyFoundation\Exceptions\InvalidOperationException;
+use FlyFoundation\Util\ArrayHelper;
 use FlyFoundation\Util\Set as Set;
 
 /**
@@ -218,15 +219,15 @@ class Response {
      */
     public function AsArray(){
         $res = $this->GetAllData();
-        $res["headers"] = Objectifier::Objectify($this->Headers->GetHeaders());
+        $res["headers"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->Headers->GetHeaders());
         $res["metadata"] = $this->MetaData->AsArray();
         $res["title"] = $this->Title;
         $res["doctype"] = $this->_doctype;
-        $res["javascript_pre"] = Objectifier::Objectify($this->_javascript_pre->AsArray());
-        $res["javascript"] = Objectifier::Objectify($this->_javascript->AsArray());
-        $res["stylesheets"] = Objectifier::Objectify($this->_stylesheets->AsArray());
+        $res["javascript_pre"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_javascript_pre->AsArray());
+        $res["javascript"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_javascript->AsArray());
+        $res["stylesheets"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_stylesheets->AsArray());
         $res["content"] = $this->_content;
-        $res["templates"] = Objectifier::Objectify($this->_templates);
+        $res["templates"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_templates);
         return $res;
     }
 
@@ -234,28 +235,6 @@ class Response {
 	 * Output all current contents and send the response
 	 */
 	public function output($ResponseType = ResponseType::Html){
-		if ($this->CompressOutput && !DEBUG) { //Never compress in debug mode
-			ob_start("ob_gzhandler");
-		} else {
-			ob_start();
-		}
-        if(DEBUG){
-            $debugwords = Config::Get("debugwords");
-            if(is_array($debugwords)){
-                echo '<ul>';
-                foreach(Config::Get("debugwords") as $l=>$v){
-                    echo '<li><a href="?d='.$v.'">'.$l.'</a></li>';
-                }
-                echo '</ul>';
-            }
-        }
-
-        if(DEBUG_CMD == "responsedata"){
-            echo '<pre>';
-            print_r($this->AsArray());
-            echo '</pre>';
-        }
-
         $method_name = "Output".$ResponseType;
         if(method_exists($this,$method_name)){
             $output = $this->$method_name();
@@ -266,8 +245,6 @@ class Response {
 
 		$this->Headers->Output();
 		echo $output;
-
-		ob_end_flush();
 	}
 
     /**
@@ -278,9 +255,7 @@ class Response {
      */
     private function OutputHtml(){
         //Import mustache
-        require_once BASEDIR . DS . "libraries" . DS . "Mustache" . DS . "Autoloader.php";
-        \Mustache_Autoloader::register();
-        $m = new \Mustache_Engine;
+        $m = new \Mustache_Engine();
 
         //Collect the output by looping over the templates from inside out
         $output = "";

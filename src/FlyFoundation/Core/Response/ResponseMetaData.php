@@ -1,8 +1,9 @@
 <?php
 namespace FlyFoundation\Core\Response;
 
-use Util\Objectifier;
-use \Util\Set;
+use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Util\ArrayHelper;
+use FlyFoundation\Util\Set;
 
 /**
  * Class ResponseMetaData
@@ -108,7 +109,7 @@ class ResponseMetaData {
 	public function SetRobots($robotsStatement){
 		$robotsStatement = strtoupper($robotsStatement);
 		if(!in_array($robotsStatement,$this->_allowedRobots)){
-			throw new \Exceptions\InvalidArgumentException('Robots statement "'.$robotsStatement.'" is not valid.');
+			throw new InvalidArgumentException('Robots statement "'.$robotsStatement.'" is not valid.');
 		}
 		$this->_meta["robots"] = $robotsStatement;
 	}
@@ -144,7 +145,7 @@ class ResponseMetaData {
 	}
 
     public function AsArray(){
-        $res = Objectifier::Objectify($this->_meta);
+        $res = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_meta);
         $keywords = $this->_keyWords->AsArray();
         if(count($keywords)) $res["keywords"] = implode(",",$keywords);
 
