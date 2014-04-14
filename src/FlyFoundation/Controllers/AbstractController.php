@@ -8,12 +8,12 @@ use FlyFoundation\Core\Response;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
-abstract class AbstractController {
+abstract class AbstractController implements Controller{
     private $model;
     private $view;
     private $response;
 
-    public function render()
+    public function render(array $arguments)
     {
         $view = $this->getView();
         $model = $this->getModel();

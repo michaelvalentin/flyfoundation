@@ -1,7 +1,7 @@
 <?php
 
 
-namespace FlyFoundation\Core;
+namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Config;
@@ -77,7 +77,7 @@ class ConfigurationFactory {
             return false;
         }
 
-        require $directory."/".$file;
+        require_once $directory."/".$file;
 
         $className = $matches[1];
         if(!class_exists($className)){

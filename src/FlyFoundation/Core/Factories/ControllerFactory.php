@@ -15,7 +15,6 @@ class ControllerFactory extends AbstractFactory
      */
     public function load($className, $arguments = array())
     {
-
         $className = $this->findImplementation($className,$this->getConfig()->controllerSearchPaths);
         $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->controllerSearchPaths);
 
@@ -27,10 +26,10 @@ class ControllerFactory extends AbstractFactory
             return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
         }
 
-        if(!class_exists($className)){
-            $controller = $this->getFactory()->load("\\FlyFoundation\\Controllers\\DynamicEntityController");
-        }else{
+        if(class_exists($className)){
             $controller = $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+        }else{
+            $controller = $this->getFactory()->load("\\FlyFoundation\\Controllers\\DynamicEntityController",$arguments);
         }
 
         if(($controller instanceof Controller)){

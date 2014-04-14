@@ -41,4 +41,24 @@ class OpenPersistentEntity extends PersistentEntity
         $this->columnValuePairs[$key] = $value;
     }
 
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        // TODO: Implement getId() method.
+    }
+
+    /**
+     * @return array
+     */
+    public function asArray()
+    {
+        // TODO: Implement asArray() method.
+    }
+
+    public function fromArray(array $data)
+    {
+        // TODO: Implement fromArray() method.
+    }
 }

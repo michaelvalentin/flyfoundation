@@ -1,7 +1,7 @@
 <?php
 
 
-class SecondSampleConfigurator implements \FlyFoundation\Configurator{
+class TestAppIncludePaths implements \FlyFoundation\Configurator{
 
     /**
      * @param \FlyFoundation\Config $config
@@ -9,7 +9,8 @@ class SecondSampleConfigurator implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->set("test2","This is a demo");
+        $config->baseSearchPaths->add("\\TestApp");
+        $config->modelSearchPaths->add("\\TestApp\\ExtraModelPath");
         return $config;
     }
 }

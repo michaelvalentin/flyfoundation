@@ -8,7 +8,7 @@ namespace FlyFoundation\Models;
 
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 
-abstract class PersistentEntity implements Entity
+abstract class PersistentEntity implements Entity, Model
 {
     protected  $columnValuePairs;
     protected $entityDefinition;

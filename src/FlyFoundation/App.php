@@ -2,7 +2,7 @@
 
 namespace FlyFoundation;
 
-use FlyFoundation\Core\ConfigurationFactory;
+use FlyFoundation\Core\Factories\ConfigurationFactory;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Util\DirectoryList;
@@ -37,13 +37,8 @@ class App {
      */
     public function getResponse($query, Context $context = null)
     {
-        $config = $this->getConfiguration();
 
-        if($context == null){
-            $context = $this->getDefaultContext();
-        }
-
-        $factory = new Factory($config, $context);
+        $factory = $this->getFactory($context);
 
         /** @var Router $router */
         $router = $factory->load("\\FlyFoundation\\Core\\Router",[$context]);
@@ -52,6 +47,18 @@ class App {
         $arguments = $router->getArguments($query);
 
         return $controller->render($arguments);
+    }
+
+    public function getFactory($context = null){
+        $config = $this->getConfiguration();
+
+        if($context == null){
+            $context = $this->getDefaultContext();
+        }
+
+        $factory = new Factory($config, $context);
+
+        return $factory;
     }
 
     public function getDefaultContext()
@@ -66,8 +73,8 @@ class App {
         return $this->configurationFactory->getConfiguration();
     }
 
-    public function addConfigurator($path)
+    public function addConfigurator($directory)
     {
-        $this->configurationFactory->addConfiguratorDirectory($path);
+        $this->configurationFactory->addConfiguratorDirectory($directory);
     }
 }

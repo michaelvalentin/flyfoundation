@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/test-init.php';
 
 use FlyFoundation\App;
 
@@ -16,7 +16,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
     public function testConfigurationsLoading()
     {
         $app = new App();
-        $app->addConfigurator(__DIR__."/sample_configurators");
+        $app->addConfigurator(__DIR__."/TestApp/configurators");
         $config = $app->getConfiguration();
 
         $test = $config->get("test");
@@ -25,6 +25,4 @@ class AppTest extends \PHPUnit_Framework_TestCase {
         $test2 = $config->get("test2");
         $this->assertSame("This is a demo",$test2);
     }
-
-
 }

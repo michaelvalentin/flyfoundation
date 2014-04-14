@@ -14,12 +14,22 @@ use FlyFoundation\Database\DataMethods;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
+use FlyFoundation\Util\ClassInspector;
+use FlyFoundation\Util\ValueList;
 use FlyFoundation\Views\View;
 
 class Factory extends AbstractFactory{
 
     public function __construct(Config $config, Context $context)
     {
+        foreach($config->baseSearchPaths->asArray() as $path){
+            $config->databaseSearchPaths->add($path."\\Database");
+            $config->controllerSearchPaths->add($path."\\Controllers");
+            $config->entityDefinitionSearchPaths->add($path."\\SystemDefinitions");
+            $config->viewSearchPaths->add($path."\\Views");
+            $config->modelSearchPaths->add($path."\\Models");
+        }
+
         $this->setConfig($config);
         $this->setContext($context);
     }
@@ -49,14 +59,18 @@ class Factory extends AbstractFactory{
 
     }
 
-
+    /**
+     * @param $className
+     * @return bool|AbstractFactory
+     */
     private function findSpecializedFactory($className)
     {
         $factorySearchPathsMap = [
             "ControllerFactory" => $this->getConfig()->controllerSearchPaths,
             "DatabaseFactory" => $this->getConfig()->databaseSearchPaths,
             "ModelFactory" => $this->getConfig()->modelSearchPaths,
-            "ViewFactory" => $this->getConfig()->viewSearchPaths
+            "ViewFactory" => $this->getConfig()->viewSearchPaths,
+            "EntityDefinitionFactory" => new ValueList(["\\FlyFoundation\\SystemDefinitions"])
         ];
 
         foreach($factorySearchPathsMap as $factory=>$paths)
@@ -87,8 +101,8 @@ class Factory extends AbstractFactory{
 
     private function setEnvironmentVariables($instance)
     {
-        $traits = class_uses($instance);
-        if(in_array("\\FlyFoundation\\Core\\Environment",$traits)){
+        $traits = ClassInspector::classUsesDeep($instance);
+        if(in_array("FlyFoundation\\Core\\Environment",$traits)){
             /** @var Environment $instance */
             $instance->setFactory($this);
             $instance->setConfig($this->getConfig());
@@ -152,24 +166,24 @@ class Factory extends AbstractFactory{
     }
 
     /**
-     * @param string $modelName
+     * @param string $entityName
      * @param array $arguments
      * @return DataMapper
      */
-    public function loadDataMapper($modelName, $arguments = array())
+    public function loadDataMapper($entityName, $arguments = array())
     {
-        $fullClassName = "\\FlyFoundation\\Database\\".$modelName."DataMapper";
+        $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
         return $this->load($fullClassName, $arguments);
     }
 
     /**
-     * @param string $modelName
+     * @param string $entityName
      * @param array $arguments
      * @return DataFinder
      */
-    public function loadDataFinder($modelName, $arguments = array())
+    public function loadDataFinder($entityName, $arguments = array())
     {
-        $fullClassName = "\\FlyFoundation\\Database\\".$modelName."DataFinder";
+        $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataFinder";
         return $this->load($fullClassName, $arguments);
     }
 
@@ -178,9 +192,15 @@ class Factory extends AbstractFactory{
      * @param array $arguments
      * @return DataMethods
      */
-    public function loadDataQueryObject($dqoName, $arguments = array())
+    public function loadDataMethods($dqoName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dqoName;
+        return $this->load($fullClassName, $arguments);
+    }
+
+    public function loadEntityDefinition($entityName, $arguments = array())
+    {
+        $fullClassName = "\\FlyFoundation\\SystemDefinitions\\".$entityName."Definition";
         return $this->load($fullClassName, $arguments);
     }
 }
