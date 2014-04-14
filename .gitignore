@@ -55,3 +55,4 @@ vendor
 
 # SystemSpecific
 experiments
+mysql-test-database.json
