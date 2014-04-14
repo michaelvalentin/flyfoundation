@@ -8,18 +8,39 @@ class ValueList implements Collection{
 
     private $data;
 
-    public function __construct(array $data = array()){
+    public function __construct(array $data = array())
+    {
         $this->data = array();
         foreach($data as $d){
             $this->add($d);
         }
     }
 
-    public function add($element){
+    public function add($element)
+    {
         $this->data[] = $element;
     }
 
-    public function clear(){
+    public function addAll(array $elements)
+    {
+        foreach($elements as $element)
+        {
+            $this->add($element);
+        }
+    }
+
+    public function remove($element)
+    {
+        foreach($this->data as $index => $entry)
+        {
+            if($element == $entry){
+                unset($this->data[$index]);
+            }
+        }
+    }
+
+    public function clear()
+    {
         $this->data = array();
     }
 

@@ -25,6 +25,13 @@ class Set implements Collection{
 	public function add($element){
 		$this->data[$element] = true;
 	}
+
+    public function addAll($elements){
+        foreach($elements as $element)
+        {
+            $this->add($element);
+        }
+    }
 	
 	/**
 	 * Remove an element from the set

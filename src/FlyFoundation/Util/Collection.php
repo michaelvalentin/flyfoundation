@@ -16,6 +16,14 @@ interface Collection {
     public function isEmpty();
 
     /**
+     * @param $element
+     * @return bool
+     */
+    public function contains($element);
+
+    public function clear();
+
+    /**
      * @return array
      */
     public function asArray();

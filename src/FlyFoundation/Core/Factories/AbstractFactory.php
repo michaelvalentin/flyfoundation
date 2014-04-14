@@ -19,7 +19,7 @@ abstract class AbstractFactory {
 
     public function getOverride($className){
         $config = $this->getConfig();
-        while($config->classOverrides->hasKey($className))
+        while($config->classOverrides->containsKey($className))
         {
             $className = $config->classOverrides->get($className);
         }

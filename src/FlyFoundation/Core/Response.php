@@ -4,11 +4,8 @@ namespace FlyFoundation\Core;
 
 use FlyFoundation\Core\Response\ResponseHeaders;
 use FlyFoundation\Core\Response\ResponseMetaData;
-
-use Exceptions\InvalidArgumentException;
-use Exceptions\InvalidOperationException;
-use Util\Objectifier;
-use Util\Set as Set;
+use FlyFoundation\Exceptions\InvalidOperationException;
+use FlyFoundation\Util\Set as Set;
 
 /**
  * Class Response
@@ -236,7 +233,7 @@ class Response {
 	/**
 	 * Output all current contents and send the response
 	 */
-	public function output($ResponseType = "Html"){
+	public function output($ResponseType = ResponseType::Html){
 		if ($this->CompressOutput && !DEBUG) { //Never compress in debug mode
 			ob_start("ob_gzhandler");
 		} else {
@@ -276,7 +273,7 @@ class Response {
     /**
      * Return html representation of the response
      *
-     * @throws \Exceptions\InvalidOperationException
+     * @throws \FlyFoundation\Exceptions\InvalidOperationException
      * @return string
      */
     private function OutputHtml(){

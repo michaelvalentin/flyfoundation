@@ -15,11 +15,11 @@ class Map implements Collection{
         $this->data = array();
     }
 
-    public function hasKey($key){
+    public function containsKey($key){
         return array_key_exists($key, $this->data);
     }
 
-    public function hasValue($value){
+    public function contains($value){
         return in_array($value,$this->data);
     }
 
@@ -34,13 +34,13 @@ class Map implements Collection{
     }
 
     public function remove($key){
-        if($this->hasKey($key)){
+        if($this->containsKey($key)){
             unset($this->data[$key]);
         }
     }
 
     public function get($key){
-        if(!$this->hasKey($key)){
+        if(!$this->containsKey($key)){
             return null;
         }
         return $this->data[$key];
@@ -57,4 +57,4 @@ class Map implements Collection{
     public function asArray(){
         return $this->data;
     }
-} 
+}
