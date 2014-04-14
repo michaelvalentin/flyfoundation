@@ -73,5 +73,10 @@ class Set implements Collection{
     {
         return count($this->data);
     }
+
+    public function clear()
+    {
+        // TODO: Implement clear() method.
+    }
 }
 ?>

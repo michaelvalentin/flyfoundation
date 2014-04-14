@@ -11,10 +11,10 @@ use FlyFoundation\SystemDefinitions\EntityDefinition;
 class OpenPersistentEntity extends PersistentEntity
 {
 
-    public function __construct(EntityDefinition $entityDefinition, array $columnValuePairs)
+    public function __construct(EntityDefinition $entityDefinition, array $data = array())
     {
         $this->entityDefinition = $entityDefinition;
-        $this->columnValuePairs = $columnValuePairs;
+        $this->columnValuePairs = $data;
     }
 
     public function getDefinition()
