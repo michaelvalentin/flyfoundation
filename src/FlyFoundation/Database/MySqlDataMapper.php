@@ -44,6 +44,7 @@ class MySqlDataMapper implements DataMapper
                 $config->get('database_user'),
                 $config->get('database_password')
             );
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->fpdo = new FluentPDO($pdo);
             return $this->fpdo;
         }
@@ -52,19 +53,19 @@ class MySqlDataMapper implements DataMapper
     /**
      * @param PersistentEntity $persistentEntity
      *
-     * @return void
+     * @return array
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      */
     public function save(PersistentEntity $persistentEntity)
     {
         $tableName = $this->entityDefinition->getTableName();
-        $isUpdate = $persistentEntity->getId() ? true : false;
+        $entityColumns = $persistentEntity->getPersistentData();
+        $primaryKey = $persistentEntity->getPrimaryKey();
 
-        if($isUpdate){
-            
-        } else {
+        $query = $this->getPdo()->insertInto($tableName, $entityColumns)->onDuplicateKeyUpdate($entityColumns);
+        $result = $query->execute();
 
-        }
+        return $primaryKey ? $primaryKey : ['id' => $result];
 
     }
 
@@ -103,10 +104,7 @@ class MySqlDataMapper implements DataMapper
 
         $data = $query->execute();
         if(!$data){
-            throw new InvalidArgumentException(
-                'Failed to delete data from ' . $tableName
-                . ', because the query failed.'
-            );
+            // TODO throw warning if data is already deleted
         }
     }
 
@@ -126,7 +124,7 @@ class MySqlDataMapper implements DataMapper
 
         } elseif(is_array($primaryKey)){
 
-            $definedPrimaryKey = $this->entityDefinition->getPrimaryKey();
+            $definedPrimaryKey = $this->entityDefinition->getPrimaryColumnTypePairs();
             $diff = array_diff_key($definedPrimaryKey, $primaryKey);
             if(!empty($diff)){
                 throw new InvalidArgumentException(
@@ -147,7 +145,7 @@ class MySqlDataMapper implements DataMapper
         if(empty($data)){
             throw new InvalidArgumentException(
                 'Failed to load data from ' . $tableName
-                . ', because the query failed.'
+                . ', because the query did not find any data matching $primaryKey.'
             );
         }
 

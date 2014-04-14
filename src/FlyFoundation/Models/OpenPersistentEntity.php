@@ -10,12 +10,11 @@ use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class OpenPersistentEntity extends PersistentEntity
 {
-    private $entityDefinition;
-    private $data;
 
-    public function __construct(EntityDefinition $entityDefinition)
+    public function __construct(EntityDefinition $entityDefinition, array $data = array())
     {
         $this->entityDefinition = $entityDefinition;
+        $this->columnValuePairs = $data;
     }
 
     public function getDefinition()
@@ -30,7 +29,7 @@ class OpenPersistentEntity extends PersistentEntity
      */
     public function get($key)
     {
-        return $this->data[$key];
+        return $this->columnValuePairs[$key];
     }
 
     /**
@@ -39,7 +38,7 @@ class OpenPersistentEntity extends PersistentEntity
      */
     public function set($key, $value)
     {
-        $this->data[$key] = $value;
+        $this->columnValuePairs[$key] = $value;
     }
 
     /**

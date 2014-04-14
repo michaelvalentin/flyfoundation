@@ -86,4 +86,21 @@ class DynamicEntityDefinition extends AbstractEntityDefinition{
     {
         // TODO: Implement getPrimaryKey() method.
     }
-}
+
+    /**
+     * @return array
+     */
+    public function getPrimaryColumns()
+    {
+        // TODO: Implement getPrimaryColumns() method.
+    }
+
+    /**
+     * @param array $columnValuePairs
+     *
+     * @return bool
+     */
+    public function matchPrimaryKey(array $columnValuePairs)
+    {
+        // TODO: Implement matchPrimaryKey() method.
+}}

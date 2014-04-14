@@ -13,7 +13,7 @@ interface DataMapper {
     /**
      * @param PersistentEntity $persistentEntity
      *
-     * @return void
+     * @return integer | array
      */
     public function save(PersistentEntity $persistentEntity);
 

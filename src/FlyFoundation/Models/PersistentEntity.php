@@ -6,32 +6,51 @@
 
 namespace FlyFoundation\Models;
 
-
-use FlyFoundation\Database\DataMapper;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 abstract class PersistentEntity implements Entity, Model
 {
-    private $dataMapper;
-    private $id;
+    protected  $columnValuePairs;
+    protected $entityDefinition;
 
-    /**
-     * @return DataMapper
-     */
-    public function getDataMapper()
+    public function __construct(EntityDefinition $entityDefinition, array $data = array())
     {
-        return $this->dataMapper;
+        $this->entityDefinition = $entityDefinition;
+        $this->columnValuePairs = $columnValuePairs;
     }
 
-    /**
-     * @param DataMapper $dataMapper
-     */
-    public function setDataMapper(DataMapper $dataMapper)
+    public function getDefinition()
     {
-        $this->dataMapper = $dataMapper;
+        return $this->entityDefinition;
     }
 
-    /**
-     * @return integer
-     */
-    abstract public function getId();
+    public function getPersistentData()
+    {
+        $persistentData = [];
+        $data = $this->columnValuePairs;
+
+        foreach($this->entityDefinition->getFields() as $field){
+            $columnName = $field->getColumnName();
+            if(isset($data[$columnName])){
+                $persistentData[$columnName] = $data[$columnName];
+            }
+        }
+        return $persistentData;
+    }
+
+    public function getPrimaryKey()
+    {
+        $primaryKey = [];
+        $primaryColumns = $this->entityDefinition->getPrimaryColumns();
+
+        foreach($this->columnValuePairs as $column => $value){
+            if(in_array($column, $primaryColumns)){
+                $primaryKey[$column] = $value;
+            }
+        }
+
+        if(count($primaryKey) === count($primaryColumns)) return $primaryKey;
+        return false;
+    }
+
 }

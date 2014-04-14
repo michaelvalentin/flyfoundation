@@ -71,5 +71,11 @@ interface EntityDefinition
     /**
      * @return array
      */
-    public function getPrimaryKey();
+    public function getPrimaryColumns();
+
+    /**
+     * @param array $columnValuePairs
+     * @return bool
+     */
+    public function matchPrimaryKey(array $columnValuePairs);
 } 

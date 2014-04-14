@@ -101,7 +101,7 @@ class EmptyEntityDefinition extends AbstractEntityDefinition {
     /**
      * @return array
      */
-    public function getPrimaryKey()
+    public function getPrimaryColumnTypePairs()
     {
         $primaryKey = [];
         foreach($this->fields as $field){
@@ -110,5 +110,67 @@ class EmptyEntityDefinition extends AbstractEntityDefinition {
             }
         }
         return $primaryKey;
+    }
+
+    public function matchPrimaryKey(array $columnValuePairs)
+    {
+        $primaryKey = $this->getPrimaryColumnTypePairs();
+        foreach($primaryKey as $primaryColumn => $primaryType){
+            $foundKey = false;
+            foreach($columnValuePairs as $column => $value){
+                if($column === $primaryColumn && gettype($value) === $primaryType){
+                    $foundKey = true;
+                    break;
+                }
+            }
+            if(!$foundKey) return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getColumnTypePairs()
+    {
+        $fields = [];
+        foreach($this->fields as $field){
+            $fields[$field->getColumnName()] = $field->getType();
+        }
+        return $fields;
+    }
+
+    /**
+     * @param array $columnValuePairs
+     * @return bool
+     */
+    public function matchColumns(array $columnValuePairs)
+    {
+        $definedColumns = $this->getColumnTypePairs();
+        foreach($definedColumns as $definedColumn => $definedType){
+            $foundColumn = false;
+            foreach($columnValuePairs as $column => $value){
+                if($column === $definedColumn && gettype($value) === $definedType){
+                    $foundColumn = true;
+                    break;
+                }
+            }
+            if(!$foundColumn) return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPrimaryColumns()
+    {
+        $primaryColumns = [];
+        foreach($this->getFields() as $field){
+            if($field->isPrimaryKey()){
+                $primaryColumns[] = $field->getColumnName();
+            }
+        }
+        return $primaryColumns;
     }
 }
