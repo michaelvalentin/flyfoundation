@@ -16,9 +16,6 @@ class DefaultClassPaths implements FlyFoundation\Configurator{
         $config->entityDefinitionSearchPaths->add("\\FlyFoundation\\SystemDefinitions");
         $config->viewSearchPaths->add("\\FlyFoundation\\Views");
 
-        $config->entityDirectories->add(__DIR__."/../entity_definitions");
-        $config->templateDirectories->add(__DIR__."/../templates");
-
         return $config;
     }
 }

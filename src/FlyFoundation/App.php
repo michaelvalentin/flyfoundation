@@ -48,7 +48,7 @@ class App {
         $router = $factory->load("\\FlyFoundation\\Core\\Router",[$context]);
 
         $controller = $router->getController($query);
-        //$arguments = $router->getArguments($query);
+        $arguments = $router->getArguments($query);
         $arguments = array();
 
         return $controller->render($arguments);
@@ -78,7 +78,7 @@ class App {
         return $this->configurationFactory->getConfiguration();
     }
 
-    public function addConfigurator($directory)
+    public function addConfigurators($directory)
     {
         $this->configurationFactory->addConfiguratorDirectory($directory);
     }

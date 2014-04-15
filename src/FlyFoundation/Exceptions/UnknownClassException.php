@@ -4,6 +4,6 @@
 namespace FlyFoundation\Exceptions;
 
 
-class UnknownClassException extends \Exception{
+class UnknownClassException extends FlyFoundationException{
 
 } 

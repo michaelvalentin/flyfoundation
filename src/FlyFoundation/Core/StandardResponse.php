@@ -2,8 +2,10 @@
 
 namespace FlyFoundation\Core;
 
+use Aws\Common\Exception\InvalidArgumentException;
 use FlyFoundation\Core\Response\ResponseHeaders;
 use FlyFoundation\Core\Response\ResponseMetaData;
+use FlyFoundation\Core\Response\ResponseOutputType;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Util\ArrayHelper;
 use FlyFoundation\Util\Set;
@@ -16,8 +18,12 @@ use FlyFoundation\Util\Set;
  * @package Core
  */
 class StandardResponse implements Response{
+
+    use Environment;
+
 	public $headers;
 	public $metaData;
+    private $outputType;
 	private $title;
 	private $javaScriptAfterBody;
     private $javaScriptBeforeBody;
@@ -41,12 +47,75 @@ class StandardResponse implements Response{
         $this->templates = array();
 
         //Defaults
+        $this->setOutputType(ResponseOutputType::Html);
 		$this->htmlDocType = '<!doctype html>';
         $this->setContentType();
         $this->headers->SetHeader("Expires","-1"); //Don't cache this browser-side...
         $this->headers->SetHeader("Cache-Control","private, max-age=0"); //Don't cache this browser-side..
 	}
-	
+
+    public function output()
+    {
+
+        $supportedOutputs = [
+            "Html"
+        ];
+
+        if(!in_array($this->outputType,$supportedOutputs)){
+            throw new InvalidArgumentException("Output type '".$this->outputType."' is not currently supported");
+        }
+
+        $method = "compose".$this->outputType;
+
+        $this->headers->Output();
+        echo $this->$method();
+
+    }
+
+    /**
+     * Get the response data as an array
+     *
+     * @return array
+     */
+    public function asArray(){
+        $res = $this->getData();
+        $res["headers"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->headers->GetHeaders());
+        $res["metadata"] = $this->metaData->AsArray();
+        $res["title"] = $this->title;
+        $res["doc_type"] = $this->htmlDocType;
+        $res["javascript_pre"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->javaScriptBeforeBody->AsArray());
+        $res["javascript"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->javaScriptAfterBody->AsArray());
+        $res["stylesheets"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->stylesheets->AsArray());
+        $res["content"] = $this->content;
+        $res["templates"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->templates);
+        return $res;
+    }
+
+    public function composeHtml()
+    {
+        $m = new \Mustache_Engine();
+
+        $contentLayers = $this->templates;
+        array_unshift($contentLayers, $this->content);
+
+        foreach($contentLayers as $c){
+            $output = $m->render($c,$this->asArray());
+            $this->content = $output;
+        }
+
+        return $output;
+    }
+
+    public function setOutputType($outputType)
+    {
+        $this->outputType = $outputType;
+    }
+
+    public function getOutputType()
+    {
+        return $this->outputType;
+    }
+
 	/**
 	 * Set the content type in both headers and metadata
 	 * 
@@ -58,224 +127,114 @@ class StandardResponse implements Response{
 		$this->metaData->Set("content-type",$type."; charset=".strtoupper($charset));
 	}
 
-	/**
-	 * Add this script to the response
-	 * 
-	 * @param string $path
-     * @param boolean $frontload
-	 */
-	public function addJs($path, $frontload=false) {
-        if($frontload){
-            $this->javaScriptBeforeBody->add($path);
-            return;
-        }
-		$this->javaScriptAfterBody->add($path);
+	public function addJavaScriptBeforeBody($path)
+    {
+        $this->javaScriptAfterBody->remove($path);
+        $this->javaScriptBeforeBody->add($path);
 	}
-	
-	/**
-	 * Remove this script from the response
-	 * 
-	 * @param string $path
-	 */
-	public function removeJs($path) {
+
+    public function getJavaScriptBeforeBody()
+    {
+        return $this->javaScriptBeforeBody->asArray();
+    }
+
+    public function addJavaScriptAfterBody($path)
+    {
+        if(!$this->javaScriptBeforeBody->contains($path)){
+            $this->javaScriptAfterBody->add($path);
+        }
+    }
+
+    public function getJavaScriptAfterBody()
+    {
+        return $this->javaScriptAfterBody->asArray();
+    }
+
+    public function getAllJavaScript()
+    {
+        return array_unique(arrray_merge($this->javaScriptAfterBody->asArray(),$this->javaScriptBeforeBody));
+    }
+
+	public function removeJavaScript($path)
+    {
 		$this->javaScriptAfterBody->remove($path);
         $this->javaScriptBeforeBody->remove($path);
 	}
 
-	/**
-	 * Add this stylesheet to the response
-	 * 
-	 * @param string $css
-	 */
-	public function addCss($css) {
-		$this->stylesheets->add($css);
+    public function addStylesheet($path)
+    {
+		$this->stylesheets->add($path);
 	}
 
-    /**
-     * Remove this stylesheet from the response
-     *
-     * @param $css
-     */
-	public function removeCss($css){
-		$this->stylesheets->Remove($css);
-	}
-
-    /**
-     * Get an array of all javascript files used
-     *
-     * @return array
-     */
-    public function getJs() {
-		return array_merge($this->javaScriptAfterBody->AsArray(),$this->javaScriptBeforeBody->AsArray());
-	}
-
-    /**
-     * Get an array of css files used
-     *
-     * @return array
-     */
-    public function getCss() {
-		return $this->stylesheets->AsArray();
-	}
-
-    /**
-     * Get the doctype declaration for this response
-     *
-     * @return string
-     */
-    public function getHtmlDocType(){
-		return $this->htmlDocType;
-	}
-
-    /**
-     * Set the doctype declaration for this response
-     *
-     * @param $doctype
-     */
-    public function setHtmlDocType($doctype){
-		$this->htmlDocType = $doctype;
-	}
-
-    /**
-     * Get the current content of this response
-     *
-     * @return mixed
-     */
-    public function getContent(){
-        return $this->content;
+    public function getStylesheets()
+    {
+        return $this->stylesheets->asArray();
     }
 
-    /**
-     * Set the content of this response
-     *
-     * @param $content
-     */
-    public function setContent($content){
-        $this->content = $content;
+    public function removeStylesheet($path)
+    {
+        $this->stylesheets->remove($path);
     }
 
-    /**
-     * Set a given field in the data to a given value, based on it's key
-     *
-     * @param $key
-     * @param $value
-     */
-    public function setData($key, $value){
+    public function setDataValue($key, $value)
+    {
         $this->data[$key] = $value;
     }
 
-    /**
-     * Add this data, overriding existing values if they exist
-     *
-     * @param $array
-     */
-    public function addData($array){
-        $this->data = array_merge($this->data,$array);
+    public function setData(array $data)
+    {
+        $this->data = array_merge($this->data, $data);
     }
 
-    /**
-     * Get a given field in the data based on it's key
-     *
-     * @param $key
-     * @return mixed
-     */
-    public function getData($key){
+    public function getDataValue($key)
+    {
+        if(!isset($this->data[$key])){
+            return null;
+        }
         return $this->data[$key];
     }
 
-    /**
-     * Get all data as an array
-     *
-     * @return array
-     */
-    public function getAllData(){
+    public function getData()
+    {
         return $this->data;
     }
 
-    /**
-     * Wrap the content in this template
-     *
-     * @param $template_content
-     */
-    public function wrapInTemplate($template_content){
-        $this->templates[] = $template_content;
+    public function setContent($content)
+    {
+        $this->content = $content;
     }
 
-    /**
-     * Get an array of all templates, with the innermost template first and outermost last
-     *
-     * @return array
-     */
-    public function getTemplates(){
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    public function wrapInTemplate($templateContents)
+    {
+        $this->templates[] = $templateContents;
+    }
+
+    public function wrapInTemplateFile($templateName)
+    {
+        $fileLoader = $this->getFactory()->load("\\FlyFoundation\\Core\\FileLoader");
+        $template_file = $fileLoader->findTemplate($templateName);
+        if(!file_exists($template_file)){
+            throw new InvalidOperationException('The template "'.$template_file.'" does not exist!');
+        }
+        $this->templates[] = file_get_contents($template_file);
+    }
+
+    public function getAllTemplatesInnermostFirst(){
         return $this->templates;
     }
 
-    /**
-     * Get the response data as an array
-     *
-     * @return array
-     */
-    public function asArray(){
-        $res = $this->getAllData();
-        $res["headers"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->headers->GetHeaders());
-        $res["metadata"] = $this->metaData->AsArray();
-        $res["title"] = $this->title;
-        $res["doctype"] = $this->htmlDocType;
-        $res["javascript_pre"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->javaScriptBeforeBody->AsArray());
-        $res["javascript"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->javaScriptAfterBody->AsArray());
-        $res["stylesheets"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->stylesheets->AsArray());
-        $res["content"] = $this->content;
-        $res["templates"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->templates);
-        return $res;
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
-    /**
-     * Return html representation of the response
-     *
-     * @throws \FlyFoundation\Exceptions\InvalidOperationException
-     * @return string
-     */
-    public function outputHtml(){
-        $this->headers->Output();
-
-        //Import mustache
-        $m = new \Mustache_Engine();
-
-        //Collect the output by looping over the templates from inside out
-        $output = "";
-        $content = array();
-        $content[] = $this->content;
-        foreach($this->templates as $t){
-            $template_file = BASEDIR.DS."..".DS."templates".DS.strtolower($t).".phtml";
-            if(!file_exists($template_file)){
-                throw new InvalidOperationException('The template "'.$template_file.'" does not exist!');
-            }
-            $content[] = file_get_contents($template_file);
-        }
-        foreach($content as $c){
-            $output = $m->render($c,$this->asArray());
-            $this->content = $output;
-        }
-
-        //Return the final output
-        return $output;
-    }
-
-    /**
-     * Return data only from response as a JSON object (string)
-     *
-     * @return string
-     */
-    private function outputJsonData(){
-        return json_encode($this->getAllData());
-    }
-
-    /**
-     * Return all response data as a JSON object (string)
-     *
-     * @return string
-     */
-    private function outputJsonAll(){
-        return json_encode($this->asArray());
+    public function getTitle($title)
+    {
+        return $this->title;
     }
 }

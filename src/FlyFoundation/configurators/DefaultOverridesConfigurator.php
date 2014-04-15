@@ -9,7 +9,11 @@ class DefaultOverridesConfigurator implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->classOverrides->put("\\FlyFoundation\\Core\\Router","\\FlyFoundation\\Core\\DefaultRouter");
+        $config->classOverrides->putAll([
+            "\\FlyFoundation\\Core\\Router"=>"\\FlyFoundation\\Core\\StandardRouter",
+            "\\FlyFoundation\\Core\\Response"=>"\\FlyFoundation\\Core\\StandardResponse",
+            "\\FlyFoundation\\Core\\FileLoader"=>"\\FlyFoundation\\Core\\StandardFileLoader"
+        ]);
         return $config;
     }
 }
