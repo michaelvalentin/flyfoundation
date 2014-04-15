@@ -5,7 +5,7 @@ namespace FlyFoundation\Controllers;
 
 
 use FlyFoundation\Core\Environment;
-use FlyFoundation\Core\Response;
+use FlyFoundation\Core\StandardResponse;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
@@ -49,7 +49,7 @@ abstract class AbstractController implements Controller{
         return $this->view;
     }
 
-    public function setBaseResponse(Response $response)
+    public function setBaseResponse(StandardResponse $response)
     {
         $this->response = $response;
     }
