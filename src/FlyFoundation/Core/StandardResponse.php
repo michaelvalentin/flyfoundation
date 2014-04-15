@@ -123,7 +123,7 @@ class StandardResponse implements Response{
 	 * @param string $charset (The charset eg. utf-8)
 	 */
 	public function setContentType($type="text/html",$charset="utf-8"){
-		$this->headers->SetHeader("Content-Type",$type."; ".$charset);
+		$this->headers->SetHeader("Content-Type",$type."; charset=".$charset);
 		$this->metaData->Set("content-type",$type."; charset=".strtoupper($charset));
 	}
 

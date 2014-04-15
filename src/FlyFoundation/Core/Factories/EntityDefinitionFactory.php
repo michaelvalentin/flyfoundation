@@ -37,7 +37,7 @@ class EntityDefinitionFactory extends AbstractFactory
 
     private function findEntityDeclarationFile($entityName)
     {
-        foreach($this->getConfig()->entityDefinintionDirectories->asArray() as $directory){
+        foreach($this->getConfig()->entityDefinitionDirectories->asArray() as $directory){
             $filename = $directory."/".$entityName.".lsd";
             if(file_exists($filename)){
                 return $filename;

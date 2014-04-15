@@ -21,9 +21,9 @@ abstract class AbstractController implements Controller{
     {
         $view = $this->getView();
         $model = $this->getModel();
-        $response = $this->getResponse();
+        $response = $this->getBaseResponse();
         $view->setData($model->asArray());
-        $response->AddData($view->output());
+        $response->setData($view->output());
         return $response;
     }
 
@@ -54,7 +54,7 @@ abstract class AbstractController implements Controller{
         $this->response = $response;
     }
 
-    private function getResponse()
+    public function getBaseResponse()
     {
         if($this->response == null){
             $this->response = $this->getFactory()->load("\\FlyFoundation\\Core\\Response");
