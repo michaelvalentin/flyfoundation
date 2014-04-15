@@ -16,17 +16,15 @@ use FlyFoundation\Util\Set;
  * @package Core
  */
 class StandardResponse implements Response{
-	public $Headers;
-	public $MetaData;
-	public $Title;
-	public $CompressOutput = true;
-	private $_doctype;
-	private $_javascript;
-    private $_javascript_pre;
-	private $_stylesheets;
-    private $_data;
-    private $_content;
-    private $_templates;
+	public $headers;
+	public $metaData;
+	private $title;
+	private $javaScriptAfterBody;
+    private $javaScriptBeforeBody;
+	private $stylesheets;
+    private $data;
+    private $content;
+    private $templates;
 
 	
 	/**
@@ -34,19 +32,19 @@ class StandardResponse implements Response{
 	 */
 	public function __construct(){
 		//Initialize
-        $this->Headers = new ResponseHeaders();
-		$this->MetaData = new ResponseMetaData();
-		$this->_javascript = new Set();
-        $this->_javascript_pre = new Set();
-		$this->_stylesheets = new Set();
-        $this->_data = array();
-        $this->_templates = array();
+        $this->headers = new ResponseHeaders();
+		$this->metaData = new ResponseMetaData();
+		$this->javaScriptAfterBody = new Set();
+        $this->javaScriptBeforeBody = new Set();
+		$this->stylesheets = new Set();
+        $this->data = array();
+        $this->templates = array();
 
         //Defaults
-		$this->_doctype = '<!doctype html>';
+		$this->htmlDocType = '<!doctype html>';
         $this->setContentType();
-        $this->Headers->SetHeader("Expires","-1"); //Don't cache this browser-side...
-        $this->Headers->SetHeader("Cache-Control","private, max-age=0"); //Don't cache this browser-side..
+        $this->headers->SetHeader("Expires","-1"); //Don't cache this browser-side...
+        $this->headers->SetHeader("Cache-Control","private, max-age=0"); //Don't cache this browser-side..
 	}
 	
 	/**
@@ -56,8 +54,8 @@ class StandardResponse implements Response{
 	 * @param string $charset (The charset eg. utf-8)
 	 */
 	public function setContentType($type="text/html",$charset="utf-8"){
-		$this->Headers->SetHeader("Content-Type",$type."; ".$charset);
-		$this->MetaData->Set("content-type",$type."; charset=".strtoupper($charset));
+		$this->headers->SetHeader("Content-Type",$type."; ".$charset);
+		$this->metaData->Set("content-type",$type."; charset=".strtoupper($charset));
 	}
 
 	/**
@@ -68,10 +66,10 @@ class StandardResponse implements Response{
 	 */
 	public function addJs($path, $frontload=false) {
         if($frontload){
-            $this->_javascript_pre->add($path);
+            $this->javaScriptBeforeBody->add($path);
             return;
         }
-		$this->_javascript->add($path);
+		$this->javaScriptAfterBody->add($path);
 	}
 	
 	/**
@@ -80,8 +78,8 @@ class StandardResponse implements Response{
 	 * @param string $path
 	 */
 	public function removeJs($path) {
-		$this->_javascript->remove($path);
-        $this->_javascript_pre->remove($path);
+		$this->javaScriptAfterBody->remove($path);
+        $this->javaScriptBeforeBody->remove($path);
 	}
 
 	/**
@@ -90,7 +88,7 @@ class StandardResponse implements Response{
 	 * @param string $css
 	 */
 	public function addCss($css) {
-		$this->_stylesheets->add($css);
+		$this->stylesheets->add($css);
 	}
 
     /**
@@ -99,7 +97,7 @@ class StandardResponse implements Response{
      * @param $css
      */
 	public function removeCss($css){
-		$this->_stylesheets->Remove($css);
+		$this->stylesheets->Remove($css);
 	}
 
     /**
@@ -108,7 +106,7 @@ class StandardResponse implements Response{
      * @return array
      */
     public function getJs() {
-		return array_merge($this->_javascript->AsArray(),$this->_javascript_pre->AsArray());
+		return array_merge($this->javaScriptAfterBody->AsArray(),$this->javaScriptBeforeBody->AsArray());
 	}
 
     /**
@@ -117,7 +115,7 @@ class StandardResponse implements Response{
      * @return array
      */
     public function getCss() {
-		return $this->_stylesheets->AsArray();
+		return $this->stylesheets->AsArray();
 	}
 
     /**
@@ -125,8 +123,8 @@ class StandardResponse implements Response{
      *
      * @return string
      */
-    public function getDoctype(){
-		return $this->_doctype;
+    public function getHtmlDocType(){
+		return $this->htmlDocType;
 	}
 
     /**
@@ -134,8 +132,8 @@ class StandardResponse implements Response{
      *
      * @param $doctype
      */
-    public function setDoctype($doctype){
-		$this->_doctype = $doctype;
+    public function setHtmlDocType($doctype){
+		$this->htmlDocType = $doctype;
 	}
 
     /**
@@ -144,7 +142,7 @@ class StandardResponse implements Response{
      * @return mixed
      */
     public function getContent(){
-        return $this->_content;
+        return $this->content;
     }
 
     /**
@@ -153,7 +151,7 @@ class StandardResponse implements Response{
      * @param $content
      */
     public function setContent($content){
-        $this->_content = $content;
+        $this->content = $content;
     }
 
     /**
@@ -163,7 +161,7 @@ class StandardResponse implements Response{
      * @param $value
      */
     public function setData($key, $value){
-        $this->_data[$key] = $value;
+        $this->data[$key] = $value;
     }
 
     /**
@@ -172,7 +170,7 @@ class StandardResponse implements Response{
      * @param $array
      */
     public function addData($array){
-        $this->_data = array_merge($this->_data,$array);
+        $this->data = array_merge($this->data,$array);
     }
 
     /**
@@ -182,7 +180,7 @@ class StandardResponse implements Response{
      * @return mixed
      */
     public function getData($key){
-        return $this->_data[$key];
+        return $this->data[$key];
     }
 
     /**
@@ -191,7 +189,7 @@ class StandardResponse implements Response{
      * @return array
      */
     public function getAllData(){
-        return $this->_data;
+        return $this->data;
     }
 
     /**
@@ -200,7 +198,7 @@ class StandardResponse implements Response{
      * @param $template_content
      */
     public function wrapInTemplate($template_content){
-        $this->_templates[] = $template_content;
+        $this->templates[] = $template_content;
     }
 
     /**
@@ -209,7 +207,7 @@ class StandardResponse implements Response{
      * @return array
      */
     public function getTemplates(){
-        return $this->_templates;
+        return $this->templates;
     }
 
     /**
@@ -219,33 +217,17 @@ class StandardResponse implements Response{
      */
     public function asArray(){
         $res = $this->getAllData();
-        $res["headers"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->Headers->GetHeaders());
-        $res["metadata"] = $this->MetaData->AsArray();
-        $res["title"] = $this->Title;
-        $res["doctype"] = $this->_doctype;
-        $res["javascript_pre"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_javascript_pre->AsArray());
-        $res["javascript"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_javascript->AsArray());
-        $res["stylesheets"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_stylesheets->AsArray());
-        $res["content"] = $this->_content;
-        $res["templates"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->_templates);
+        $res["headers"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->headers->GetHeaders());
+        $res["metadata"] = $this->metaData->AsArray();
+        $res["title"] = $this->title;
+        $res["doctype"] = $this->htmlDocType;
+        $res["javascript_pre"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->javaScriptBeforeBody->AsArray());
+        $res["javascript"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->javaScriptAfterBody->AsArray());
+        $res["stylesheets"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->stylesheets->AsArray());
+        $res["content"] = $this->content;
+        $res["templates"] = ArrayHelper::AssociativeArrayToObjectStyleArray($this->templates);
         return $res;
     }
-
-	/**
-	 * Output all current contents and send the response
-	 */
-	public function output($ResponseType = ResponseType::Html){
-        $method_name = "output".$ResponseType;
-        if(method_exists($this,$method_name)){
-            $output = $this->$method_name();
-        }else{
-            throw new InvalidArgumentException('"'.$ResponseType.'" is not a known response type.
-            Use fx: FlyFoundation\\Core\\ResponseType::Html');
-        }
-
-		$this->Headers->Output();
-		echo $output;
-	}
 
     /**
      * Return html representation of the response
@@ -253,15 +235,17 @@ class StandardResponse implements Response{
      * @throws \FlyFoundation\Exceptions\InvalidOperationException
      * @return string
      */
-    private function outputHtml(){
+    public function outputHtml(){
+        $this->headers->Output();
+
         //Import mustache
         $m = new \Mustache_Engine();
 
         //Collect the output by looping over the templates from inside out
         $output = "";
         $content = array();
-        $content[] = $this->_content;
-        foreach($this->_templates as $t){
+        $content[] = $this->content;
+        foreach($this->templates as $t){
             $template_file = BASEDIR.DS."..".DS."templates".DS.strtolower($t).".phtml";
             if(!file_exists($template_file)){
                 throw new InvalidOperationException('The template "'.$template_file.'" does not exist!');
@@ -270,7 +254,7 @@ class StandardResponse implements Response{
         }
         foreach($content as $c){
             $output = $m->render($c,$this->asArray());
-            $this->_content = $output;
+            $this->content = $output;
         }
 
         //Return the final output
@@ -294,17 +278,4 @@ class StandardResponse implements Response{
     private function outputJsonAll(){
         return json_encode($this->asArray());
     }
-}
-
-/**
- * Class ResponseType
- *
- * Types of response to be used with response output (Enumerable equivalent)
- *
- * @package Core
- */
-class ResponseType {
-    const Html = "Html";
-    const JsonData = "JsonData";
-    const JsonAll = "JsonAll";
 }
