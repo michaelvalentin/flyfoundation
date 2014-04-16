@@ -16,7 +16,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
     public function testConfigurationsLoading()
     {
         $app = new App();
-        $app->addConfigurator(__DIR__."/TestApp/configurators");
+        $app->addConfigurators(__DIR__."/TestApp/configurators");
         $config = $app->getConfiguration();
 
         $test = $config->get("test");

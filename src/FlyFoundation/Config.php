@@ -47,7 +47,10 @@ class Config {
     public $templateDirectories;
 
     /** @var \FlyFoundation\Util\DirectoryList  */
-    public $entityDirectories;
+    public $entityDefinitionDirectories;
+
+    /** @var \FlyFoundation\Util\DirectoryList  */
+    public $baseFileDirectories;
 
     public function __construct(){
         $this->data = array();
@@ -60,7 +63,8 @@ class Config {
         $this->databaseSearchPaths = new ValueList();
         $this->entityDefinitionSearchPaths = new ValueList();
         $this->templateDirectories = new DirectoryList();
-        $this->entityDirectories = New DirectoryList();
+        $this->entityDefinitionDirectories = New DirectoryList();
+        $this->baseFileDirectories = new DirectoryList();
     }
 
     public function set($key,$value)

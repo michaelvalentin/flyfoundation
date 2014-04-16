@@ -5,7 +5,7 @@ namespace FlyFoundation\Controllers;
 
 
 use FlyFoundation\Core\Environment;
-use FlyFoundation\Core\Response;
+use FlyFoundation\Core\StandardResponse;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
@@ -21,9 +21,9 @@ abstract class AbstractController implements Controller{
     {
         $view = $this->getView();
         $model = $this->getModel();
-        $response = $this->getResponse();
+        $response = $this->getBaseResponse();
         $view->setData($model->asArray());
-        $response->AddData($view->output());
+        $response->setData($view->output());
         return $response;
     }
 
@@ -49,12 +49,12 @@ abstract class AbstractController implements Controller{
         return $this->view;
     }
 
-    public function setBaseResponse(Response $response)
+    public function setBaseResponse(StandardResponse $response)
     {
         $this->response = $response;
     }
 
-    private function getResponse()
+    public function getBaseResponse()
     {
         if($this->response == null){
             $this->response = $this->getFactory()->load("\\FlyFoundation\\Core\\Response");

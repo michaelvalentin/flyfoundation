@@ -7,7 +7,7 @@ namespace FlyFoundation\Core;
 use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Controllers\PageController;
 
-class DefaultRouter implements Router{
+class StandardRouter implements Router{
 
     use Environment;
 

@@ -4,7 +4,7 @@ namespace FlyFoundation;
 
 use FlyFoundation\Core\Factories\ConfigurationFactory;
 use FlyFoundation\Core\Context;
-use FlyFoundation\Core\Response;
+use FlyFoundation\Core\StandardResponse;
 use FlyFoundation\Util\DirectoryList;
 use FlyFoundation\Core\Router;
 
@@ -33,7 +33,7 @@ class App {
     /**
      * @param string $query
      * @param Context $context
-     * @return Response
+     * @return StandardResponse
      */
     public function getResponse($query, Context $context = null)
     {
@@ -48,7 +48,7 @@ class App {
         $router = $factory->load("\\FlyFoundation\\Core\\Router",[$context]);
 
         $controller = $router->getController($query);
-        //$arguments = $router->getArguments($query);
+        $arguments = $router->getArguments($query);
         $arguments = array();
 
         return $controller->render($arguments);
@@ -78,7 +78,7 @@ class App {
         return $this->configurationFactory->getConfiguration();
     }
 
-    public function addConfigurator($directory)
+    public function addConfigurators($directory)
     {
         $this->configurationFactory->addConfiguratorDirectory($directory);
     }

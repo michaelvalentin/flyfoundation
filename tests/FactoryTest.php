@@ -158,7 +158,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         $app = new \FlyFoundation\App();
-        $app->addConfigurator(__DIR__."/TestApp/configurators");
+        $app->addConfigurators(__DIR__."/TestApp/configurators");
         $this->factory = $app->getFactory();
         $this->factory->getConfig()->baseSearchPaths->add("\\TestApp");
         parent::setUp();
