@@ -10,11 +10,10 @@ class EntityField
 {
     private $columnName;
     private $type;
-    private $primaryKey;
 
     /**
-     * @param $columnName
-     * @param $type
+     * @param string $columnName
+     * @param string $type
      */
     public function __construct($columnName, $type)
     {
@@ -49,23 +48,6 @@ class EntityField
     {
         return $this->type;
     }
-
-    /**
-     * @param boolean $boolean
-     */
-    public function setPrimaryKey($boolean)
-    {
-        $this->primaryKey = $boolean;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isPrimaryKey()
-    {
-        return $this->primaryKey;
-    }
-
 }
 
 /**

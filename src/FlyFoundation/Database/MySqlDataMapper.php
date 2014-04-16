@@ -53,52 +53,43 @@ class MySqlDataMapper implements DataMapper
     /**
      * @param PersistentEntity $persistentEntity
      *
-     * @return array
+     * @return integer
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      */
     public function save(PersistentEntity $persistentEntity)
     {
         $tableName = $this->entityDefinition->getTableName();
         $entityColumns = $persistentEntity->getPersistentData();
-        $primaryKey = $persistentEntity->getPrimaryKey();
+        $id = isset($entityColumns['id']) ? $entityColumns['id'] : 0;
+
+        if(!is_int($id)){
+            throw new InvalidArgumentException(
+                'Failed to save data to ' . $tableName
+                . ', because the type of the entity\'s id was ' . gettype($id) . ', expected integer.'
+            );
+        }
 
         $query = $this->getPdo()->insertInto($tableName, $entityColumns)->onDuplicateKeyUpdate($entityColumns);
         $result = $query->execute();
 
-        return $primaryKey ? $primaryKey : ['id' => $result];
-
+        return $id ? $id : (int)$result;
     }
 
     /**
-     * @param int | array $primaryKey
-     *
+     * @param integer $id
      * @return void
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      */
-    public function delete($primaryKey)
+    public function delete($id)
     {
         $tableName = $this->entityDefinition->getTableName();
 
-        if(is_int($primaryKey)){
-
-            $query = $this->getPdo()->delete($tableName, $primaryKey);
-
-        } elseif(is_array($primaryKey)){
-
-            $definedPrimaryKey = $this->entityDefinition->getPrimaryKey();
-            $diff = array_diff_key($definedPrimaryKey, $primaryKey);
-            if(!empty($diff)){
-                throw new InvalidArgumentException(
-                    'Failed to delete data from ' . $tableName
-                    . ', because the keys in $primaryKey did not match the entity definition\'s primary key columns.'
-                );
-            }
-            $query = $this->getPdo()->delete($tableName)->where($primaryKey);
-
+        if(is_int($id)){
+            $query = $this->getPdo()->delete($tableName, $id);
         } else {
             throw new InvalidArgumentException(
                 'Failed to delete data from ' . $tableName
-                . ', because the type of $primaryKey was ' . gettype($primaryKey) . ', expected integer or array.'
+                . ', because the type of $primaryKey was ' . gettype($id) . ', expected integer.'
             );
         }
 
@@ -109,35 +100,21 @@ class MySqlDataMapper implements DataMapper
     }
 
     /**
-     * @param int | array $primaryKey
+     * @param integer $id
      *
      * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      * @return PersistentEntity
      */
-    public function load($primaryKey)
+    public function load($id)
     {
         $tableName = $this->entityDefinition->getTableName();
 
-        if(is_int($primaryKey)){
-
-            $query = $this->getPdo()->from($tableName, $primaryKey);
-
-        } elseif(is_array($primaryKey)){
-
-            $definedPrimaryKey = $this->entityDefinition->getPrimaryColumnTypePairs();
-            $diff = array_diff_key($definedPrimaryKey, $primaryKey);
-            if(!empty($diff)){
-                throw new InvalidArgumentException(
-                    'Failed to load data from ' . $tableName
-                    . ', because the keys in $primaryKey did not match the entity definition\'s primary key columns.'
-                );
-            }
-            $query = $this->getPdo()->from($tableName)->where($primaryKey);
-
+        if(is_int($id)){
+            $query = $this->getPdo()->from($tableName, $id);
         } else {
             throw new InvalidArgumentException(
                 'Failed to load data from ' . $tableName
-                . ', because the type of $primaryKey was ' . gettype($primaryKey) . ', expected integer or array.'
+                . ', because the type of $id was ' . gettype($id) . ', expected integer.'
             );
         }
 
@@ -145,11 +122,11 @@ class MySqlDataMapper implements DataMapper
         if(empty($data)){
             throw new InvalidArgumentException(
                 'Failed to load data from ' . $tableName
-                . ', because the query did not find any data matching $primaryKey.'
+                . ', because the query did not find any data that matches the $id.'
             );
         }
 
         $factory = $this->getFactory();
-        return $factory->loadModel($this->entityDefinition->getClassName(), $data);
+        return $factory->load($this->entityDefinition->getClassName(), $data[0]);
     }
 }
