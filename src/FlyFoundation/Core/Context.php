@@ -1,121 +1,188 @@
 <?php
 namespace FlyFoundation\Core;
 
-/**
- * Class Request
- *
- * The current request, as understood by the system, including all necessary data. The
- * request information should be accessed through this class and it's interfaces.
- *
- * @package Core
- */
+use FlyFoundation\Exceptions\InvalidArgumentException;
+
 class Context {
-	private static $_request = null;    // Used to hold the request instance
-    private $_uri;                      // The request, after the base URL
-    private $_baseUrl;                  // The base URL for the request (before identifier), might be subdirectory
-    private $_protocol;                 // The protocol of the request
-    private $_httpMethod;               // The request method
-	private $_parameters;               // The interpreted parameters of the request
 
-    public function getUri(){
-        return $this->_uri;
-    }
+    private $uri;                      // The request, after the base URL
+    private $domain;                   // The host / domain
+    private $baseUrl;                  // The base URL for the request (before identifier), might be subdirectory
+    private $protocol;                 // The protocol of the request
+    private $httpVerb;                 // The request method (GET, POST, ETC.)
+	private $parameters;               // The get parameters of the request
+    private $postData;                 // The post data of the request
 
-    public function GetUriParts(){
-        return explode("/",$this->_uri);
-    }
-
-    public function getBaseUrl(){
-        return $this->_baseUrl;
-    }
-
-    public function getProtocol(){
-        return $this->_protocol;
-    }
-
-    public function getHttpMethod(){
-        return $this->_httpMethod;
-    }
-
-    public function getParameters(){
-        return $this->_parameters;
-    }
-
-    public function getParameter($key){
-        return isset($this->_parameters[$key]) ? $this->_parameters[$key] : false;
-    }
-
-    /**
-     * What is the current request? (Singleton factory)
-     *
-     * @return \Core\Request
-     * @throws \Exceptions\InvalidOperationException
-     */
-    public static function getRequest()
+    public function __construct(array $initData = array())
     {
-		if (self::$_request === null) throw new \Exceptions\InvalidOperationException("Request must be initialized before it can be used.");
-		return self::$_request;
-	}
+        $this->applyDefaults();
 
-    /**
-     * Initialize the request from this query
-     *
-     * @param $query
-     * @throws \Exceptions\InvalidOperationException
-     */
-    public static function Init($query){
-        if (self::$_request !== null) throw new \Exceptions\InvalidOperationException("Request can only be initialized once per call.");
-        self::$_request = new Context($query);
+        $potentialArguments = [
+            "uri",
+            "baseUrl",
+            "protocol",
+            "httpVerb",
+            "parameters",
+            "postData",
+            "domain"
+        ];
+
+        foreach($potentialArguments as $argumentName)
+        {
+            if(array_key_exists($argumentName,$initData)){
+                $methodName = "set".ucfirst($argumentName);
+                $this->$methodName($initData[$argumentName]);
+            }
+        }
     }
 
-    public function loadFromEnvironment()
+    public function getUri()
     {
-        //TODO: Implement based on previous methods!
+        return $this->uri;
     }
 
-    protected function parse($query)
+    public function getBaseUrl()
     {
-        $this->_uri = $query;
+        return $this->baseUrl;
+    }
 
-        //Determine the baseURL
-        $this->_baseUrl = str_replace($this->_uri,"",$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
-        $parts = explode("?",$this->_baseUrl);
-        $this->_baseUrl = $parts[0];
-        $parts = explode("/",$this->_baseUrl);
-        $last_part = array_pop($parts);
-        if($last_part != "") array_push($parts,$last_part);
-        $this->_baseUrl = implode("/",$parts);
-        $this->_baseUrl = "http://".$this->_baseUrl;
+    public function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    public function getHttpVerb()
+    {
+        return $this->httpVerb;
+    }
+
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    public function getParameter($key)
+    {
+        if(array_key_exists($key, $this->parameters)){
+            return $this->parameters[$key];
+        }else{
+            return null;
+        }
+    }
+
+    public function getPostData()
+    {
+        return $this->postData;
+    }
+
+    public function getPostDataValue($key)
+    {
+        if(array_key_exists($key, $this->postData)){
+            return $this->postData[$key];
+        }else{
+            return null;
+        }
+    }
+
+    public function getDomain()
+    {
+        return $this->domain;
+    }
+
+    public function loadFromEnvironmentBasedOnUri($uri)
+    {
+        $this->setUri($uri);
+
+        $baseUrl = str_replace($this->uri,"",$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
+        $baseUrl = explode("?",$baseUrl)[0];
+        $baseUrl = preg_replace("/\\/+/","/",$baseUrl); //Make all slashes single slash
+        $baseUrl = preg_replace("/^(.*)\\/$/","$1",$baseUrl); //Remove trailing slash
+        $this->setBaseUrl($baseUrl);
 
         if(preg_match("/HTTPS/",$_SERVER["SERVER_PROTOCOL"])){
-            $this->_protocol = "HTTPS";
+            $this->setProtocol("HTTPS");
         }else{
-            $this->_protocol = "HTTP";
+            $this->setProtocol("HTTP");
         }
 
         if($_SERVER["REQUEST_METHOD"] == "POST"){
-            $this->_httpMethod = "POST";
+            $this->setHttpVerb("POST");
         }else{
-            $this->_httpMethod = "GET";
+            $this->setHttpVerb("GET");
         }
 
-        //Determine parameters
-        $this->_parameters = $_GET;
-        foreach(array_keys($_GET) as $g) unset($_GET[$g]); //Unset the parameters
-
-        //Force lower case URL for SEO purposes
-        $lrequest = strtolower($this->_uri);
-        if($this->_uri != $lrequest){
-            \Util\Redirecter::Redirect($this->_protocol."://".$this->_baseUrl.$lrequest, \Util\RedirectType::MovedPermanently, $this->_parameters);
+        $this->setParameters($_GET);
+        foreach(array_keys($_GET) as $g)
+        {
+            unset($_GET[$g]);
         }
-	}
 
-    /**
-     * Is the current host/domain a demo-domain (where debugging and other insecure stuff is allowed).
-     *
-     * @return bool
-     */
-    public function isDemoDomain(){
-        return in_array($_SERVER["HTTP_HOST"],\Core\Config::Get("demo_domains"));
+        $this->setPostData($_POST);
+        foreach(array_keys($_POST) as $p)
+        {
+            unset($_POST[$p]);
+        }
+
+        $this->setDomain($_SERVER["HTTP_HOST"]);
+
+    }
+
+    private function setUri($uri)
+    {
+        $this->uri = $uri;
+    }
+
+    private function setBaseUrl($baseUrl)
+    {
+        if(preg_match("/http(s)?:\\/\\//",$baseUrl)){
+            throw new InvalidArgumentException("Base url should not include protocol specification (http://)");
+        }
+        $this->baseUrl = $baseUrl;
+    }
+
+    private function setProtocol($protocol)
+    {
+        $protocol = strtolower($protocol);
+        $allowedProtocols = ["http","https"];
+        if(!in_array($protocol,$allowedProtocols)){
+            throw new InvalidArgumentException("Only protocol type http and https are allowed");
+        }
+        $this->protocol = $protocol;
+    }
+
+    private function setHttpVerb($httpVerb)
+    {
+        $httpVerb = strtoupper($httpVerb);
+        $allowedVerbs = ["GET","POST"];
+        if(!in_array($httpVerb,$allowedVerbs)){
+            throw new InvalidArgumentException("Only http verbs: GET & POST are allowed");
+        }
+        $this->httpVerb = $httpVerb;
+    }
+
+    private function setParameters(array $parameters)
+    {
+        $this->parameters = $parameters;
+    }
+
+    private function setPostData(array $postData)
+    {
+        $this->postData = $postData;
+    }
+
+    private function setDomain($domain)
+    {
+        $this->domain = $domain;
+    }
+
+    private function applyDefaults()
+    {
+        $this->baseUrl = "";
+        $this->httpVerb = "GET";
+        $this->parameters = [];
+        $this->postData = [];
+        $this->protocol = "HTTP";
+        $this->uri = "";
+        $this->domain = "";
     }
 }

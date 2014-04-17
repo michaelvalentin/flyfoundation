@@ -22,13 +22,7 @@ class Factory extends AbstractFactory{
 
     public function __construct(Config $config, Context $context)
     {
-        foreach($config->baseSearchPaths->asArray() as $path){
-            $config->databaseSearchPaths->add($path."\\Database");
-            $config->controllerSearchPaths->add($path."\\Controllers");
-            $config->entityDefinitionSearchPaths->add($path."\\SystemDefinitions");
-            $config->viewSearchPaths->add($path."\\Views");
-            $config->modelSearchPaths->add($path."\\Models");
-        }
+
 
         $this->setConfig($config);
         $this->setContext($context);

@@ -1,6 +1,7 @@
 <?php
 
 use FlyFoundation\App;
+use FlyFoundation\Core\Context;
 
 require_once __DIR__.'/test-init.php';
 
@@ -8,7 +9,8 @@ require_once __DIR__.'/test-init.php';
 class ResponseTest extends PHPUnit_Framework_TestCase {
     public function testComposeHtml(){
         $app = new App();
-        $factory = $app->getFactory();
+        $context = new Context();
+        $factory = $app->getFactory($context);
         /** @var \FlyFoundation\Core\StandardResponse $response */
         $response = $factory->load("\\FlyFoundation\\Core\\Response");
         $response->setDataValue("demo","demo");

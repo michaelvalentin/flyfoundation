@@ -5,6 +5,7 @@ namespace FlyFoundation\Core;
 
 
 interface Response {
+
     public function output();
 
     public function setOutputType($outputType);

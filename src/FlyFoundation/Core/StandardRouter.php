@@ -12,28 +12,61 @@ class StandardRouter implements Router{
     use Environment;
 
     /**
-     * @param Context $context
+     * @param $query
+     * @return SystemQuery
      */
-    public function __construct(Context $context)
+    public function getSystemQuery($query)
     {
-        $this->setContext($context);
+        $prefixedQuery = $this->getContext()->getHttpVerb().":".$query;
+        list($controller, $method, $arguments) = $this->parseQuery($prefixedQuery);
+        $arguments = array_merge($this->getContext()->getParameters(),$arguments);
+
+        $result = new SystemQuery();
+        $result->setController($controller);
+        $result->setMethod($method);
+        $result->setArguments($arguments);
+
+        return $result;
     }
 
-    /**
-     * @param string $query
-     * @return Controller
-     */
-    public function getController($query)
+    public function parseQuery($query)
     {
-        return $this->getFactory()->load("\\FlyFoundation\\Controllers\\PageController");
+        $routings = $this->getConfig()->routing->asArray();
+
+        foreach($routings as $routing)
+        {
+            $uriPattern = $routing["uri"];
+            $action = $routing["action"];
+            list($match, $arguments) = $this->matchUri($uriPattern, $query);
+
+            if($match){
+
+                list($controllerName, $method) = explode("#",$action);
+
+                $controller = $this->getFactory()->loadController($controllerName);
+
+                if($controller->respondsTo($arguments)){
+                    return [$controller, $method, $arguments];
+                }
+
+            }
+
+        }
+
+        $controller = $this->getFactory()->loadController("Page");
+        return [$controller, "pageNotFound", []];
     }
 
-    /**
-     * @param string $query
-     * @return Map
-     */
-    public function getArguments($query)
+    public function matchUri($uriPattern, $query)
     {
-        // TODO: Implement getArguments() method.
+        $uriEscaped = str_replace("/","\\/",$uriPattern);
+        $uriRegexp = "/^".preg_replace('/\\{([a-zA-Z0-9\\-\\_]+)\\}/','(?<$1>.+)', $uriEscaped)."$/";
+        $arguments = [];
+        $matchesUri = preg_match($uriRegexp,$query,$arguments);
+        if(!$matchesUri){
+            return [false, []];
+        }
+        return [true, $arguments];
     }
+
 }

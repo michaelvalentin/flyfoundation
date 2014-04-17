@@ -2,9 +2,11 @@
 
 namespace FlyFoundation;
 
+use Aws\Common\Exception\InvalidArgumentException;
 use FlyFoundation\Core\Factories\ConfigurationFactory;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\StandardResponse;
+use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Util\DirectoryList;
 use FlyFoundation\Core\Router;
 
@@ -17,65 +19,66 @@ class App {
         $baseConfig = new Config();
         $this->configurationFactory = new ConfigurationFactory($baseConfig);
 
-        $defaultConfigurators = __DIR__."/configurators";
-        $this->configurationFactory->addConfiguratorDirectory($defaultConfigurators);
+        $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_before_app");
     }
 
     /**
-     * @param string $query
+     * @param string $uri
      * @param Context $context
      */
-    public function serve($query, Context $context = null)
+    public function serve($uri, $context = null)
     {
-        $this->getResponse($query, $context)->output();
+        $this->getResponse($uri, $context)->output();
     }
 
     /**
-     * @param string $query
+     * @param string $uri
      * @param Context $context
      * @return StandardResponse
      */
-    public function getResponse($query, Context $context = null)
+    public function getResponse($uri, $context = null)
     {
-
         if($context == null){
-            $context = $this->getDefaultContext();
+            $context = new Context();
+            $context->loadFromEnvironmentBasedOnUri($uri);
         }
 
         $factory = $this->getFactory($context);
 
         /** @var Router $router */
-        $router = $factory->load("\\FlyFoundation\\Core\\Router",[$context]);
+        $router = $factory->load("\\FlyFoundation\\Core\\Router");
 
-        $controller = $router->getController($query);
-        $arguments = $router->getArguments($query);
-        $arguments = array();
+        $systemQuery = $router->getSystemQuery($uri);
 
-        return $controller->render($arguments);
+        return $systemQuery->execute();
     }
 
     public function getFactory($context = null){
-        $config = $this->getConfiguration();
-
         if($context == null){
-            $context = $this->getDefaultContext();
+            $context = new Context();
         }
+
+        $config = $this->getConfiguration();
 
         $factory = new Factory($config, $context);
 
         return $factory;
     }
 
-    public function getDefaultContext()
-    {
-        $context = new Context();
-        $context->loadFromEnvironment();
-        return $context;
-    }
-
     public function getConfiguration()
     {
-        return $this->configurationFactory->getConfiguration();
+        $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_after_app");
+        $config = $this->configurationFactory->getConfiguration();
+
+        foreach($config->baseSearchPaths->asArray() as $path){
+            $config->databaseSearchPaths->add($path."\\Database");
+            $config->controllerSearchPaths->add($path."\\Controllers");
+            $config->entityDefinitionSearchPaths->add($path."\\SystemDefinitions");
+            $config->viewSearchPaths->add($path."\\Views");
+            $config->modelSearchPaths->add($path."\\Models");
+        }
+
+        return $config;
     }
 
     public function addConfigurators($directory)

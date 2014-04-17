@@ -55,7 +55,7 @@ class OpenPersistentEntity extends PersistentEntity
     public function asArray()
     {
         // TODO: Implement asArray() method.
-        return array();
+        return array("test" => "This is a demo");
     }
 
     public function fromArray(array $data)

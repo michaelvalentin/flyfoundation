@@ -7,20 +7,11 @@ namespace FlyFoundation\Core;
 use FlyFoundation\Controllers\Controller;
 
 interface Router {
-    /**
-     * @param Context $context
-     */
-    public function __construct(Context $context);
+
 
     /**
-     * @param string $query
-     * @return Controller
+     * @param $query
+     * @return SystemQuery
      */
-    public function getController($query);
-
-    /**
-     * @param string $query
-     * @return Map
-     */
-    public function getArguments($query);
+    public function getSystemQuery($query);
 } 

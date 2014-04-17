@@ -13,19 +13,15 @@ class ResponseHeaders {
 	private $_headers = array();
 	
 	/**
-	 * Create a new set of headers
-	 */
-	public function __construct(){
-		//Default headers..
-		$this->SetHeader("Content-Type","text/html; utf-8"); //UTF-8 encoding..
-	}
-	
-	/**
 	 * Output the current headers
 	 */
 	public function Output(){
-		foreach($this->_headers as $l=>$v){
-			header($l.": ".$v);
+		foreach($this->_headers as $label=>$value){
+            if($value){
+			    header($label.": ".$value);
+            }else{
+                header($label);
+            }
 		}
 	}
 	

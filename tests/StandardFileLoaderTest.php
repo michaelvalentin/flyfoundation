@@ -13,7 +13,8 @@ class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {
     {
         $app = new App();
         $app->addConfigurators(__DIR__."/TestApp/configurators");
-        $factory = $app->getFactory();
+        $context = new \FlyFoundation\Core\Context();
+        $factory = $app->getFactory($context);
         $this->fileLoader = $factory->load("\\FlyFoundation\\Core\\FileLoader");
     }
 
