@@ -47,5 +47,13 @@ class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {
         $contents = file_get_contents(__DIR__."/../src/FlyFoundation/templates/demo.mustache");
         $this->assertSame($contents, $contents_result);
     }
+
+    public function testLoadingFileImplementedInBothFlyFoundationAndTestApp()
+    {
+        $result = $this->fileLoader->findFile("entity_definitions/readme.md");
+        $contents_result = file_get_contents($result);
+        $contents = file_get_contents(__DIR__."/TestApp/entity_definitions/readme.md");
+        $this->assertSame($contents, $contents_result);
+    }
 }
  

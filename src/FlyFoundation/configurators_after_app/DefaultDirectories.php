@@ -9,8 +9,7 @@ class DefaultDirectories implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->entityDefinitionDirectories->add(__DIR__."/../entity_definitions");
-        $config->templateDirectories->add(__DIR__."/../templates");
+        $config->baseFileDirectories->add(__DIR__."/..");
 
         return $config;
     }

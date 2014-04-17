@@ -11,7 +11,7 @@ class StandardFileLoader implements FileLoader{
 
     public function findFile($path)
     {
-        $baseDirectories = array_reverse($this->getConfig()->baseFileDirectories->asArray());
+        $baseDirectories = $this->getConfig()->baseFileDirectories->asArray();
 
         $result = $this->findSpecialFile($path);
 
@@ -70,7 +70,7 @@ class StandardFileLoader implements FileLoader{
                 break;
         }
 
-        $paths = array_reverse($paths);
+        $paths = $paths;
 
         return $this->findFileInPaths($matches[2],$paths);
     }
