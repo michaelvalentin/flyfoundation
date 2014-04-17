@@ -67,15 +67,4 @@ interface EntityDefinition
      * @return void
      */
     public function addIndex(EntityIndex $entityIndex);
-
-    /**
-     * @return array
-     */
-    public function getPrimaryColumns();
-
-    /**
-     * @param array $columnValuePairs
-     * @return bool
-     */
-    public function matchPrimaryKey(array $columnValuePairs);
 } 

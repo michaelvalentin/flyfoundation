@@ -13,21 +13,19 @@ interface DataMapper {
     /**
      * @param PersistentEntity $persistentEntity
      *
-     * @return integer | array
+     * @return void
      */
     public function save(PersistentEntity $persistentEntity);
 
     /**
      * @param $id
-     *
      * @return void
      */
     public function delete($id);
 
     /**
-     * @param mixed $primaryKey
-     *
+     * @param integer $id
      * @return PersistentEntity
      */
-    public function load($primaryKey);
+    public function load($id);
 } 
