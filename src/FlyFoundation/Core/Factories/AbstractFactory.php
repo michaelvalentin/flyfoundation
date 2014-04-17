@@ -39,7 +39,7 @@ abstract class AbstractFactory {
     {
         $matches = [];
 
-        foreach(array_reverse($searchPaths->asArray()) as $path)
+        foreach($searchPaths->asArray() as $path)
         {
             $regexpPath = str_replace("\\","\\\\",$path);
 
@@ -62,7 +62,7 @@ abstract class AbstractFactory {
             return $className;
         }
 
-        foreach(array_reverse($searchPaths->asArray()) as $path){
+        foreach($searchPaths->asArray() as $path){
             $fullClassName = $path."\\".$partialClassName;
             if(class_exists($fullClassName)){
                 return $fullClassName;

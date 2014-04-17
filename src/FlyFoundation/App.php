@@ -67,6 +67,7 @@ class App {
 
     public function getConfiguration()
     {
+
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_after_app");
         $config = $this->configurationFactory->getConfiguration();
 

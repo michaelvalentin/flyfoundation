@@ -19,10 +19,10 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $className3 = "\\MyOtherNamespace\\Kaki\\Demo";
 
         $paths = new \FlyFoundation\Util\ValueList([
-            "\\MyNamespace",
-            "\\MyNamespace\\Folder\\SomeClassFolder",
-            "\\OtherNamespace",
             "\\MyNamespace\\SomeThing",
+            "\\OtherNamespace",
+            "\\MyNamespace\\Folder\\SomeClassFolder",
+            "\\MyNamespace",
         ]);
 
         $result = $this->factory->findPartialClassNameInPaths($className,$paths);
@@ -39,9 +39,9 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $config = new \FlyFoundation\Config();
         $config->classOverrides = new \FlyFoundation\Util\Map();
         $config->classOverrides->putAll([
-            "\\MyScope\\Test" => "\\NewScope\\Test",
+            "\\NewScope\\MyClass" => "\\DemoScope\\NewClass",
             "\\OtherScope\\Demo\\MyClass" => "\\NewScope\\MyClass",
-            "\\NewScope\\MyClass" => "\\DemoScope\\NewClass"
+            "\\MyScope\\Test" => "\\NewScope\\Test",
         ]);
         $this->factory->setConfig($config);
 
