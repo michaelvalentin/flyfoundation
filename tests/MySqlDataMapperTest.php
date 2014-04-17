@@ -82,10 +82,6 @@ class MySqlDataMapperTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
     }
 
-    public function testMockTest(){
-        $this->assertTrue(true);
-    }
-
     public function testLoadEntity()
     {
         $this->setExpectedException('FlyFoundation\Exceptions\UnknownClassException');
