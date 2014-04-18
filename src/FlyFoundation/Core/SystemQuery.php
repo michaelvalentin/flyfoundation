@@ -15,8 +15,11 @@ class SystemQuery {
     /** @var array */
     private $arguments;
 
-    public function execute()
+    public function execute(Response $baseResponse = null)
     {
+        if($baseResponse != null){
+            $this->controller->setBaseResponse($baseResponse);
+        }
         $controller = $this->controller;
         $method = $this->method;
         return $controller->$method($this->arguments);

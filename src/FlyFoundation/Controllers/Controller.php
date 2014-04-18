@@ -10,9 +10,6 @@ use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
 interface Controller {
-    public function render(array $arguments);
-
-    public function respondsTo(array $arguments);
 
     public function setModel(Model $model);
 

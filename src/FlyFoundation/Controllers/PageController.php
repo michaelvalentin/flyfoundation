@@ -43,7 +43,12 @@ class PageController extends AbstractController{
         return $response;
     }
 
-    public function respondsTo(array $arguments)
+    public function viewRespondsTo(array $arguments)
+    {
+        return $this->pageRespondsTo($arguments);
+    }
+
+    private function pageRespondsTo(array $arguments)
     {
         if(!isset($arguments["alias"])){
             return false;
@@ -57,6 +62,11 @@ class PageController extends AbstractController{
             return false;
         }
 
+        return true;
+    }
+
+    public function pageNotFoundRespondsTo(array $arguments)
+    {
         return true;
     }
 

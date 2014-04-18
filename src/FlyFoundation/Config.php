@@ -3,6 +3,7 @@
 namespace FlyFoundation;
 use FlyFoundation\Core\RoutingList;
 use FlyFoundation\Exceptions\InvalidOperationException;
+use FlyFoundation\Util\BaseControllerList;
 use FlyFoundation\Util\ClassMap;
 use FlyFoundation\Util\DirectoryList;
 use FlyFoundation\Util\ValueList;
@@ -59,6 +60,9 @@ class Config {
     /** @var \FlyFoundation\Core\RoutingList  */
     public $routing;
 
+    /** @var \FlyFoundation\Util\BaseControllerList  */
+    public $baseControllers;
+
     public function __construct(){
         $this->data = array();
         $this->locked = false;
@@ -74,6 +78,7 @@ class Config {
         $this->entityDefinitionDirectories = New DirectoryList();
         $this->baseFileDirectories = new DirectoryList();
         $this->routing = new RoutingList();
+        $this->baseControllers = new BaseControllerList();
     }
 
     public function set($key,$value)

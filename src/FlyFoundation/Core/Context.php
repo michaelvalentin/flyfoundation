@@ -7,7 +7,7 @@ class Context {
 
     private $uri;                      // The request, after the base URL
     private $domain;                   // The host / domain
-    private $baseUrl;                  // The base URL for the request (before identifier), might be subdirectory
+    private $hostName;                  // The base host name for the request (before identifier), might be subdirectory
     private $protocol;                 // The protocol of the request
     private $httpVerb;                 // The request method (GET, POST, ETC.)
 	private $parameters;               // The get parameters of the request
@@ -41,9 +41,14 @@ class Context {
         return $this->uri;
     }
 
+    public function getHostName()
+    {
+        return $this->hostName;
+    }
+
     public function getBaseUrl()
     {
-        return $this->baseUrl;
+        return $this->protocol."://".$this->hostName;
     }
 
     public function getProtocol()
@@ -97,7 +102,7 @@ class Context {
         $baseUrl = explode("?",$baseUrl)[0];
         $baseUrl = preg_replace("/\\/+/","/",$baseUrl); //Make all slashes single slash
         $baseUrl = preg_replace("/^(.*)\\/$/","$1",$baseUrl); //Remove trailing slash
-        $this->setBaseUrl($baseUrl);
+        $this->setHostName($baseUrl);
 
         if(preg_match("/HTTPS/",$_SERVER["SERVER_PROTOCOL"])){
             $this->setProtocol("HTTPS");
@@ -132,12 +137,12 @@ class Context {
         $this->uri = $uri;
     }
 
-    private function setBaseUrl($baseUrl)
+    private function setHostName($baseUrl)
     {
         if(preg_match("/http(s)?:\\/\\//",$baseUrl)){
             throw new InvalidArgumentException("Base url should not include protocol specification (http://)");
         }
-        $this->baseUrl = $baseUrl;
+        $this->hostName = $baseUrl;
     }
 
     private function setProtocol($protocol)
@@ -177,7 +182,7 @@ class Context {
 
     private function applyDefaults()
     {
-        $this->baseUrl = "";
+        $this->hostName = "";
         $this->httpVerb = "GET";
         $this->parameters = [];
         $this->postData = [];

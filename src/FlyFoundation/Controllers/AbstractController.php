@@ -18,22 +18,6 @@ abstract class AbstractController implements Controller{
     private $view;
     private $response;
 
-    public function render(array $arguments = array())
-    {
-        $view = $this->getView();
-        $model = $this->getModel();
-        $response = $this->getBaseResponse();
-        $view->setData($model->asArray());
-        $response->setData($view->output());
-        return $response;
-    }
-
-    public function respondsTo(array $arguments = array())
-    {
-        //TODO: IMPLEMENT!
-        return true;
-    }
-
     public function setModel(Model $model)
     {
         $this->model = $model;

@@ -2,12 +2,11 @@
 
 namespace FlyFoundation;
 
-use Aws\Common\Exception\InvalidArgumentException;
+use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Controllers\AbstractBaseController;
 use FlyFoundation\Core\Factories\ConfigurationFactory;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\StandardResponse;
-use FlyFoundation\Exceptions\InvalidOperationException;
-use FlyFoundation\Util\DirectoryList;
 use FlyFoundation\Core\Router;
 
 class App {
@@ -50,7 +49,9 @@ class App {
 
         $systemQuery = $router->getSystemQuery($uri);
 
-        return $systemQuery->execute();
+        $baseResponse = $this->getBaseResponse($factory);
+
+        return $systemQuery->execute($baseResponse);
     }
 
     public function getFactory($context = null){
@@ -90,5 +91,19 @@ class App {
     public function addConfigurators($directory)
     {
         $this->configurationFactory->addConfiguratorDirectory($directory);
+    }
+
+    private function getBaseResponse(Factory $factory)
+    {
+        $response = $factory->load("\\FlyFoundation\\Core\\Response");
+        foreach($factory->getConfig()->baseControllers->asArray() as $baseControllerName){
+            $baseController = $factory->load($baseControllerName);
+            if(!$baseController instanceof AbstractBaseController){
+                throw new InvalidArgumentException("Base Controllers must be of class AbstractBaseController");
+            }
+            $baseController->setBaseResponse($response);
+            $response = $baseController->render();
+        }
+        return $response;
     }
 }
