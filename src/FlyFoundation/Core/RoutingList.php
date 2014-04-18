@@ -10,7 +10,7 @@ use FlyFoundation\Util\Map;
 use FlyFoundation\Util\ValueList;
 
 class RoutingList extends ValueList{
-    public function addRouting($uri, $action)
+    public function addRouting($uri, $action, $arguments = [])
     {
         if(!$this->validateUri($uri)){
             throw new InvalidArgumentException(
@@ -23,7 +23,7 @@ class RoutingList extends ValueList{
             );
         }
 
-        parent::add(["uri"=>$uri,"action"=>$action]);
+        parent::add(["uri"=>$uri,"action"=>$action, "arguments" => $arguments]);
     }
 
     public function add($value)

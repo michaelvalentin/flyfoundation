@@ -44,6 +44,7 @@ class StandardRouter implements Router{
                 list($controllerName, $method) = explode("#",$action);
 
                 $controller = $this->getFactory()->loadController($controllerName);
+                $arguments = array_merge($arguments, $routing["arguments"]);
 
                 if($controller->respondsTo($method, $arguments)){
                     return [$controller, $method, $arguments];
