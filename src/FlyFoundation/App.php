@@ -51,7 +51,9 @@ class App {
 
         $baseResponse = $this->getBaseResponse($factory);
 
-        return $systemQuery->execute($baseResponse);
+        $response = $systemQuery->execute($baseResponse);
+
+        return $this->finalizeResponse($response,$factory);
     }
 
     public function getFactory($context = null){
@@ -102,7 +104,20 @@ class App {
                 throw new InvalidArgumentException("Base Controllers must be of class AbstractBaseController");
             }
             $baseController->setBaseResponse($response);
-            $response = $baseController->render();
+            $response = $baseController->beforeRender();
+        }
+        return $response;
+    }
+
+    private function finalizeResponse($response, Factory $factory)
+    {
+        foreach($factory->getConfig()->baseControllers->asArray() as $baseControllerName){
+            $baseController = $factory->load($baseControllerName);
+            if(!$baseController instanceof AbstractBaseController){
+                throw new InvalidArgumentException("Base Controllers must be of class AbstractBaseController");
+            }
+            $baseController->setBaseResponse($response);
+            $response = $baseController->afterRender();
         }
         return $response;
     }
