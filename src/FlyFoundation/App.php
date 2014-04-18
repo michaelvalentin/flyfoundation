@@ -79,6 +79,11 @@ class App {
             $config->modelSearchPaths->add($path."\\Models");
         }
 
+        foreach($config->baseFileDirectories->asArray() as $dir){
+            $config->entityDefinitionDirectories->add($dir."/entity_definitions");
+            $config->templateDirectories->add($dir."/templates");
+        }
+
         return $config;
     }
 
