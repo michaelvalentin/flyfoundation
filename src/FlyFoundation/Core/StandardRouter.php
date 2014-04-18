@@ -45,9 +45,7 @@ class StandardRouter implements Router{
 
                 $controller = $this->getFactory()->loadController($controllerName);
 
-                $respondsToMethod = $method."RespondsTo";
-
-                if($controller->$respondsToMethod($arguments)){
+                if($controller->respondsTo($method, $arguments)){
                     return [$controller, $method, $arguments];
                 }
 

@@ -9,22 +9,10 @@ use FlyFoundation\Exceptions\InvalidArgumentException;
 
 class PageController extends AbstractController{
 
-    public function render(array $arguments)
-    {
-        //TODO: Implement something proper!!!
-
-        /** @var Response $response */
-        $response = $this->getBaseResponse();
-        $response->setData($this->getModel()->asArray());
-        $response->setContent("<p>Dette er bare en demo, æøå for at se om det hele virker... <b>".$arguments["alias"]."</b></p>");
-        $response->wrapInTemplate("<h1>{{test}}</h1>{{{content}}}");
-        return $response;
-    }
-
-    public function view(array $arguments)
+    public function view(Response $response, array $arguments)
     {
         if(!isset($arguments["alias"])){
-            throw new InvalidArgumentException("The page controller expects an alias for the page and can't load without.");
+            return false;
         }
 
         /** @var FileLoader $fileLoader */
@@ -32,47 +20,19 @@ class PageController extends AbstractController{
         $filename = $fileLoader->findPage($arguments["alias"]);
 
         if(!$filename){
-            throw new InvalidArgumentException("No page with the name given as alias exists.");
+            return false;
         }
 
         $pageContent = file_get_contents($filename);
 
-        $response = $this->getBaseResponse();
         $response->setContent($pageContent);
 
         return $response;
     }
 
-    public function viewRespondsTo(array $arguments)
+    public function pageNotFound(Response $response, array $arguments)
     {
-        return $this->pageRespondsTo($arguments);
-    }
-
-    private function pageRespondsTo(array $arguments)
-    {
-        if(!isset($arguments["alias"])){
-            return false;
-        }
-
-        /** @var FileLoader $fileLoader */
-        $fileLoader = $this->getFactory()->load("\\FlyFoundation\\Core\\FileLoader");
-        $filename = $fileLoader->findPage($arguments["alias"]);
-
-        if(!$filename){
-            return false;
-        }
-
-        return true;
-    }
-
-    public function pageNotFoundRespondsTo(array $arguments)
-    {
-        return true;
-    }
-
-    public function pageNotFound(array $arguments)
-    {
-        $this->getBaseResponse()->headers->SetHeader("HTTP/1.0 404 Not Found",false);
-        return $this->view(["alias" => "404-not-found"]);
+        $response->headers->SetHeader("HTTP/1.0 404 Not Found",false);
+        return $this->view($response, ["alias" => "404-not-found"]);
     }
 } 

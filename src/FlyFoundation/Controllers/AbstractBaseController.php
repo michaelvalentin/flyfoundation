@@ -9,7 +9,6 @@ use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
 abstract class AbstractBaseController extends AbstractController{
-
     public abstract function beforeRender();
 
     public abstract function afterRender();

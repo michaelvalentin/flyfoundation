@@ -21,8 +21,7 @@ class SystemQuery {
             $this->controller->setBaseResponse($baseResponse);
         }
         $controller = $this->controller;
-        $method = $this->method;
-        return $controller->$method($this->arguments);
+        return $controller->render($this->method, $this->arguments);
     }
 
     /**

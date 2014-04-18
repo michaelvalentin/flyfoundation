@@ -6,7 +6,7 @@ namespace FlyFoundation\Controllers;
 
 use FlyFoundation\Core\Environment;
 use FlyFoundation\Core\Response;
-use FlyFoundation\Core\StandardResponse;
+use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
@@ -49,7 +49,7 @@ abstract class AbstractController implements Controller{
     }
 
     /**
-     * @return StandardResponse
+     * @return Response
      */
     public function getBaseResponse()
     {
@@ -57,5 +57,48 @@ abstract class AbstractController implements Controller{
             $this->response = $this->getFactory()->load("\\FlyFoundation\\Core\\Response");
         }
         return $this->response;
+    }
+
+    /**
+     * @param $action
+     * @param array $arguments
+     * @throws \FlyFoundation\Exceptions\InvalidArgumentException
+     * @return Response
+     */
+    public function render($action, array $arguments = [])
+    {
+        $result = $this->doAction($action, $arguments);
+        if(!$result){
+            throw new InvalidArgumentException("The controller does not respond to the given arguments, and hence can
+            not render. Check with the repondsTo method before calling render.");
+        }
+        return $result;
+    }
+
+    /**
+     * @param $action
+     * @param array $arguments
+     * @return bool
+     */
+    public function respondsTo($action, array $arguments = [])
+    {
+        return $this->doAction($action, $arguments) != false;
+    }
+
+    /**
+     * @param $action
+     * @param $arguments
+     * @return bool|Response
+     * @throws \FlyFoundation\Exceptions\InvalidArgumentException
+     */
+    private function doAction($action, $arguments)
+    {
+        if(!method_exists($this,$action)){
+            throw new InvalidArgumentException("The given action '".$action."' could not be found in the controller.");
+        }
+
+        $response = $this->getBaseResponse();
+
+        return $this->$action($response, $arguments);
     }
 }
