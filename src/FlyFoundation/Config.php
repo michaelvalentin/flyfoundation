@@ -44,7 +44,10 @@ class Config {
     /** @var \FlyFoundation\Util\ValueList  */
     public $entityDefinitionSearchPaths;
 
-    /** @var Util\DirectoryList */
+    /** @var \FlyFoundation\Util\DirectoryList */
+    public $pageDirectories;
+
+    /** @var \FlyFoundation\Util\DirectoryList */
     public $templateDirectories;
 
     /** @var \FlyFoundation\Util\DirectoryList  */
@@ -66,6 +69,7 @@ class Config {
         $this->controllerSearchPaths = new ValueList();
         $this->databaseSearchPaths = new ValueList();
         $this->entityDefinitionSearchPaths = new ValueList();
+        $this->pageDirectories = new DirectoryList();
         $this->templateDirectories = new DirectoryList();
         $this->entityDefinitionDirectories = New DirectoryList();
         $this->baseFileDirectories = new DirectoryList();

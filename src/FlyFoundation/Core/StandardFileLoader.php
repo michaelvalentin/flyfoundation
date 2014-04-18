@@ -18,11 +18,6 @@ class StandardFileLoader implements FileLoader{
         if(!$result){
             $result = $this->findFileInPaths($path, $baseDirectories);
         }
-
-        if(!$result){
-            throw new NonExistantFileException("The file '".$path."' could not be located in the given include paths");
-        }
-
         return $result;
     }
 
@@ -34,6 +29,11 @@ class StandardFileLoader implements FileLoader{
     public function findEntityDefinition($name)
     {
         return $this->findFile("entity_definitions/".$name.".json");
+    }
+
+    public function findPage($name)
+    {
+        return $this->findFile("pages/".$name.".mustache");
     }
 
     private function findFileInPaths($name, $paths)
@@ -50,7 +50,7 @@ class StandardFileLoader implements FileLoader{
 
     private function findSpecialFile($path)
     {
-        $specialFilePattern = "/^(templates|entity_definitions)\\/(.*)$/";
+        $specialFilePattern = "/^(templates|entity_definitions|pages)\\/(.*)$/";
         $matches = [];
         $isSpecialFile = preg_match($specialFilePattern, $path, $matches);
 
@@ -64,6 +64,9 @@ class StandardFileLoader implements FileLoader{
                 break;
             case "entity_definitions" :
                 $paths = $this->getConfig()->entityDefinitionDirectories->asArray();
+                break;
+            case "pages" :
+                $paths = $this->getConfig()->pageDirectories->asArray();
                 break;
             default :
                 $paths = [];

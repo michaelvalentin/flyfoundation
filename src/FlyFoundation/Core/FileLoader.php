@@ -10,4 +10,6 @@ interface FileLoader {
     public function findTemplate($name);
 
     public function findEntityDefinition($name);
+
+    public function findPage($name);
 } 

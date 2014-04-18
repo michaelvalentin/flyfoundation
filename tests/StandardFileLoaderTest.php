@@ -28,8 +28,8 @@ class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {
 
     public function testFindingFileThatDoesntExist()
     {
-        $this->setExpectedException("\\FlyFoundation\\Exceptions\\NonExistantFileException");
         $result = $this->fileLoader->findFile("file-that/does-not/exist");
+        $this->assertFalse($result);
     }
 
     public function testLoadingEntityDefinitionInExtraDir()
