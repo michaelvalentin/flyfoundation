@@ -1,0 +1,12 @@
+#Deriving the system model
+- The system definitions are initialized with a textual/array (text-tree) set of data
+- The system definintions are finalized before use
+- Parsing from DSL to text-tree should be done seperately
+
+##System model class design
+- A system definition is a collection of definition components, the system definition a component itself
+- Every system component contains a number of options and potentially a number of nested definition components
+- A definition component is build by supplying one or more arrays of options
+- The relevant definition component will validate the options as they receive them
+- Before the definition component can be read, it must be finalized
+- In finalizing the component, the relevant component will make sure that it's properties are valid
