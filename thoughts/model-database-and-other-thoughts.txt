@@ -1,33 +1,29 @@
 STRUCTURE for representing data-objects
 
 model_name                  #Name of the model                                              #Indicated by file name
-database_table_name         #What should the table be called (optional)                     #A setting
 fields                      #Data fields of the model                                       #Can be collected
     name                    #Field name must be unique                                      #Default "line"
-        type                #Object and database type                                       #Indicated along with name
-        storage             #How is this stored (default: database)                         #Field settings
-        translate           #Does it make sense to translate this field?                    #Field settings
-        version             #Should this field be part of version?                          #Field settings
-        access_control      #Should this field have separate access control?                #Field settings
-validations                 #Things to validate. This also covers constraints...            #Field settings
-    validation              #Wrapper
-        type                #Type of validation
-        fields              #What field(s) to use
-        data                #Data for validation like RegExp or Number range "1-256"
-        message             #Error message if validation is not met
-relations                   #What relations does this model have?
+    type                    #Object and database type                                       #Indicated along with name
+persistent_fields
+    auto_increment?
+    default_value
+relation_fields             #What relations does this model have?
     relation_name           #Relations must have a unique name
-        relation_type       #What kind of relation? Has-Many, Has-A, In-Many-To-Many
-        relation_model      #What other model does this relate to?
-        local_fields        #By which local field(s) is this relation?
-        relation_fields     #What fields in the related model is in the relation?
-        match_type          #What kind of match is it (Database-stuff...)
-        delete_strategy     #What delete strategy (database)
-        update_strategy     #What update strategy (database)
-options                     #Currently i can only think of AutoIncrement...
-access_controls             #What action controls are related to this model?
-    access_control          #Wrapper
-        name                #Name eg. "read", "write", "show-secret-name"
+    relation_type           #What kind of relation? Has-Many, Has-A, In-Many-To-Many
+    relation_model          #What other model does this relate to?
+    local_fields            #By which local field(s) is this relation?
+    relation_fields         #What fields in the related model is in the relation?
+    match_type              #What kind of match is it (Database-stuff...)
+    delete_strategy         #What delete strategy (database)
+    update_strategy         #What update strategy (database)
+calculated_fields
+    calculation_type        #Eg. count, avg, max, in, etc?
+    group_by_fields         #The fields to group by (default to primary key)
+validations                 #Things to validate. This also covers constraints...            #Field settings
+    type                    #Type of validation
+    fields                  #What field(s) to use
+    data                    #Data for validation like RegExp or Number range "1-256"
+    message                 #Error message if validation is not met
 indexes                     #What indexes exist?
     index                   #An index
         name                #What name should the index have?
