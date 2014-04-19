@@ -1,0 +1,16 @@
+{
+    "fields" : [
+        {
+            "name" : "title",
+            "type" : "string"
+        },
+        {
+            "name" : "alternative",
+            "type" : "string"
+        },
+        {
+            "name" : "url",
+            "type" : "string"
+        }
+    ]
+}
