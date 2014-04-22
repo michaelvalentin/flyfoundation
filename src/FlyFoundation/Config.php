@@ -18,6 +18,8 @@ use FlyFoundation\Util\ValueList;
  */
 class Config {
 
+    /** @var \FlyFoundation\Util\ClassMap $this->test */
+
     /** @var array  */
     private $data;
 

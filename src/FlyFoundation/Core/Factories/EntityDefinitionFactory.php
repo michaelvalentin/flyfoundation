@@ -5,6 +5,9 @@ namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Controllers\Controller;
+use FlyFoundation\Core\FileLoader;
+use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Exceptions\InvalidOperationException;
 
 class EntityDefinitionFactory extends AbstractFactory
 {
@@ -29,21 +32,12 @@ class EntityDefinitionFactory extends AbstractFactory
         if(class_exists($className)){
             return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
         }else{
-            $entityDeclarationFile = $this->findEntityDeclarationFile($matches[1]);
+            /** @var FileLoader $fileLoader */
+            $fileLoader = $this->getFactory()->load("\\FlyFoundation\\Core\\FileLoader");
+            $entityDeclarationFile = $fileLoader->findEntityDefinition($matches[1]);
             array_unshift($arguments,$entityDeclarationFile);
             return $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\DynamicEntityDefinition",$arguments);
         }
-    }
-
-    private function findEntityDeclarationFile($entityName)
-    {
-        foreach($this->getConfig()->entityDefinitionDirectories->asArray() as $directory){
-            $filename = $directory."/".$entityName.".lsd";
-            if(file_exists($filename)){
-                return $filename;
-            }
-        }
-        return "NO_LSD_FILE_FOUND_BY_ENTITY_DEFINITION_FACTORY";
     }
 
 }

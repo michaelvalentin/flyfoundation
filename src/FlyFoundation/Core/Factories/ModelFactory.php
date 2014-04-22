@@ -4,6 +4,8 @@
 namespace FlyFoundation\Core\Factories;
 
 
+use FlyFoundation\SystemDefinitions\EntityDefinition;
+
 class ModelFactory extends AbstractFactory{
 
     private $defaultModel = "\\FlyFoundation\\Models\\OpenPersistentEntity";
@@ -22,6 +24,7 @@ class ModelFactory extends AbstractFactory{
             $arguments = $this->prepareArguments($className,$arguments);
             $model = $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
         }else{
+            $arguments = $this->prepareArguments($className,$arguments);
             $model = $this->getFactory()->load($this->defaultModel,$arguments);
         }
 
@@ -30,6 +33,8 @@ class ModelFactory extends AbstractFactory{
 
     private function prepareArguments($className, $arguments)
     {
+        $requestedClassName = $className;
+
         if(!class_exists($className)){
             $className = $this->defaultModel;
         }
@@ -45,9 +50,14 @@ class ModelFactory extends AbstractFactory{
         $constructorFirstParameterClass = $constructorParameters[0]->getClass()->getName();
         $takesEntityDefinitionAsFirstParameter = $constructorFirstParameterClass == "FlyFoundation\\SystemDefinitions\\EntityDefinition";
 
-        if($takesEntityDefinitionAsFirstParameter){
-            $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->modelSearchPaths);
-            $entityDefinition = $this->getFactory()->loadEntityDefinition($partialClassName);
+        $firstArgumentIsEntityDefinition = false;
+        if(isset($arguments[0])){
+            $firstArgumentIsEntityDefinition = $arguments[0] instanceof EntityDefinition;
+        }
+
+        if($takesEntityDefinitionAsFirstParameter && !$firstArgumentIsEntityDefinition){
+            $requestedPartialClassName = $this->findPartialClassNameInPaths($requestedClassName, $this->getConfig()->modelSearchPaths);
+            $entityDefinition = $this->getFactory()->loadEntityDefinition($requestedPartialClassName);
             array_unshift($arguments,$entityDefinition);
         }
 

@@ -12,6 +12,7 @@ use FlyFoundation\Database\MySqlDataMapper;
 use FlyFoundation\Factory;
 use FlyFoundation\Models\OpenPersistentEntity;
 use FlyFoundation\SystemDefinitions\EmptyEntityDefinition;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 use FlyFoundation\SystemDefinitions\EntityField;
 use FlyFoundation\SystemDefinitions\EntityFieldType;
 
@@ -48,7 +49,7 @@ class MySqlDataMapperTest extends \PHPUnit_Framework_TestCase
         $pdo->query("TRUNCATE TABLE `local_region_site`")->execute();
         $pdo->query("INSERT INTO `local_region_site` VALUES (1, 'Loc 1', 'Ins');")->execute();
 
-        $this->entityDefinition = new EmptyEntityDefinition();
+        $this->entityDefinition = new EntityDefinition();
         $this->entityDefinition->setTableName('local_region_site');
 
         $fieldA = new EntityField('id', EntityFieldType::INTEGER);
