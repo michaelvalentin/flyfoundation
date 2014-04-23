@@ -9,7 +9,7 @@ use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
 interface BaseController{
-    public function beforeController();
+    public function beforeController(Response $response);
 
-    public function afterController();
+    public function afterController(Response $response);
 }

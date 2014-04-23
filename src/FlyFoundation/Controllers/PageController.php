@@ -11,8 +11,9 @@ class PageController extends AbstractController{
 
     public function view(Response $response, array $arguments)
     {
-        if(!isset($arguments["alias"])){
-            return false;
+        if(!$this->viewRespondsTo($arguments)){
+            throw new InvalidArgumentException("The Page#view action expects an alias as an argument, which has an
+            existing page file");
         }
 
         /** @var FileLoader $fileLoader */
@@ -28,6 +29,22 @@ class PageController extends AbstractController{
         $response->setContent($pageContent);
 
         return $response;
+    }
+
+    public function viewRespondsTo($arguments){
+        if(!isset($arguments["alias"])){
+            return false;
+        }
+
+        /** @var FileLoader $fileLoader */
+        $fileLoader = $this->getFactory()->load("\\FlyFoundation\\Core\\FileLoader");
+        $filename = $fileLoader->findPage($arguments["alias"]);
+
+        if(!$filename){
+            return false;
+        }
+
+        return true;
     }
 
     public function pageNotFound(Response $response, array $arguments)

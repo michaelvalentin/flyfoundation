@@ -82,7 +82,12 @@ abstract class AbstractController implements Controller{
      */
     public function respondsTo($action, array $arguments = [])
     {
-        return $this->doAction($action, $arguments) != false;
+        $respondsToMethod = $action."RespondsTo";
+        if(method_exists($this, $respondsToMethod)){
+            return $this->$respondsToMethod($arguments);
+        }else{
+            return $this->doAction($action, $arguments) != false;
+        }
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace FlyFoundation;
 
+use FlyFoundation\Core\Response;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Controllers\BaseController;
 use FlyFoundation\Core\Factories\ConfigurationFactory;
@@ -97,14 +98,14 @@ class App {
 
     private function getBaseResponse(Factory $factory)
     {
+        /** @var Response $response */
         $response = $factory->load("\\FlyFoundation\\Core\\Response");
         foreach($factory->getConfig()->baseControllers->asArray() as $baseControllerName){
             $baseController = $factory->load($baseControllerName);
             if(!$baseController instanceof BaseController){
                 throw new InvalidArgumentException("Base Controllers must be of class AbstractBaseController");
             }
-            $baseController->setBaseResponse($response);
-            $response = $baseController->beforeController();
+            $response = $baseController->beforeController($response);
         }
         return $response;
     }
@@ -116,8 +117,7 @@ class App {
             if(!$baseController instanceof BaseController){
                 throw new InvalidArgumentException("Base Controllers must be of class AbstractBaseController");
             }
-            $baseController->setBaseResponse($response);
-            $response = $baseController->afterController();
+            $response = $baseController->afterController($response);
         }
         return $response;
     }
