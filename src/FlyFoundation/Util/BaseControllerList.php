@@ -4,7 +4,7 @@
 namespace FlyFoundation\Util;
 
 
-use FlyFoundation\Controllers\AbstractBaseController;
+use FlyFoundation\Controllers\BaseController;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 
 class BaseControllerList extends ValueList{

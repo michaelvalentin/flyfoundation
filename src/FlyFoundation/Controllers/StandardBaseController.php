@@ -4,16 +4,16 @@
 namespace FlyFoundation\Controllers;
 
 
-class StandardBaseController extends AbstractBaseController{
+class StandardBaseController implements BaseController{
 
-    public function beforeRender()
+    public function beforeController()
     {
         $response = $this->getBaseResponse();
         $response->setDataValue("baseurl",$this->getContext()->getBaseUrl());
         return $response;
     }
 
-    public function afterRender()
+    public function afterController()
     {
         //TODO: This is silly, lets change it soon ;-)
         $response = $this->getBaseResponse();

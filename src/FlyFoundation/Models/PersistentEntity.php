@@ -16,7 +16,7 @@ abstract class PersistentEntity implements Entity, Model
     public function __construct(EntityDefinition $entityDefinition, array $data = array())
     {
         $this->entityDefinition = $entityDefinition;
-        $this->columnValuePairs = $columnValuePairs;
+        $this->columnValuePairs = $data;
     }
 
     public function getDefinition()

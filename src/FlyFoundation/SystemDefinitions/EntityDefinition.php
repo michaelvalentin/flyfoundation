@@ -95,11 +95,13 @@ class EntityDefinition extends DefinitionComponent{
 
     public function finalize()
     {
+        if(!is_array($this->fields) || count($this->fields)<1){
+            throw new InvalidArgumentException("An entity definition must have at least one field.");
+        }
         parent::finalize();
-        //TODO: Implement
     }
 
-    protected function applyFields($fieldsData){
+    protected function applyFields(array $fieldsData){
         foreach($fieldsData as $fieldData){
             $field = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\PersistentField");
             $field->applyOptions($fieldData);
