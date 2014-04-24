@@ -1,7 +1,7 @@
 <?php
 
 use FlyFoundation\Controllers\Controller;
-use FlyFoundation\Controllers\DynamicEntityController;
+use FlyFoundation\Controllers\GenericEntityController;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Factory;
 use FlyFoundation\Models\OpenPersistentEntity;
@@ -79,12 +79,11 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf("\\FlyFoundation\\Util\\Set",$result);
     }
 
-    public function testLoadingNonExistingModel()
+    public function testLoadingNonExistingModelWithoutDefinition()
     {
         /** @var OpenPersistentEntity $result */
         $result = $this->factory->load("\\FlyFoundation\\Models\\MyModel");
         $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenPersistentEntity",$result);
-        $def = $result->getDefinition(); //TODO: Inspect the definition to see if it's correct
     }
 
     public function testLoadExistingModelInTestApp()
@@ -131,9 +130,9 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
 
     public function testLoadingNonExistingController()
     {
-        /** @var DynamicEntityController $result */
+        /** @var GenericEntityController $result */
         $result = $this->factory->loadController("SomeSpecial");
-        $this->assertInstanceOf("\\FlyFoundation\\Controllers\\DynamicEntityController",$result);
+        $this->assertInstanceOf("\\FlyFoundation\\Controllers\\GenericEntityController",$result);
 
         $model = $result->getModel();
         $view = $result->getView();

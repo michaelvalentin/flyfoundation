@@ -4,15 +4,28 @@
 namespace FlyFoundation\Core;
 
 
+use FlyFoundation\Core\Response\ResponseHeaders;
+use FlyFoundation\Core\Response\ResponseMetaData;
+
 interface Response {
 
     public function output();
 
+    public function asArray();
+
+    /**
+     * @return ResponseHeaders
+     */
+    public function getHeaders();
+
+    /**
+     * @return ResponseMetaData
+     */
+    public function getMetaData();
+
     public function setOutputType($outputType);
 
     public function getOutputType();
-
-    public function asArray();
 
     public function setTitle($title);
 

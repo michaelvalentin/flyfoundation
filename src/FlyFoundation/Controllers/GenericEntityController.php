@@ -8,7 +8,7 @@ use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Models\Entity;
 use FlyFoundation\Models\Model;
 
-class DynamicEntityController extends AbstractController{
+class GenericEntityController extends AbstractController{
 
     public function index(Response $response, array $arguments)
     {
@@ -29,7 +29,7 @@ class DynamicEntityController extends AbstractController{
     public function setModel(Model $model)
     {
         if(!$model instanceof Entity){
-            throw new InvalidOperationException("Models for DynamicEntityControllers must implement the Entity interface");
+            throw new InvalidOperationException("Models for GenericEntityControllers must implement the Entity interface");
         }
         parent::setModel($model);
     }
@@ -37,20 +37,20 @@ class DynamicEntityController extends AbstractController{
     /**
      * @return Entity
      */
-    public function getModel()
+    public function getEntity()
     {
-        return parent::getModel();
+        return $this->getModel();
     }
 
-    public function getModelDefinition()
+    public function getEntityDefinition()
     {
-        return $this->getModel()->getDefinition();
+        return $this->getEntity()->getDefinition();
     }
 
     public function getDataFinderBuilder()
     {
         $dataFinderBuilder = $this->getFactory()->load("\\FlyFoundation\\DefinitionInterpreters\\DataFinderBuilder");
-        $dataFinderBuilder->setDefinintion($this->getModelDefinition());
+        $dataFinderBuilder->setDefinintion($this->getEntityDefinition());
         return $dataFinderBuilder;
     }
 } 

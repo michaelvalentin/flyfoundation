@@ -13,6 +13,7 @@ abstract class DefinitionComponent {
     use Environment;
 
     private $finalized;
+    private $settings;
 
     public function applyOptions(array $options)
     {
@@ -24,6 +25,22 @@ abstract class DefinitionComponent {
         {
             $this->applyOption($optionName, $value);
         }
+    }
+
+    public function applySettings(array $settings)
+    {
+        $this->settings = $settings;
+    }
+
+    public function getSetting($name)
+    {
+        if(!is_array($this->settings)){
+            return false;
+        }
+        if(!isset($this->settings[$name])){
+            return false;
+        }
+        return $this->settings[$name];
     }
 
     public function finalize()

@@ -49,7 +49,7 @@ class PageController extends AbstractController{
 
     public function pageNotFound(Response $response, array $arguments)
     {
-        $response->headers->SetHeader("HTTP/1.0 404 Not Found",false);
+        $response->getHeaders()->SetHeader("HTTP/1.0 404 Not Found",false);
         return $this->view($response, ["alias" => "404-not-found"]);
     }
 } 

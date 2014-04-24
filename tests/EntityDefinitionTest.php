@@ -79,5 +79,33 @@ class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
         ]);
         $this->definition->finalize();
     }
+
+    public function testSettings()
+    {
+        $this->definition->applyOptions([
+            "fields" => [
+                [
+                    "type" => "string",
+                    "name" => "testField"
+                ],
+                [
+                    "type" => "string",
+                    "name" => "testField2"
+                ],
+            ],
+            "settings" => [
+                "mySetting" => "myValue",
+                "myOtherSetting" => "otherValue"
+            ]
+        ]);
+        $this->definition->finalize();
+        $result1 = $this->definition->getSetting("mySetting");
+        $result2 = $this->definition->getSetting("myOtherSetting");
+        $result3 = $this->definition->getSetting("doesNotExist");
+
+        $this->assertSame("myValue", $result1);
+        $this->assertSame("otherValue", $result2);
+        $this->assertFalse($result3);
+    }
 }
  

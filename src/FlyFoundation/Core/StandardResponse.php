@@ -21,8 +21,8 @@ class StandardResponse implements Response{
 
     use Environment;
 
-	public $headers;
-	public $metaData;
+	private $headers;
+	private $metaData;
     private $outputType;
 	private $title;
 	private $javaScriptAfterBody;
@@ -236,5 +236,21 @@ class StandardResponse implements Response{
     public function getTitle($title)
     {
         return $this->title;
+    }
+
+    /**
+     * @return ResponseHeaders
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @return ResponseMetaData
+     */
+    public function getMetaData()
+    {
+        $this->metaData;
     }
 }

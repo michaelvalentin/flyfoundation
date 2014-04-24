@@ -29,7 +29,7 @@ class ControllerFactory extends AbstractFactory
         if(class_exists($className)){
             $controller = $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
         }else{
-            $controller = $this->getFactory()->load("\\FlyFoundation\\Controllers\\DynamicEntityController",$arguments);
+            $controller = $this->getFactory()->load("\\FlyFoundation\\Controllers\\GenericEntityController",$arguments);
         }
 
         if(($controller instanceof Controller)){

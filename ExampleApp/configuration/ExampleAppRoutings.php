@@ -11,6 +11,7 @@ class ExampleAppRoutings implements Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
+        $config->routing->addRouting("GET:demo","Blog#index");
         $config->routing->addRouting("GET:example-app/{word}","ExampleApp#show");
         $config->routing->addRouting("GET:test/{alias}","MyModel#view");
         $config->routing->addRouting("GET:test/", "MyModel#show");

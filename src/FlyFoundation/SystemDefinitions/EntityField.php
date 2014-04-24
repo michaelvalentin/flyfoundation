@@ -8,6 +8,7 @@ use FlyFoundation\Core\Environment;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Models\Entity;
+use FlyFoundation\Models\OpenPersistentEntity;
 
 abstract class EntityField extends DefinitionComponent{
 
@@ -70,7 +71,9 @@ abstract class EntityField extends DefinitionComponent{
     private function isInstanceOfEntity($typeName)
     {
         $model = $this->getFactory()->loadModel($typeName);
-        if($model instanceof Entity){
+        if($model instanceof OpenPersistentEntity){
+            return $model->getDefinition()->getName() != null;
+        }elseif($model instanceof Entity){
             return true;
         }else{
             return false;

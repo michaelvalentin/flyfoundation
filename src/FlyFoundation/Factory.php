@@ -63,8 +63,7 @@ class Factory extends AbstractFactory{
             "ControllerFactory" => $this->getConfig()->controllerSearchPaths,
             "DatabaseFactory" => $this->getConfig()->databaseSearchPaths,
             "ModelFactory" => $this->getConfig()->modelSearchPaths,
-            "ViewFactory" => $this->getConfig()->viewSearchPaths,
-            "EntityDefinitionFactory" => new ValueList(["\\FlyFoundation\\SystemDefinitions"])
+            "ViewFactory" => $this->getConfig()->viewSearchPaths
         ];
 
         foreach($factorySearchPathsMap as $factory=>$paths)
@@ -147,18 +146,6 @@ class Factory extends AbstractFactory{
         return $this->load($fullClassName, $arguments);
     }
 
-    public function loadEntityForm($modelName, $arguments = array())
-    {
-        $fullClassName = "\\FlyFoundation\\Models\\".$modelName."EntityForm";
-        return $this->load($fullClassName, $arguments);
-    }
-
-    public function loadEntityListing($modelName, $arguments = array())
-    {
-        $fullClassName = "\\FlyFoundation\\Models\\".$modelName."EntityListing";
-        return $this->load($fullClassName, $arguments);
-    }
-
     /**
      * @param string $entityName
      * @param array $arguments
@@ -189,12 +176,6 @@ class Factory extends AbstractFactory{
     public function loadDataMethods($dqoName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dqoName;
-        return $this->load($fullClassName, $arguments);
-    }
-
-    public function loadEntityDefinition($entityName, $arguments = array())
-    {
-        $fullClassName = "\\FlyFoundation\\SystemDefinitions\\".$entityName."Definition";
         return $this->load($fullClassName, $arguments);
     }
 }
