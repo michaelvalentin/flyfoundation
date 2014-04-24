@@ -8,24 +8,49 @@ use FlyFoundation\Exceptions\InvalidArgumentException;
 
 class EntityDefinition extends DefinitionComponent{
 
+    /** @var string */
     protected $name;
     /** @var EntityField[] */
     protected $fields;
+    /** @var  EntityValidation[] */
     protected $validations;
+    /** @var  EntityIndex[] */
     protected $indexes;
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         $this->requireFinalized();
         return $this->name;
     }
 
+    /**
+     * @return EntityField[]
+     */
     public function getFields()
     {
         $this->requireFinalized();
         return $this->fields;
     }
 
+    public function getField($name){
+        $this->requireFinalized();
+        if(!$this->hasField($name)){
+            throw new InvalidArgumentException("The entity definition ".$this->getName()." does not contain a field ".$name);
+        }
+        return $this->fields[$name];
+    }
+
+    public function hasField($name){
+        $this->requireFinalized();
+        return isset($this->fields[$name]);
+    }
+
+    /**
+     * @return array
+     */
     public function getPersistentFields()
     {
         $this->requireFinalized();
@@ -70,17 +95,6 @@ class EntityDefinition extends DefinitionComponent{
         return $result;
     }
 
-    public function getField($name)
-    {
-        $this->requireFinalized();
-        foreach($this->getFields() as $field){
-            if($field->getName() == $name){
-                return $field;
-            }
-        }
-        throw new InvalidArgumentException("No field '".$name."' exists in the definition '".$this->getName()."'");
-    }
-
     public function getValidations()
     {
         $this->requireFinalized();
@@ -101,12 +115,17 @@ class EntityDefinition extends DefinitionComponent{
         parent::finalize();
     }
 
-    protected function applyFields(array $fieldsData){
-        foreach($fieldsData as $fieldData){
+    protected function applyFields(array $fieldsData)
+    {
+        foreach($fieldsData as $fieldData)
+        {
             $field = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\PersistentField");
             $field->applyOptions($fieldData);
             $field->setEntityDefinition($this);
-            $this->fields[] = $field;
+            if(!isset($fieldData["name"])){
+                throw new InvalidArgumentException("A field must have a name to be in an entity definition.");
+            }
+            $this->fields[$fieldData["name"]] = $field;
         }
     }
 }

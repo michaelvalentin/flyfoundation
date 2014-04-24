@@ -10,3 +10,12 @@
 - The relevant definition component will validate the options as they receive them
 - Before the definition component can be read, it must be finalized
 - In finalizing the component, the relevant component will make sure that it's properties are valid
+
+#System model properties and settings
+- The core properties (options) with relevant apply methods, are the essential
+  parts of the system definition.
+- Additional info can be added as settings, but settings should follow this:
+   * They are simple string/integer types
+   * The system does not rely on them (a default value/behavior exist)
+   * They do not come with any guarantees, and the finialization should not
+     care about them

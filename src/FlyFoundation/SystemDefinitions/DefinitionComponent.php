@@ -34,6 +34,7 @@ abstract class DefinitionComponent {
 
     public function getSetting($name)
     {
+        $this->requireFinalized();
         if(!is_array($this->settings)){
             return false;
         }
