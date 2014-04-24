@@ -20,12 +20,6 @@ use FlyFoundation\Views\View;
 
 class Factory extends AbstractFactory{
 
-    public function __construct(Config $config, Context $context)
-    {
-        $this->setConfig($config);
-        $this->setContext($context);
-    }
-
     /**
      * @param string $className
      * @param array $arguments
@@ -98,6 +92,7 @@ class Factory extends AbstractFactory{
             $instance->setFactory($this);
             $instance->setConfig($this->getConfig());
             $instance->setContext($this->getContext());
+            $instance->setSystemDefinition($this->getSystemDefinition());
         }
         return $instance;
     }

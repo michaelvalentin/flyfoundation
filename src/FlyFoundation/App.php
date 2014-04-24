@@ -58,14 +58,26 @@ class App {
         return $this->finalizeResponse($response,$factory);
     }
 
-    public function getFactory($context = null){
+    /**
+     * @param Context $context
+     * @return Factory
+     */
+    public function getFactory(Context $context = null)
+    {
+        $factory = new Factory();
+
         if($context == null){
             $context = new Context();
         }
 
-        $config = $this->getConfiguration();
+        $factory->setContext($context);
 
-        $factory = new Factory($config, $context);
+        $config = $this->getConfiguration();
+        $factory->setConfig($config);
+
+        $systemDefinitionFactory = $factory->load("\\FlyFoundation\\Core\\Factories\\SystemDefinitionFactory");
+        $systemDefinition = $systemDefinitionFactory->loadFromConfig($config);
+        $factory->setSystemDefinition($systemDefinition);
 
         return $factory;
     }
@@ -98,12 +110,6 @@ class App {
     public function addConfigurators($directory)
     {
         $this->configurationFactory->addConfiguratorDirectory($directory);
-    }
-
-    private function getSystemDefinition(Factory $factory)
-    {
-        $systemDefinitionFactory = $factory->load("\\FlyFoundation\\Core\\Factories\\SystemDefinitionFactory");
-        return $systemDefinitionFactory->buildFromConfig();
     }
 
     private function getBaseResponse(Factory $factory)

@@ -25,9 +25,6 @@ class Config {
     /** @var bool  */
     private $locked;
 
-    /** @var  SystemDefinition */
-    private $systemDefinition;
-
     /** @var \FlyFoundation\Util\ClassMap  */
     public $classOverrides;
 
@@ -126,29 +123,5 @@ class Config {
     public function isLocked()
     {
         return $this->locked;
-    }
-
-
-    /**
-     * @param \FlyFoundation\SystemDefinitions\SystemDefinition $systemDefinition
-     * @throws Exceptions\InvalidOperationException
-     */
-    public function setSystemDefinition(SystemDefinition $systemDefinition)
-    {
-        if($this->isLocked()){
-            throw new InvalidOperationException("The configuration file is locked and can not be changed.");
-        }
-        if(!$systemDefinition->isFinalized()){
-            $systemDefinition->finalize();
-        }
-        $this->systemDefinition = $systemDefinition;
-    }
-
-    /**
-     * @return \FlyFoundation\SystemDefinitions\SystemDefinition
-     */
-    public function getSystemDefinition()
-    {
-        return $this->systemDefinition;
     }
 }

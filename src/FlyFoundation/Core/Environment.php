@@ -6,20 +6,17 @@ namespace FlyFoundation\Core;
 
 use FlyFoundation\Config;
 use FlyFoundation\Factory;
+use FlyFoundation\SystemDefinitions\SystemDefinition;
 
 trait Environment {
-    /**
-     * @var Context
-     */
+    /** @var Context */
     private $context;
-    /**
-     * @var Config
-     */
+    /** @var Config */
     private $config;
-    /**
-     * @var Factory
-     */
+    /** @var Factory */
     private $factory;
+    /** @var SystemDefinition */
+    private $systemDefinition;
 
     /**
      * @param \FlyFoundation\Config $config
@@ -67,6 +64,25 @@ trait Environment {
     public function getFactory()
     {
         return $this->factory;
+    }
+
+    /**
+     * @param \FlyFoundation\SystemDefinitions\SystemDefinition $systemDefinition
+     */
+    public function setSystemDefinition(SystemDefinition $systemDefinition)
+    {
+        if(!$systemDefinition->isFinalized()){
+            $systemDefinition->finalize();
+        }
+        $this->systemDefinition = $systemDefinition;
+    }
+
+    /**
+     * @return \FlyFoundation\SystemDefinitions\SystemDefinition
+     */
+    public function getSystemDefinition()
+    {
+        return $this->systemDefinition;
     }
 
 

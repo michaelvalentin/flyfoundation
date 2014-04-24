@@ -10,10 +10,12 @@ use FlyFoundation\SystemDefinitions\SystemDefinition;
 class SystemDefinitionFactory {
 
     /**
+     * @param \FlyFoundation\Config $config
      * @return SystemDefinition
      */
-    public function buildFromConfig(){
+    public function loadFromConfig(Config $config){
         //TODO: Implement
+        return new SystemDefinition();
     }
 
 } 
