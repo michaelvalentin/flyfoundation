@@ -16,6 +16,24 @@ class EntityDefinition extends DefinitionComponent{
     protected $validations;
     /** @var  EntityIndex[] */
     protected $indexes;
+    /** @var  SystemDefinition */
+    private $systemDefinition;
+
+    /**
+     * @param SystemDefinition $systemDefinition
+     */
+    public function setSystemDefinition(SystemDefinition $systemDefinition)
+    {
+        $this->systemDefinition = $systemDefinition;
+    }
+
+    /**
+     * @return SystemDefinition
+     */
+    public function getSystemDefinition()
+    {
+        return $this->systemDefinition;
+    }
 
     /**
      * @return string
@@ -119,6 +137,7 @@ class EntityDefinition extends DefinitionComponent{
     {
         foreach($fieldsData as $fieldData)
         {
+            //TODO: This should split them into different types of fields!
             $field = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\PersistentField");
             $field->applyOptions($fieldData);
             $field->setEntityDefinition($this);
@@ -126,6 +145,33 @@ class EntityDefinition extends DefinitionComponent{
                 throw new InvalidArgumentException("A field must have a name to be in an entity definition.");
             }
             $this->fields[$fieldData["name"]] = $field;
+        }
+    }
+
+    protected function applyName($name)
+    {
+        $this->name = $name;
+    }
+
+    protected function applyValidations(array $validationsData)
+    {
+        foreach($validationsData as $validationData)
+        {
+            $validation = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\EntityValidation");
+            $validation->applyOptions($validationData);
+            $validation->setEntityDefinition($this);
+            $this->validations[] = $validation;
+        }
+    }
+
+    protected function applyIndexes(array $indexesData)
+    {
+        foreach($indexesData as $indexData)
+        {
+            $index = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\EntityIndex");
+            $index->applyOptions($indexData);
+            $index->setEntityDefinition($this);
+            $this->validations[] = $index;
         }
     }
 }

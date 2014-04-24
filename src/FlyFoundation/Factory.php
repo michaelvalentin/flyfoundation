@@ -22,8 +22,6 @@ class Factory extends AbstractFactory{
 
     public function __construct(Config $config, Context $context)
     {
-
-
         $this->setConfig($config);
         $this->setContext($context);
     }

@@ -2,6 +2,7 @@
 
 namespace FlyFoundation;
 
+use FlyFoundation\Core\Factories\SystemDefinitionFactory;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Controllers\BaseController;
@@ -88,12 +89,21 @@ class App {
             $config->templateDirectories->add($dir."/templates");
         }
 
+        $config->lock();
+
         return $config;
     }
+
 
     public function addConfigurators($directory)
     {
         $this->configurationFactory->addConfiguratorDirectory($directory);
+    }
+
+    private function getSystemDefinition(Factory $factory)
+    {
+        $systemDefinitionFactory = $factory->load("\\FlyFoundation\\Core\\Factories\\SystemDefinitionFactory");
+        return $systemDefinitionFactory->buildFromConfig();
     }
 
     private function getBaseResponse(Factory $factory)

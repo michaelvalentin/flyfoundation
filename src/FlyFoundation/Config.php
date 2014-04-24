@@ -3,6 +3,7 @@
 namespace FlyFoundation;
 use FlyFoundation\Core\RoutingList;
 use FlyFoundation\Exceptions\InvalidOperationException;
+use FlyFoundation\SystemDefinitions\SystemDefinition;
 use FlyFoundation\Util\BaseControllerList;
 use FlyFoundation\Util\ClassMap;
 use FlyFoundation\Util\DirectoryList;
@@ -18,13 +19,14 @@ use FlyFoundation\Util\ValueList;
  */
 class Config {
 
-    /** @var \FlyFoundation\Util\ClassMap $this->test */
-
     /** @var array  */
     private $data;
 
     /** @var bool  */
     private $locked;
+
+    /** @var  SystemDefinition */
+    private $systemDefinition;
 
     /** @var \FlyFoundation\Util\ClassMap  */
     public $classOverrides;
@@ -124,5 +126,29 @@ class Config {
     public function isLocked()
     {
         return $this->locked;
+    }
+
+
+    /**
+     * @param \FlyFoundation\SystemDefinitions\SystemDefinition $systemDefinition
+     * @throws Exceptions\InvalidOperationException
+     */
+    public function setSystemDefinition(SystemDefinition $systemDefinition)
+    {
+        if($this->isLocked()){
+            throw new InvalidOperationException("The configuration file is locked and can not be changed.");
+        }
+        if(!$systemDefinition->isFinalized()){
+            $systemDefinition->finalize();
+        }
+        $this->systemDefinition = $systemDefinition;
+    }
+
+    /**
+     * @return \FlyFoundation\SystemDefinitions\SystemDefinition
+     */
+    public function getSystemDefinition()
+    {
+        return $this->systemDefinition;
     }
 }

@@ -8,9 +8,9 @@ use FlyFoundation\Exceptions\InvalidArgumentException;
 
 class SystemDefinition extends DefinitionComponent{
     /** @var EntityDefinition[] */
-    private $entities;
+    protected $entities;
     /** @var string */
-    private $name;
+    protected $name;
 
     /**
      * @return EntityDefinition[]
@@ -65,11 +65,19 @@ class SystemDefinition extends DefinitionComponent{
         {
             $entity = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\EntityDefinition");
             $entity->applyOptions($entityData);
-            $entity->setEntityDefinition($this);
+            $entity->setSystemDefinition($this);
             if(!isset($entityData["name"])){
                 throw new InvalidArgumentException("An entity must have a name to be in a system definition.");
             }
             $this->entities[$entityData["name"]] = $entity;
         }
+    }
+
+    public function finalize()
+    {
+        if(!$this->name){
+            throw new InvalidArgumentException("A system definition must have a name");
+        }
+        parent::finalize();
     }
 } 

@@ -4,7 +4,7 @@
 namespace FlyFoundation\SystemDefinitions;
 
 
-use Aws\Common\Exception\InvalidArgumentException;
+use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Core\Environment;
 use FlyFoundation\Exceptions\InvalidOperationException;
 
@@ -18,7 +18,7 @@ abstract class DefinitionComponent {
     public function applyOptions(array $options)
     {
         if($this->isFinalized()){
-            throw new InvalidOperationException("The definition is all ready finalized, and can not be changed");
+            throw new InvalidOperationException("The definition is allready finalized, and can not be changed");
         }
 
         foreach($options as $optionName => $value)
@@ -32,28 +32,28 @@ abstract class DefinitionComponent {
         $this->settings = $settings;
     }
 
-    public function getSetting($name)
+    public function getSetting($name, $default = null)
     {
         $this->requireFinalized();
         if(!is_array($this->settings)){
-            return false;
+            return $default;
         }
         if(!isset($this->settings[$name])){
-            return false;
+            return $default;
         }
         return $this->settings[$name];
     }
 
     public function finalize()
     {
-        $instanceVariableNames = array_keys(get_object_vars($this));
+        $instanceVariableNames = $this->getInstanceVariables();
         $this->finalizeVariables($instanceVariableNames);
         $this->finalized = true;
     }
 
     public function isFinalized()
     {
-        return $this->finalized;
+        return $this->finalized == true;
     }
 
     public function requireFinalized()
@@ -92,6 +92,17 @@ abstract class DefinitionComponent {
         }else{
             throw new InvalidArgumentException("The option '".$optionName."' could not be found in the definition.");
         }
+    }
+
+    private function getInstanceVariables()
+    {
+        $reflection = new \ReflectionClass($this);
+        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED);
+        $result = array();
+        foreach($properties as $p){
+            $result[] = $p->getName();
+        }
+        return $result;
     }
 
 
