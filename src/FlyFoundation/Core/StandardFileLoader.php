@@ -9,15 +9,15 @@ class StandardFileLoader implements FileLoader{
 
     use Environment;
 
-    public function findFile($path)
+    public function findFile($fileName, array $extensions = [])
     {
-        $baseDirectories = $this->getConfig()->baseFileDirectories->asArray();
-
-        $result = $this->findSpecialFile($path);
+        $result = $this->findSpecialFile($fileName, $extensions);
 
         if(!$result){
-            $result = $this->findFileInPaths($path, $baseDirectories);
+            $baseDirectories = $this->getConfig()->baseFileDirectories->asArray();
+            $result = $this->findFileInPaths($fileName, $baseDirectories, $extensions);
         }
+
         return $result;
     }
 
@@ -28,7 +28,9 @@ class StandardFileLoader implements FileLoader{
 
     public function findEntityDefinition($name)
     {
-        return $this->findFile("entity_definitions/".$name.".json");
+        $extensions = [".lsd", ".yml", ".json"];
+
+        return $this->findFile("entity_definitions/".$name, $extensions);
     }
 
     public function findPage($name)
@@ -36,23 +38,29 @@ class StandardFileLoader implements FileLoader{
         return $this->findFile("pages/".$name.".mustache");
     }
 
-    private function findFileInPaths($name, $paths)
+    private function findFileInPaths($name, $paths, array $extensions = [])
     {
+        if(count($extensions) == 0){
+            $extensions = [""];
+        }
+
         foreach($paths as $path)
         {
-            $filename = $path."/".$name;
-            if(file_exists($filename)){
-                return $filename;
+            $fileName = $this->fileExistsWithExtensions($path."/".$name,$extensions);
+            if($fileName){
+                return $fileName;
             }
         }
         return false;
     }
 
-    private function findSpecialFile($path)
+
+
+    private function findSpecialFile($fileName, array $extensions = [])
     {
         $specialFilePattern = "/^(templates|entity_definitions|pages)\\/(.*)$/";
         $matches = [];
-        $isSpecialFile = preg_match($specialFilePattern, $path, $matches);
+        $isSpecialFile = preg_match($specialFilePattern, $fileName, $matches);
 
         if(!$isSpecialFile){
             return false;
@@ -73,8 +81,18 @@ class StandardFileLoader implements FileLoader{
                 break;
         }
 
-        $paths = $paths;
+        return $this->findFileInPaths($matches[2],$paths, $extensions);
+    }
 
-        return $this->findFileInPaths($matches[2],$paths);
+    private function fileExistsWithExtensions($fileName, $extensions)
+    {
+        foreach($extensions as $extension)
+        {
+            $fileNameWithExtension = $fileName.$extension;
+            if(file_exists($fileNameWithExtension)){
+                return $fileNameWithExtension;
+            }
+        }
+        return false;
     }
 }
