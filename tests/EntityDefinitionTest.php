@@ -2,25 +2,38 @@
 
 use FlyFoundation\App;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
+use FlyFoundation\SystemDefinitions\SystemDefinition;
 
 require_once __DIR__.'/test-init.php';
 
 
 class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
-    /** @var  EntityDefinition */
+    /** @var  SystemDefinition */
     private $definition;
 
     protected function setUp()
     {
         $app = new App();
         $app->addConfigurators(__DIR__."/TestApp/configurators");
-        $this->definition = $app->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\EntityDefinition");
+        $this->definition = $app->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\SystemDefinition");
         parent::setUp();
+    }
+
+    public function applySingleEntityOptions(array $options)
+    {
+        $options = [
+            "name" => "Testing Definintion",
+            "entities" => [
+                $options
+            ]
+        ];
+        $this->definition->applyOptions($options);
     }
 
     public function testConstructionOfValidDefinition()
     {
-        $this->definition->applyOptions([
+        $this->applySingleEntityOptions([
+            "name" => "DemoEntity",
             "fields" => [
                 [
                     "name" => "testTime",
@@ -37,7 +50,8 @@ class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
     public function testConstructIncompleteDefinition()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidArgumentException");
-        $this->definition->applyOptions([
+        $this->applySingleEntityOptions([
+            "name" => "DemoEntity",
             "fields" => [
                 [
                     "type" => "DateTime",
@@ -52,7 +66,8 @@ class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
     public function testConstructIncompleteDefinition2()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidArgumentException");
-        $this->definition->applyOptions([
+        $this->applySingleEntityOptions([
+            "name" => "DemoEntity",
             "fields" => [
                 [
                     "name" => "testTime",
@@ -67,7 +82,8 @@ class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
     public function testConstructInvalidDefinition()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidArgumentException");
-        $this->definition->applyOptions([
+        $this->applySingleEntityOptions([
+            "name" => "DemoEntity",
             "fields" => [
                 [
                     "type" => "TypeDoesNotExist",
@@ -82,7 +98,8 @@ class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
 
     public function testSettings()
     {
-        $this->definition->applyOptions([
+        $this->applySingleEntityOptions([
+            "name" => "DemoEntity",
             "fields" => [
                 [
                     "type" => "string",
@@ -99,13 +116,18 @@ class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
             ]
         ]);
         $this->definition->finalize();
-        $result1 = $this->definition->getSetting("mySetting");
-        $result2 = $this->definition->getSetting("myOtherSetting");
-        $result3 = $this->definition->getSetting("doesNotExist");
+        $entity = $this->definition->getEntity("DemoEntity");
+        $result1 = $entity->getSetting("mySetting");
+        $result2 = $entity->getSetting("myOtherSetting");
+        $result3 = $entity->getSetting("doesNotExist", false);
+        $result4 = $entity->getSetting("doesNotExist");
+        $result5 = $entity->getSetting("doesNotExist","Demo");
 
         $this->assertSame("myValue", $result1);
         $this->assertSame("otherValue", $result2);
         $this->assertFalse($result3);
+        $this->assertNull($result4);
+        $this->assertSame("Demo",$result5);
     }
 }
  

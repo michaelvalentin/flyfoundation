@@ -46,9 +46,18 @@ abstract class DefinitionComponent {
 
     public function finalize()
     {
-        $instanceVariableNames = $this->getInstanceVariables();
-        $this->finalizeVariables($instanceVariableNames);
         $this->finalized = true;
+
+        $instanceVariableNames = $this->getInstanceVariables();
+        $this->executeOnVariables($instanceVariableNames, "finalize");
+
+        $this->validate(); //Validation is after finalization to allow access to parent and children
+    }
+
+    public function validate()
+    {
+        $instanceVariableNames = $this->getInstanceVariables();
+        $this->executeOnVariables($instanceVariableNames, "validate");
     }
 
     public function isFinalized()
@@ -64,21 +73,21 @@ abstract class DefinitionComponent {
         }
     }
 
-    private function finalizeVariables($variableNames)
+    private function executeOnVariables($variableNames, $method)
     {
         foreach($variableNames as $variable){
-            $this->$variable = $this->finalizeRecursive($this->$variable);
+            $this->$variable = $this->executeRecursive($this->$variable, $method);
         }
     }
 
-    private function finalizeRecursive($potentialComponent)
+    private function executeRecursive($potentialComponent, $method)
     {
         if($potentialComponent instanceof DefinitionComponent){
-            $potentialComponent->finalize();
+            $potentialComponent->$method();
         }
         if(is_array($potentialComponent)){
             foreach($potentialComponent as $index => $value){
-                $potentialComponent[$index] = $this->finalizeRecursive($value);
+                $potentialComponent[$index] = $this->executeRecursive($value, $method);
             }
         }
         return $potentialComponent;

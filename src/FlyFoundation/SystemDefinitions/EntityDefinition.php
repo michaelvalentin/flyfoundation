@@ -125,12 +125,12 @@ class EntityDefinition extends DefinitionComponent{
         return $this->indexes;
     }
 
-    public function finalize()
+    public function validate()
     {
         if(!is_array($this->fields) || count($this->fields)<1){
             throw new InvalidArgumentException("An entity definition must have at least one field.");
         }
-        parent::finalize();
+        parent::validate();
     }
 
     protected function applyFields(array $fieldsData)
