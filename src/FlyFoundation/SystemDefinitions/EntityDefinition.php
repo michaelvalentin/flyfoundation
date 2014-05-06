@@ -155,17 +155,20 @@ class EntityDefinition extends DefinitionComponent{
 
     protected function applyValidations(array $validationsData)
     {
-        foreach($validationsData as $validationData)
+        //TODO: Implement
+        /*foreach($validationsData as $validationData)
         {
             $validation = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\EntityValidation");
             $validation->applyOptions($validationData);
             $validation->setEntityDefinition($this);
             $this->validations[] = $validation;
-        }
+        }*/
     }
 
     protected function applyIndexes(array $indexesData)
     {
+        //TODO: Implement
+        /*
         foreach($indexesData as $indexData)
         {
             $index = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\EntityIndex");
@@ -173,5 +176,6 @@ class EntityDefinition extends DefinitionComponent{
             $index->setEntityDefinition($this);
             $this->validations[] = $index;
         }
+        */
     }
 }

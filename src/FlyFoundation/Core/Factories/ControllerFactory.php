@@ -41,6 +41,7 @@ class ControllerFactory extends AbstractFactory
 
     private function decorateController(Controller $controller, $controllerName)
     {
+        if($this->getFactory()->)
         $view = $this->getFactory()->loadView($controllerName);
         $controller->setView($view);
 

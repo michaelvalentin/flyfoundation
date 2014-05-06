@@ -22,6 +22,19 @@ class ConfigurationFactory {
 
     public function getConfiguration(){
         $config = $this->applyConfigurators($this->config);
+
+        foreach($config->baseSearchPaths->asArray() as $path){
+            $config->databaseSearchPaths->add($path."\\Database");
+            $config->controllerSearchPaths->add($path."\\Controllers");
+            $config->viewSearchPaths->add($path."\\Views");
+            $config->modelSearchPaths->add($path."\\Models");
+        }
+
+        foreach($config->baseFileDirectories->asArray() as $dir){
+            $config->entityDefinitionDirectories->add($dir."/entity_definitions");
+            $config->templateDirectories->add($dir."/templates");
+        }
+
         return $config;
     }
 
@@ -71,7 +84,7 @@ class ConfigurationFactory {
     private function configuratorFromFile($file, $directory)
     {
         $matches = [];
-        $phpFile = preg_match("/^(.*)(\.php)$/",$file,$matches);
+        $phpFile = preg_match("/^(.*)(\\.php)$/",$file,$matches);
 
         if(!$phpFile){
             return false;

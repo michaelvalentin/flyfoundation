@@ -1,0 +1,23 @@
+{
+    "fields" : [
+        {
+            "name" : "id",
+            "type" : "integer",
+            "settings" : {
+                "auto_increment" : true,
+                "user_edit" : false
+            }
+        }
+    ],
+    "indexes" : [
+        {
+            "name" : "primary_key",
+            "type" : "primary_key",
+            "fields" : [
+                {
+                    "name" : "id"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "settings" : {
+        "trashing" : true
+    },
+
+    "fields" : [
+        {
+            "name" : "trashed",
+            "type" : "boolean"
+        },
+        {
+            "name" : "trashed_time",
+            "type" : "DateTime"
+        }
+    ]
+}

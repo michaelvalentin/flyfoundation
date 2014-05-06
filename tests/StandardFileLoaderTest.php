@@ -36,7 +36,7 @@ class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {
     {
         $result = $this->fileLoader->findEntityDefinition("demo");
         $contents_result = file_get_contents($result);
-        $contents = file_get_contents(__DIR__."/TestApp/entities/demo.json");
+        $contents = file_get_contents(__DIR__."/TestApp/entities/DemoEntity.json");
         $this->assertSame($contents, $contents_result);
     }
 

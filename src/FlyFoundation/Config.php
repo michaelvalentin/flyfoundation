@@ -43,9 +43,6 @@ class Config {
     /** @var \FlyFoundation\Util\ValueList  */
     public $databaseSearchPaths;
 
-    /** @var \FlyFoundation\Util\ValueList  */
-    public $entityDefinitionSearchPaths;
-
     /** @var \FlyFoundation\Util\DirectoryList */
     public $pageDirectories;
 
@@ -54,6 +51,9 @@ class Config {
 
     /** @var \FlyFoundation\Util\DirectoryList  */
     public $entityDefinitionDirectories;
+
+    /** @var ValueList */
+    public $entityDefinitions;
 
     /** @var \FlyFoundation\Util\DirectoryList  */
     public $baseFileDirectories;
@@ -73,10 +73,10 @@ class Config {
         $this->viewSearchPaths = new ValueList();
         $this->controllerSearchPaths = new ValueList();
         $this->databaseSearchPaths = new ValueList();
-        $this->entityDefinitionSearchPaths = new ValueList();
         $this->pageDirectories = new DirectoryList();
         $this->templateDirectories = new DirectoryList();
         $this->entityDefinitionDirectories = New DirectoryList();
+        $this->entityDefinitions = new ValueList();
         $this->baseFileDirectories = new DirectoryList();
         $this->routing = new RoutingList();
         $this->baseControllers = new BaseControllerList();
@@ -97,8 +97,11 @@ class Config {
         }
     }
 
-    public function get($key)
+    public function get($key, $default = null)
     {
+        if(!isset($this->data[$key])){
+            return $default;
+        }
         return $this->data[$key];
     }
 

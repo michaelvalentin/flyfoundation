@@ -1,7 +1,7 @@
 <?php
 
 
-class DefaultSettingsConfigurator implements \FlyFoundation\Configurator{
+class TestAppSettings implements \FlyFoundation\Configurator{
 
     /**
      * @param \FlyFoundation\Config $config
@@ -9,7 +9,7 @@ class DefaultSettingsConfigurator implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->set("app_name","Set the app_name in the configuration! :-)");
+        $config->set("app_name","TestApp");
         return $config;
     }
 }

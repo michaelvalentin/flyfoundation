@@ -1,0 +1,18 @@
+{
+    "extends" : [
+        "Core/CreatedUpdated"
+    ],
+
+    "name" : "Setting",
+
+    "fields" : [
+        {
+            "name" : "key",
+            "type" : "string"
+        },
+        {
+            "name" : "value",
+            "type" : "integer"
+        }
+    ]
+}

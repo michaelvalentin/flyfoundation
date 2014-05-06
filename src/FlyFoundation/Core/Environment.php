@@ -16,7 +16,7 @@ trait Environment {
     /** @var Factory */
     private $factory;
     /** @var SystemDefinition */
-    private $systemDefinition;
+    private $appDefinition;
 
     /**
      * @param \FlyFoundation\Config $config
@@ -69,20 +69,20 @@ trait Environment {
     /**
      * @param \FlyFoundation\SystemDefinitions\SystemDefinition $systemDefinition
      */
-    public function setSystemDefinition(SystemDefinition $systemDefinition)
+    public function setAppDefinition(SystemDefinition $systemDefinition)
     {
         if(!$systemDefinition->isFinalized()){
             $systemDefinition->finalize();
         }
-        $this->systemDefinition = $systemDefinition;
+        $this->appDefinition = $systemDefinition;
     }
 
     /**
      * @return \FlyFoundation\SystemDefinitions\SystemDefinition
      */
-    public function getSystemDefinition()
+    public function getAppDefinition()
     {
-        return $this->systemDefinition;
+        return $this->appDefinition;
     }
 
 

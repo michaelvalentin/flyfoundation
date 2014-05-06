@@ -77,7 +77,7 @@ class App {
 
         $systemDefinitionFactory = $factory->load("\\FlyFoundation\\Core\\Factories\\SystemDefinitionFactory");
         $systemDefinition = $systemDefinitionFactory->loadFromConfig($config);
-        $factory->setSystemDefinition($systemDefinition);
+        $factory->setAppDefinition($systemDefinition);
 
         return $factory;
     }
@@ -87,19 +87,6 @@ class App {
 
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_after_app");
         $config = $this->configurationFactory->getConfiguration();
-
-        foreach($config->baseSearchPaths->asArray() as $path){
-            $config->databaseSearchPaths->add($path."\\Database");
-            $config->controllerSearchPaths->add($path."\\Controllers");
-            $config->entityDefinitionSearchPaths->add($path."\\SystemDefinitions");
-            $config->viewSearchPaths->add($path."\\Views");
-            $config->modelSearchPaths->add($path."\\Models");
-        }
-
-        foreach($config->baseFileDirectories->asArray() as $dir){
-            $config->entityDefinitionDirectories->add($dir."/entity_definitions");
-            $config->templateDirectories->add($dir."/templates");
-        }
 
         $config->lock();
 

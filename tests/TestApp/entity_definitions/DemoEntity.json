@@ -1,0 +1,9 @@
+{
+    "name" : "DemoEntity",
+    "fields" : [
+        {
+            "name" : "TestField",
+            "type" : "string"
+        }
+    ]
+}

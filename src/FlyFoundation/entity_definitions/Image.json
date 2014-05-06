@@ -1,16 +1,22 @@
 {
+    "extends" : [
+        "File"
+    ],
+
+    "name" : "Image",
+
     "fields" : [
-        {
-            "name" : "title",
-            "type" : "string"
-        },
         {
             "name" : "alternative",
             "type" : "string"
         },
         {
-            "name" : "url",
-            "type" : "string"
+            "name" : "height",
+            "type" : "integer"
+        },
+        {
+            "name" : "width",
+            "type" : "integer"
         }
     ]
 }

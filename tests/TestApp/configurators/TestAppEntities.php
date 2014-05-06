@@ -1,7 +1,7 @@
 <?php
 
 
-class DefaultSettingsConfigurator implements \FlyFoundation\Configurator{
+class TestAppEntities implements \FlyFoundation\Configurator{
 
     /**
      * @param \FlyFoundation\Config $config
@@ -9,7 +9,10 @@ class DefaultSettingsConfigurator implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->set("app_name","Set the app_name in the configuration! :-)");
+        $config->entityDefinitions->addAll([
+            "DemoEntity",
+            "MyImage"
+        ]);
         return $config;
     }
 }

@@ -1,0 +1,23 @@
+{
+    "extends" : [
+        "Core/Id",
+        "Core/CreatedUpdated"
+    ],
+
+    "name" : "File",
+
+    "fields" : [
+        {
+            "name" : "title",
+            "type" : "string"
+        },
+        {
+            "name" : "url",
+            "type" : "string"
+        },
+        {
+            "name" : "alt-url",
+            "type" : "string"
+        }
+    ]
+}

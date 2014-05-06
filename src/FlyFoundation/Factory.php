@@ -45,6 +45,11 @@ class Factory extends AbstractFactory{
 
     }
 
+    public function exists($className)
+    {
+
+    }
+
     /**
      * @param $className
      * @return bool|AbstractFactory
@@ -90,9 +95,15 @@ class Factory extends AbstractFactory{
         if(in_array("FlyFoundation\\Core\\Environment",$traits)){
             /** @var Environment $instance */
             $instance->setFactory($this);
-            $instance->setConfig($this->getConfig());
-            $instance->setContext($this->getContext());
-            $instance->setSystemDefinition($this->getSystemDefinition());
+            if($this->getConfig() != null){
+                $instance->setConfig($this->getConfig());
+            }
+            if($this->getContext() != null){
+                $instance->setContext($this->getContext());
+            }
+            if($this->getAppDefinition() != null){
+                $instance->setAppDefinition($this->getAppDefinition());
+            }
         }
         return $instance;
     }

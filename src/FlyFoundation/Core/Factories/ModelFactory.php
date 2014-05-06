@@ -19,7 +19,6 @@ class ModelFactory extends AbstractFactory{
     {
         $className = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
 
-
         if(class_exists($className)){
             $arguments = $this->prepareArguments($className,$arguments);
             $model = $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
@@ -57,7 +56,7 @@ class ModelFactory extends AbstractFactory{
 
         if($takesEntityDefinitionAsFirstParameter && !$firstArgumentIsEntityDefinition){
             $requestedPartialClassName = $this->findPartialClassNameInPaths($requestedClassName, $this->getConfig()->modelSearchPaths);
-            $entityDefinition = $this->getFactory()->loadEntityDefinition($requestedPartialClassName);
+            $entityDefinition = $this->getAppDefinition()->getEntity($requestedPartialClassName);
             array_unshift($arguments,$entityDefinition);
         }
 

@@ -1,0 +1,17 @@
+{
+    "extends" : ["Image"],
+    "name" : "MyImage",
+    "fields" : [
+        {
+            "name" : "MyImageField",
+            "type" : "string"
+        },
+        {
+            "name" : "alternative",
+            "type" : "string",
+            "settings" : {
+                "my_setting" : "something"
+            }
+        }
+    ]
+}
