@@ -10,6 +10,7 @@ class ExampleAppConfigurator implements \FlyFoundation\Configurator{
     public function apply(\FlyFoundation\Config $config)
     {
         $config->set("test","test");
+        $config->baseFileDirectories->add(__DIR__."/..");
         return $config;
     }
 }
