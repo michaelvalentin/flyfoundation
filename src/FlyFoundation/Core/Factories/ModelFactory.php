@@ -23,6 +23,7 @@ class ModelFactory extends AbstractFactory{
             $arguments = $this->prepareArguments($implementation,$arguments);
             $model = $this->getFactory()->loadWithoutOverridesAndDecoration($implementation, $arguments);
         }else{
+            $arguments = $this->prepareArguments($className, $arguments);
             $model = $this->getFactory()->load($this->defaultModel,$arguments);
         }
 
@@ -46,6 +47,7 @@ class ModelFactory extends AbstractFactory{
 
     private function prepareArguments($className, $arguments)
     {
+
         $reflectionClass = new \ReflectionClass($className);
         $constructor = $reflectionClass->getConstructor();
         $constructorParameters = $constructor->getParameters();
@@ -57,12 +59,12 @@ class ModelFactory extends AbstractFactory{
         $constructorFirstParameterClass = $constructorParameters[0]->getClass()->getName();
         $takesEntityDefinitionAsFirstParameter = $constructorFirstParameterClass == "FlyFoundation\\SystemDefinitions\\EntityDefinition";
 
-        $firstArgumentIsEntityDefinition = false;
+        $firstParameterIsEntityDefinition = false;
         if(isset($arguments[0])){
-            $firstArgumentIsEntityDefinition = $arguments[0] instanceof EntityDefinition;
+            $firstParameterIsEntityDefinition = $arguments[0] instanceof EntityDefinition;
         }
 
-        if($takesEntityDefinitionAsFirstParameter && !$firstArgumentIsEntityDefinition){
+        if($takesEntityDefinitionAsFirstParameter && !$firstParameterIsEntityDefinition){
             $entityName = $this->getEntityName($className);
             $entityDefinition = $this->getAppDefinition()->getEntity($entityName);
             array_unshift($arguments,$entityDefinition);
