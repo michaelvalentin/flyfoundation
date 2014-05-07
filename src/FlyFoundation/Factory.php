@@ -12,6 +12,7 @@ use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Exceptions\InvalidClassException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Util\ClassInspector;
@@ -21,33 +22,58 @@ use FlyFoundation\Views\View;
 class Factory extends AbstractFactory{
 
     /**
-     * @param string $className
+     * @param string $actualClassName
      * @param array $arguments
      * @return object
      */
-    public function load($className, $arguments = array())
+    public function load($className, array $arguments = array())
     {
 
-        $implementation = $this->getOverride($className);
-        if($implementation == $className){
-            $className = $this->findImplementation($className,$this->getConfig()->baseSearchPaths);
-        }else{
-            $className = $implementation;
-        }
+        $actualClassName = $this->findActualClassName($className);
 
-        $specializedFactory = $this->findSpecializedFactory($className);
+        $specializedFactory = $this->findSpecializedFactory($actualClassName);
 
         if($specializedFactory){
-            return $specializedFactory->load($className, $arguments);
+            $result =  $specializedFactory->load($actualClassName, $arguments);
         }else{
-            return $this->loadWithoutOverridesAndDecoration($className, $arguments);
+            $result = $this->loadWithoutOverridesAndDecoration($actualClassName, $arguments);
         }
 
+        if(class_exists($className)){
+            if(!$result instanceof $className){
+                throw new InvalidClassException("The class '".$actualClassName."' is used as '".$className."' but does not extend it. This is not allowed.");
+            }
+        }
+
+        return $result;
     }
 
     public function exists($className)
     {
+        $className = $this->findActualClassName($className);
 
+        $specializedFactory = $this->findSpecializedFactory($className);
+
+        if($specializedFactory){
+            return $specializedFactory->exists($className);
+        }
+
+        return class_exists($className);
+    }
+
+    private function findActualClassName($className)
+    {
+        $implementation = $this->getOverride($className);
+        if($implementation){
+            return $implementation;
+        }
+
+        $implementation = $this->findImplementation($className,$this->getConfig()->baseSearchPaths);
+        if($implementation){
+            return $implementation;
+        }
+
+        return $className;
     }
 
     /**
@@ -128,6 +154,12 @@ class Factory extends AbstractFactory{
         return $this->load($fullClassName, $arguments);
     }
 
+    public function viewExists($viewName)
+    {
+        $fullClassName = "\\FlyFoundation\\Views\\".$viewName."View";
+        return $this->exists($fullClassName);
+    }
+
     /**
      * @param string $controllerName
      * @param array $arguments
@@ -137,6 +169,12 @@ class Factory extends AbstractFactory{
     {
         $fullClassName = "\\FlyFoundation\\Controllers\\".$controllerName."Controller";
         return $this->load($fullClassName, $arguments);
+    }
+
+    public function controllerExists($controllerName)
+    {
+        $fullClassName = "\\FlyFoundation\\Controllers\\".$controllerName."Controller";
+        return $this->exists($fullClassName);
     }
 
     /**
@@ -150,6 +188,12 @@ class Factory extends AbstractFactory{
         return $this->load($fullClassName, $arguments);
     }
 
+    public function modelExists($modelName)
+    {
+        $fullClassName = "\\FlyFoundation\\Models\\".$modelName."Model";
+        return $this->exists($fullClassName);
+    }
+
     /**
      * @param string $entityName
      * @param array $arguments
@@ -159,6 +203,12 @@ class Factory extends AbstractFactory{
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
         return $this->load($fullClassName, $arguments);
+    }
+
+    public function dataMapperExists($entityName)
+    {
+        $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
+        return $this->exists($fullClassName);
     }
 
     /**
@@ -172,14 +222,26 @@ class Factory extends AbstractFactory{
         return $this->load($fullClassName, $arguments);
     }
 
+    public function dataFinderExists($entityName)
+    {
+        $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataFinder";
+        return $this->exists($fullClassName);
+    }
+
     /**
-     * @param string $dqoName
+     * @param string $dataMethodsName
      * @param array $arguments
      * @return DataMethods
      */
-    public function loadDataMethods($dqoName, $arguments = array())
+    public function loadDataMethods($dataMethodsName, $arguments = array())
     {
-        $fullClassName = "\\FlyFoundation\\Database\\".$dqoName;
+        $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
         return $this->load($fullClassName, $arguments);
+    }
+
+    public function dataMethodsExists($dataMethodsName)
+    {
+        $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
+        return $this->load($fullClassName);
     }
 }

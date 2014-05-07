@@ -13,21 +13,6 @@ A class is loaded by:
      variables on!
 
 
-#Controller Factory
-A controller class is loaded by:
-
- 1 : If an explicit implementation of the controller exists, use this
-
- 2 : Otherwise use the generic entity controller, with the name of the
-     demanded controller as it's initiator
-
- 3 : Try to locate an existing model, by stepping back in the inheritance chain
-     until one appears. If none appears -> No problem :-)
-
- 4 : Try to locate an existing view, by stepping back in the inheritance chain
-     until one appears. If none appears -> No problem :-)
-
-
 #Model Factory
 A model class is loaded by:
 
@@ -52,6 +37,21 @@ A view class is loaded by:
      definition
 
  3 : If no entity exists, use the default view
+
+
+#Controller Factory
+A controller class is loaded by:
+
+ 1 : If an explicit implementation of the controller exists, use this
+
+ 2 : Otherwise use the generic entity controller, with the name of the
+     demanded controller as it's initiator
+
+ 3 : Try to locate an existing model, by stepping back in the inheritance chain
+     until one appears. If none appears -> No problem :-)
+
+ 4 : Try to locate an existing view, by stepping back in the inheritance chain
+     until one appears. If none appears -> No problem :-)
 
 
 #DataMapper / DataFinder / DataMethods Factory

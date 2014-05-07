@@ -15,16 +15,24 @@ abstract class AbstractFactory {
      * @param array $arguments
      * @return object
      */
-    public abstract function load($className, $arguments = array());
+    public abstract function load($className, array $arguments = array());
+
+    public abstract function exists($className);
 
     public function getOverride($className){
         $config = $this->getConfig();
+        $originalClassName = $className;
         while($config->classOverrides->containsKey($className))
         {
             $className = $config->classOverrides->get($className);
         }
-        return $className;
+        if($originalClassName == $className){
+            return false;
+        }else{
+            return $className;
+        }
     }
+
 
     public function explodeClassName($className)
     {
@@ -68,7 +76,7 @@ abstract class AbstractFactory {
                 return $fullClassName;
             }
         }
-        return $className;
+        return false;
     }
 
 

@@ -15,29 +15,37 @@ class ModelFactory extends AbstractFactory{
      * @param array $arguments
      * @return object
      */
-    public function load($className, $arguments = array())
+    public function load($className, array $arguments = array())
     {
-        $className = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
+        $implementation = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
 
-        if(class_exists($className)){
-            $arguments = $this->prepareArguments($className,$arguments);
-            $model = $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+        if($implementation){
+            $arguments = $this->prepareArguments($implementation,$arguments);
+            $model = $this->getFactory()->loadWithoutOverridesAndDecoration($implementation, $arguments);
         }else{
-            $arguments = $this->prepareArguments($className,$arguments);
             $model = $this->getFactory()->load($this->defaultModel,$arguments);
         }
 
         return $model;
     }
 
-    private function prepareArguments($className, $arguments)
+    public function exists($className)
     {
-        $requestedClassName = $className;
-
-        if(!class_exists($className)){
-            $className = $this->defaultModel;
+        $implementation = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
+        if($implementation){
+            return true;
         }
 
+        $entityName = $this->getEntityName($className);
+        if($this->getAppDefinition()->hasEntity($entityName)){
+            return true;
+        }
+
+        return false;
+    }
+
+    private function prepareArguments($className, $arguments)
+    {
         $reflectionClass = new \ReflectionClass($className);
         $constructor = $reflectionClass->getConstructor();
         $constructorParameters = $constructor->getParameters();
@@ -55,11 +63,18 @@ class ModelFactory extends AbstractFactory{
         }
 
         if($takesEntityDefinitionAsFirstParameter && !$firstArgumentIsEntityDefinition){
-            $requestedPartialClassName = $this->findPartialClassNameInPaths($requestedClassName, $this->getConfig()->modelSearchPaths);
-            $entityDefinition = $this->getAppDefinition()->getEntity($requestedPartialClassName);
+            $entityName = $this->getEntityName($className);
+            $entityDefinition = $this->getAppDefinition()->getEntity($entityName);
             array_unshift($arguments,$entityDefinition);
         }
 
         return $arguments;
     }
+
+    private function getEntityName($className)
+    {
+        $modelSearchPaths = $this->getConfig()->modelSearchPaths;
+        return $this->findPartialClassNameInPaths($className, $modelSearchPaths);
+    }
+
 }
