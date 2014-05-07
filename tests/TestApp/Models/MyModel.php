@@ -6,7 +6,7 @@ namespace TestApp\Models;
 
 use FlyFoundation\Models\OpenPersistentEntity;
 
-class OtherTestModel extends OpenPersistentEntity{
+class MyModel extends OpenPersistentEntity{
 
     /**
      * @return integer

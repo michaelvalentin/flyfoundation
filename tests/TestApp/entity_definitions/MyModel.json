@@ -1,0 +1,9 @@
+{
+    "name" : "MyModel",
+    "fields" : [
+        {
+            "name" : "MyField",
+            "type" : "string"
+        }
+    ]
+}

@@ -4,7 +4,7 @@ use FlyFoundation\App;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 use FlyFoundation\SystemDefinitions\SystemDefinition;
 
-require_once __DIR__.'/test-init.php';
+require_once __DIR__ . '/../test-init.php';
 
 
 class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
@@ -14,7 +14,7 @@ class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         $app = new App();
-        $app->addConfigurators(__DIR__."/TestApp/configurators");
+        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
         $this->definition = $app->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\SystemDefinition");
         parent::setUp();
     }

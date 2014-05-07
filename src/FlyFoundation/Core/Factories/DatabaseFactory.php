@@ -13,7 +13,7 @@ class DatabaseFactory extends AbstractFactory{
      * @param array $arguments
      * @return object
      */
-    public function load($className, $arguments = array())
+    public function load($className, array $arguments = array())
     {
         $className = $this->findImplementation($className,$this->getConfig()->databaseSearchPaths);
         $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->databaseSearchPaths);
@@ -47,6 +47,11 @@ class DatabaseFactory extends AbstractFactory{
             $dynamicClassName = $this->getDynamicDatabaseClassName($className, $dataObjectType);
             return $this->getFactory()->load($dynamicClassName, $arguments);
         }
+    }
+
+    public function exists($className)
+    {
+        //TODO: Implement!
     }
 
     public function getDynamicDatabaseClassName($className, $dataObjectType)

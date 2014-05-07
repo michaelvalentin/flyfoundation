@@ -4,6 +4,7 @@
 namespace FlyFoundation\Core\Factories;
 
 
+use FlyFoundation\Exceptions\InvalidClassException;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class ModelFactory extends AbstractFactory{
@@ -23,7 +24,8 @@ class ModelFactory extends AbstractFactory{
             $arguments = $this->prepareArguments($implementation,$arguments);
             $model = $this->getFactory()->loadWithoutOverridesAndDecoration($implementation, $arguments);
         }else{
-            $arguments = $this->prepareArguments($className, $arguments);
+            $entityName = $this->getEntityName($className);
+            $arguments = $this->prepareArguments($this->defaultModel, $arguments, $entityName);
             $model = $this->getFactory()->load($this->defaultModel,$arguments);
         }
 
@@ -45,12 +47,20 @@ class ModelFactory extends AbstractFactory{
         return false;
     }
 
-    private function prepareArguments($className, $arguments)
+    private function prepareArguments($className, $arguments, $entityName = false)
     {
+        if(!$entityName){
+            $entityName = $this->getEntityName($className);
+        }
+
 
         $reflectionClass = new \ReflectionClass($className);
         $constructor = $reflectionClass->getConstructor();
-        $constructorParameters = $constructor->getParameters();
+        if($constructor){
+            $constructorParameters = $constructor->getParameters();
+        }else{
+            $constructorParameters = [];
+        }
 
         if(count($constructorParameters) < 1){
             return $arguments;
@@ -65,7 +75,9 @@ class ModelFactory extends AbstractFactory{
         }
 
         if($takesEntityDefinitionAsFirstParameter && !$firstParameterIsEntityDefinition){
-            $entityName = $this->getEntityName($className);
+            if(!$this->getAppDefinition()->hasEntity($entityName)){
+                throw new InvalidClassException("No entity definition '".$entityName."' exists, and the class '".$className."' can not be loaded.");
+            }
             $entityDefinition = $this->getAppDefinition()->getEntity($entityName);
             array_unshift($arguments,$entityDefinition);
         }

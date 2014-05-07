@@ -134,14 +134,14 @@ class Factory extends AbstractFactory{
         return $instance;
     }
 
-    /*****
+    /****************
+     ****************
      *****
-     *
-     * FROM HERE:
-     * Specialized methods for easy type management...
-     *
+     *****  FROM HERE AND DOWN:
+     *****  Specialized methods for easy loading with type hinting...
      *****
-     *****/
+     ****************
+     ****************/
 
     /**
      * @param string $viewName
@@ -184,13 +184,13 @@ class Factory extends AbstractFactory{
      */
     public function loadModel($modelName, $arguments = array())
     {
-        $fullClassName = "\\FlyFoundation\\Models\\".$modelName."Model";
+        $fullClassName = "\\FlyFoundation\\Models\\".$modelName;
         return $this->load($fullClassName, $arguments);
     }
 
     public function modelExists($modelName)
     {
-        $fullClassName = "\\FlyFoundation\\Models\\".$modelName."Model";
+        $fullClassName = "\\FlyFoundation\\Models\\".$modelName;
         return $this->exists($fullClassName);
     }
 

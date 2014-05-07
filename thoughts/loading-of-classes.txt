@@ -52,7 +52,7 @@ A controller class is loaded by:
 
  3b: The generic entity controller will need an entity to work properly, but
      this is not checked by the factory, and should give an error in the
-     controller itself instead.
+     controller itself instead
 
  4 : Try to locate an existing view, by stepping back in the inheritance chain
      until one appears. If none appears -> No problem :-)

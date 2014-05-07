@@ -5,6 +5,8 @@ namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Core\Environment;
+use FlyFoundation\Exceptions\InvalidConfigurationException;
+use FlyFoundation\Util\Set;
 use FlyFoundation\Util\ValueList;
 
 abstract class AbstractFactory {
@@ -22,25 +24,25 @@ abstract class AbstractFactory {
     public function getOverride($className){
         $config = $this->getConfig();
         $originalClassName = $className;
+        $i = 0;
+        $usedClasses = new Set();
         while($config->classOverrides->containsKey($className))
         {
             $className = $config->classOverrides->get($className);
+
+            $i++;
+            if($i > 20){
+                if($usedClasses->contains($className)){
+                    throw new InvalidConfigurationException("The overwriting of '".$originalClassName."' is circular, and the class name can not be resolved.");
+                }
+                $usedClasses->add($className);
+            }
         }
         if($originalClassName == $className){
             return false;
         }else{
             return $className;
         }
-    }
-
-
-    public function explodeClassName($className)
-    {
-        $parts = explode("\\",$className);
-        if($parts[0]==""){
-            array_shift($parts);
-        }
-        return $parts;
     }
 
     public function findPartialClassNameInPaths($className, ValueList $searchPaths)
@@ -67,13 +69,13 @@ abstract class AbstractFactory {
         $partialClassName = $this->findPartialClassNameInPaths($className, $searchPaths);
 
         if(!$partialClassName){
-            return $className;
+            return false;
         }
 
         foreach($searchPaths->asArray() as $path){
-            $fullClassName = $path."\\".$partialClassName;
-            if(class_exists($fullClassName)){
-                return $fullClassName;
+            $potentialImplementation = $path."\\".$partialClassName;
+            if(class_exists($potentialImplementation)){
+                return $potentialImplementation;
             }
         }
         return false;

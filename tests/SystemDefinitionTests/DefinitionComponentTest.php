@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/test-init.php';
+require_once __DIR__ . '/../test-init.php';
 
 class DefinitionComponentTestClass extends \FlyFoundation\SystemDefinitions\DefinitionComponent{
     private $customData;
