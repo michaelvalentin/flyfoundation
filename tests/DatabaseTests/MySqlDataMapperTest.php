@@ -4,7 +4,7 @@
  * Date: 09/04/14
  */
 
-require_once __DIR__.'/test-init.php';
+require_once __DIR__ . '/../test-init.php';
 
 use FlyFoundation\Config;
 use FlyFoundation\Core\Context;
@@ -36,7 +36,7 @@ class MySqlDataMapperTest extends \PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        $settings = json_decode(file_get_contents(__DIR__."/mysql-test-database.json"),true);
+        $settings = json_decode(file_get_contents(TEST_BASE."/mysql-test-database.json"),true);
         $pdo = new PDO("mysql:host=".$settings["host"].";dbname=".$settings["database"], $settings["user"], $settings["password"]);
         $pdo->query('DROP TABLE local_region_site')->execute();
         $pdo->query("CREATE TABLE IF NOT EXISTS `local_region_site` (`id` int NOT NULL PRIMARY KEY AUTO_INCREMENT, `location_name` varchar(255) NOT NULL,  `region_site` varchar(255) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;")->execute();

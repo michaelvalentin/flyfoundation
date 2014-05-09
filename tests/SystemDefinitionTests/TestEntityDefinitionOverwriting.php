@@ -3,7 +3,7 @@
 use FlyFoundation\App;
 use FlyFoundation\SystemDefinitions\SystemDefinition;
 
-require_once __DIR__.'/test-init.php';
+require_once __DIR__ . '/test-init.php';
 
 
 class TestEntityDefinitionOverwriting extends PHPUnit_Framework_TestCase {

@@ -2,7 +2,7 @@
 
 use FlyFoundation\App;
 
-require_once __DIR__.'/test-init.php';
+require_once __DIR__ . '/test-init.php';
 
 
 class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {

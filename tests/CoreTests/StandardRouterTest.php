@@ -2,7 +2,7 @@
 
 use FlyFoundation\Core\StandardRouter;
 
-require_once __DIR__.'/test-init.php';
+require_once __DIR__ . '/test-init.php';
 
 
 class StandardRouterTest extends PHPUnit_Framework_TestCase {

@@ -3,7 +3,7 @@
 use FlyFoundation\App;
 use FlyFoundation\Core\Context;
 
-require_once __DIR__.'/test-init.php';
+require_once __DIR__ . '/test-init.php';
 
 
 class ResponseTest extends PHPUnit_Framework_TestCase {
