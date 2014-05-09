@@ -15,7 +15,7 @@ use FlyFoundation\Models\PersistentEntity;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 use PDO;
 
-class MySqlDataMapper implements DataMapper
+class MySqlGenericDataMapper implements DataMapper
 {
     use Environment;
 

@@ -28,7 +28,7 @@ class ViewFactory extends AbstractFactory{
         $implementation = $this->findImplementation($className,$this->getConfig()->viewSearchPaths);
         $hasViewNaming = $this->hasViewNaming($className);
 
-        return $implementation || $hasViewNaming;
+        return $implementation || $hasViewNaming || class_exists($className);
     }
 
     private function hasViewNaming($className)

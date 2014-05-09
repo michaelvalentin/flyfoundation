@@ -242,6 +242,6 @@ class Factory extends AbstractFactory{
     public function dataMethodsExists($dataMethodsName)
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
-        return $this->load($fullClassName);
+        return $this->exists($fullClassName);
     }
 }

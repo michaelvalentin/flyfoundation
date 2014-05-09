@@ -3,11 +3,7 @@
 
 namespace FlyFoundation\Database;
 
-
-use FlyFoundation\SystemDefinitions\EntityDefinition;
-
 interface DataFinder {
-    public function __construct(EntityDefinition $entityDefinition);
 
     /**
      * @return Entity[]

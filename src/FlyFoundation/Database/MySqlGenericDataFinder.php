@@ -6,7 +6,7 @@ namespace FlyFoundation\Database;
 
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 
-class MySqlDataFinder implements DataFinder{
+class MySqlGenericDataFinder implements DataFinder{
 
     public function __construct(EntityDefinition $entityDefinition)
     {

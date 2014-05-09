@@ -4,11 +4,8 @@
 namespace FlyFoundation\Database;
 
 use FlyFoundation\Models\PersistentEntity;
-use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 interface DataMapper {
-
-    public function __construct(EntityDefinition $entityDefinition);
 
     /**
      * @param PersistentEntity $persistentEntity

@@ -4,6 +4,6 @@
 namespace TestApp\Database;
 
 
-class MySqlDataFinder extends \FlyFoundation\Database\MySqlDataFinder{
+class MySqlGenericDataFinder extends \FlyFoundation\Database\MySqlGenericDataFinder{
 
 } 

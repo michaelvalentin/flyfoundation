@@ -35,7 +35,7 @@ class ControllerFactory extends AbstractFactory
             $controller = $this->getFactory()->load($this->defaultController,$arguments);
         }
 
-        if(($controller instanceof Controller)){
+        if($controller instanceof Controller){
             $controller = $this->decorateController($controller, $controllerName);
         }
 
@@ -54,7 +54,7 @@ class ControllerFactory extends AbstractFactory
             return true;
         }
 
-        return false;
+        return class_exists($className);
     }
 
     private function decorateController(Controller $controller, $controllerName)
