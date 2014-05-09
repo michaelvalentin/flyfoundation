@@ -19,9 +19,7 @@ class MySqlGenericDataMapper implements DataMapper
 {
     use Environment;
 
-    /**
-     * @var FluentPDO
-     */
+    /** @var FluentPDO */
     private $fpdo;
     private $entityDefinition;
 

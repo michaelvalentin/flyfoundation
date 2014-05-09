@@ -15,7 +15,7 @@ interface DataMapper {
     public function save(PersistentEntity $persistentEntity);
 
     /**
-     * @param $id
+     * @param integer $id
      * @return void
      */
     public function delete($id);
