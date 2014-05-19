@@ -1,0 +1,3 @@
+- Dynamic structures are harder to test -> But they make things a hell lot more efficient later on :-)
+
+-
