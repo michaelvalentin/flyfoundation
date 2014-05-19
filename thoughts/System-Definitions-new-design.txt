@@ -17,5 +17,10 @@
 - Additional info can be added as settings, but settings should follow this:
    * They are simple string/integer types
    * The system does not rely on them (a default value/behavior exist)
-   * They do not come with any guarantees, and the finialization should not
+   * They do not come with any guarantees, and the finalization should not
      care about them
+
+#Application architecture in relation to system definitions
+- Generic classes, validators, forms, etc. react on system definition classes
+  and hence do not need worry about the configuration or execution context
+-

@@ -1,3 +1,18 @@
+# New thoughts on the matter
+Generic classes should be loaded through the factory, which can serve an actual
+implementation if it exists or an override if one is configured. The generic
+classes can also be seen as the components of the domain model. These are
+characterized by only changing the function of the application and not of the
+framework. The framework should not rely upon model classes.
+
+Aspects such as Routing, E-mail, File operations, etc. which should be
+configurable should be added as dependencies, which are indicated by dependency
+traits and added to the object through the factory. For testing purposes these
+can manually be set to mock objects.
+
+This means we will only have to do "odd" testing for the factory / dependency
+injector itself...
+
 #General Factory
 A class is loaded by:
 

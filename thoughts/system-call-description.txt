@@ -1,0 +1,105 @@
+In this exercise we consider a GET call to the URL: http://demo.com/users/john
+
+ - The request is handled in the dispatcher, which extracts the URI: users/john.
+    * This happens in .htaccess and the dispatcher
+
+ - The app is initiated and configurators added
+    * Configurators are files that extend the configurator interface, taking a configuration class operating on it and returning it
+
+ - The request string is send to the app, to process
+
+ - The app assembles its configuration.
+    * The configuration is assembled by the ConfigurationFactory
+    * The factory goes through the configurators stated and applies them
+
+ - Based on the configuration the System definition is assembled
+    * A list of files and/or directories is supplied
+    * The files and directories are scanned for definitions
+    * The definitions are applied and validated
+    * The system definition is validated and finalized as a whole
+
+ - Based on the system definition the configuration is tweaked
+    * Dynamic routes are added to the configuration
+    * ###Other dynamic things...
+
+ - The configuration is then locked, and cannot be changed anymore
+
+ - The factory is initiated with the configuration, the system definition and the request string
+
+ - The factory is used to load the router (happens based on the configuration)
+    * The router is populated with the configuration by the factory, based on a dependency trait
+    * The router is also populated with the environment, which the factory builds and stores, using the request string
+
+ - The router is used to determine the controller, action and parameters for the given request
+    * The router goes through to find first matching
+    * First it searches the routes ordered by primarily their priority, secondly their order of declaration
+       o Distinct routes like "/users/[name]" should have a high priority, as they are easy to match
+       o General routes like "[alias]" should have a low priority, as they will require more expensive searches
+          - An alias map could be used to make such searches faster!
+    * Last in this order will be dynamic specific routes meaning that explicit routes have higher priority than dynamic ones
+    * When a route that matches in structure is found, it is tested with its relevant respondsTo method
+    * If the route responds to the arguments, the given controller, action and arguments are the result
+    * If no route is found, the PageController is returned with the 404 action
+    * The relevant controller is loaded through the factory which adds relevant dependencies
+    * In our case we will hit the User#view(john)
+
+ - The base controller is loaded through the factory
+    * It gets the context, configuration and a naked response applied by the factory, due to its traits
+
+ - The base controllers beforeRender method and the response saved
+    * The base controller does things that are general to all calls in the application like:
+        o Add basic variables
+        o Build a menu (could depend on the context eg. front-end / back-end)
+        o Set the template (could depend on the context eg. front-end / back-end)
+    * These decisions could be overturned by the actual controller
+
+ - The response is set as the base response for the controller, overruling the naked response from the factory
+    * This means that the controller will build upon this
+    * It's dependency injection but this time not by the factory
+
+ - The action is called on the controller with the arguments
+
+ - The controller which is dynamic finds the user data from his name
+    * The factory is queried for a DataFinder by the name of the controller
+    * The DataFinder is provided dynamically, in an implementation for the DBMS defined in the configuration
+    * The controller searches the relevant column with the given argument using the data finder
+        o The column is determined using the system definition
+
+ - The controller initiates the User object through the factory with the found data
+    * The User model has an actual implementation, which is loaded with the data
+    * The factory adds the relevant system definition and potentially other dependencies (eg. e-mail, etc.)
+        o In general models should only be configured through system definitions, not directly in the configuration!
+    * The User model extends the generic model, but implements a number of customised aspects
+
+ - The controller initiates a view with the name of the controller through the factory
+    * The factory applies configuration to the view and other dependencies
+
+ - The user is passed to the to the view which extracts the relevant data
+    * The view queries the model API and looks at it's system definition to determine what data and meta-data to include
+    * The view considers the configuration in determining the output
+        o Note though, that the primary source of information should be the system definition / entity definition!
+
+ - The appropriate template is determine by the controller
+    * The controller uses the template finder
+    * The template finder discovers a template implemented in the application, which is used
+
+ - The template and the data from the view are set in the response by the controller
+
+ - The response is returned from the controller and saved in the app
+
+ - The response is set as the base response for the base controller, overruling the naked response from the factory
+
+ - The base controllers afterRender method is called and the response saved
+    * These decisions in the baseController are final and overruling whatever the controller does
+    * This may apply some standards based on settings, eg. filtering or checks
+    * This could collect and optimize js, css, images and similar
+    * Use with care :-)
+
+ - The response's output method is called
+    * Data from the response is added
+    * The templates are parsed with the data, from the inside out
+    * Headings are send
+    * The output is send
+
+ - The process is finished
+    * And the lived happily forever and after :-)
