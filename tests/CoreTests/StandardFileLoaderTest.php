@@ -1,6 +1,7 @@
 <?php
 
 use FlyFoundation\App;
+use FlyFoundation\Factory;
 
 require_once __DIR__ . '/../test-init.php';
 
@@ -13,9 +14,9 @@ class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {
     {
         $app = new App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $context = new \FlyFoundation\Core\Context();
-        $factory = $app->getFactory($context);
-        $this->fileLoader = $factory->load("\\FlyFoundation\\Core\\FileLoader");
+        Factory::setConfig($app->getConfiguration());
+
+        $this->fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
     }
 
     public function testFindSomeFile()

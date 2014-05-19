@@ -19,7 +19,6 @@ class App {
     {
         $baseConfig = new Config();
         $this->configurationFactory = new ConfigurationFactory($baseConfig);
-
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_before_app");
     }
 
@@ -39,47 +38,38 @@ class App {
      */
     public function getResponse($uri, $context = null)
     {
+        $this->prepareCoreDependencies($uri, $context);
+
+        /** @var Router $router */
+        $router = Factory::load("\\FlyFoundation\\Core\\Router");
+
+        $systemQuery = $router->getSystemQuery($uri);
+
+        $baseResponse = $this->getBaseResponse();
+
+        $response = $systemQuery->execute($baseResponse);
+
+        return $this->finalizeResponse($response);
+    }
+
+    public function prepareCoreDependencies($uri, $context = null)
+    {
         if($context == null){
             $context = new Context();
             $context->loadFromEnvironmentBasedOnUri($uri);
         }
+        Factory::setContext($context);
+        Factory::setConfig($this->getConfiguration());
 
-        $factory = $this->getFactory($context);
+        /** @var SystemDefinitionFactory $systemDefinitionFactory */
+        $systemDefinitionFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\SystemDefinitionFactory");
+        $systemDefinition = $systemDefinitionFactory->createDefinition();
 
-        /** @var Router $router */
-        $router = $factory->load("\\FlyFoundation\\Core\\Router");
+        Factory::setAppDefinition($systemDefinition);
 
-        $systemQuery = $router->getSystemQuery($uri);
+        //TODO: DYNAMIC CONFIGURATIONS...
 
-        $baseResponse = $this->getBaseResponse($factory);
-
-        $response = $systemQuery->execute($baseResponse);
-
-        return $this->finalizeResponse($response,$factory);
-    }
-
-    /**
-     * @param Context $context
-     * @return Factory
-     */
-    public function getFactory(Context $context = null)
-    {
-        $factory = new Factory();
-
-        if($context == null){
-            $context = new Context();
-        }
-
-        $factory->setContext($context);
-
-        $config = $this->getConfiguration();
-        $factory->setConfig($config);
-
-        $systemDefinitionFactory = $factory->load("\\FlyFoundation\\Core\\Factories\\SystemDefinitionFactory");
-        $systemDefinition = $systemDefinitionFactory->loadFromConfig($config);
-        $factory->setAppDefinition($systemDefinition);
-
-        return $factory;
+        Factory::getConfig()->lock();
     }
 
     public function getConfiguration()
@@ -87,8 +77,6 @@ class App {
 
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_after_app");
         $config = $this->configurationFactory->getConfiguration();
-
-        $config->lock();
 
         return $config;
     }
@@ -99,29 +87,14 @@ class App {
         $this->configurationFactory->addConfiguratorDirectory($directory);
     }
 
-    private function getBaseResponse(Factory $factory)
+    private function getBaseResponse()
     {
-        /** @var Response $response */
-        $response = $factory->load("\\FlyFoundation\\Core\\Response");
-        foreach($factory->getConfig()->baseControllers->asArray() as $baseControllerName){
-            $baseController = $factory->load($baseControllerName);
-            if(!$baseController instanceof BaseController){
-                throw new InvalidArgumentException("Base Controllers must be of class AbstractBaseController");
-            }
-            $response = $baseController->beforeController($response);
-        }
-        return $response;
+        $response = Factory::load("\\FlyFoundation\\Core\\StandardResponse");
+        return Factory::getConfig()->baseController->beforeController($response);
     }
 
-    private function finalizeResponse($response, Factory $factory)
+    private function finalizeResponse($response)
     {
-        foreach($factory->getConfig()->baseControllers->asArray() as $baseControllerName){
-            $baseController = $factory->load($baseControllerName);
-            if(!$baseController instanceof BaseController){
-                throw new InvalidArgumentException("Base Controllers must be of class AbstractBaseController");
-            }
-            $response = $baseController->afterController($response);
-        }
-        return $response;
+        return Factory::getConfig()->baseController->afterController($response);
     }
 }

@@ -10,8 +10,6 @@ use FlyFoundation\Exceptions\InvalidOperationException;
 
 abstract class DefinitionComponent {
 
-    use Environment;
-
     private $finalized;
     private $settings;
 

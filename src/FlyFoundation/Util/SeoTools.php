@@ -3,14 +3,13 @@
 
 namespace FlyFoundation\Util;
 
-
-use FlyFoundation\Core\Environment;
+use FlyFoundation\Dependencies\AppContext;
 
 class SeoTools {
-    use Environment;
+    use AppContext;
 
     public function forceLowerCaseUri(){
-        $context = $this->getContext();
+        $context = $this->getAppContext();
         $lowerCaseUri = strtolower($context->getUri());
         if($lowerCaseUri != $context->getUri()){
             Redirecter::Redirect(

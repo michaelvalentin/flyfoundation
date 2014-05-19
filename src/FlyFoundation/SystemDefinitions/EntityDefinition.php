@@ -5,6 +5,7 @@ namespace FlyFoundation\SystemDefinitions;
 
 
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\SystemDefinitions\PersistentField;
 
 class EntityDefinition extends DefinitionComponent{
 
@@ -140,7 +141,7 @@ class EntityDefinition extends DefinitionComponent{
         foreach($fieldsData as $fieldData)
         {
             //TODO: This should split them into different types of fields!
-            $field = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\PersistentField");
+            $field = new PersistentField();
             $field->applyOptions($fieldData);
             $field->setEntityDefinition($this);
             if(!isset($fieldData["name"])){

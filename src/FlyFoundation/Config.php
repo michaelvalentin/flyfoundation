@@ -1,11 +1,9 @@
 <?php
 
 namespace FlyFoundation;
+use FlyFoundation\Core\DependencyMap;
 use FlyFoundation\Core\RoutingList;
 use FlyFoundation\Exceptions\InvalidOperationException;
-use FlyFoundation\SystemDefinitions\SystemDefinition;
-use FlyFoundation\Util\BaseControllerList;
-use FlyFoundation\Util\ClassMap;
 use FlyFoundation\Util\DirectoryList;
 use FlyFoundation\Util\ValueList;
 
@@ -25,12 +23,6 @@ class Config {
     /** @var bool  */
     private $locked;
 
-    /** @var \FlyFoundation\Util\ClassMap  */
-    public $classOverrides;
-
-    /** @var \FlyFoundation\Util\ValueList  */
-    public $baseSearchPaths;
-
     /** @var \FlyFoundation\Util\ValueList  */
     public $modelSearchPaths;
 
@@ -49,37 +41,39 @@ class Config {
     /** @var \FlyFoundation\Util\DirectoryList */
     public $templateDirectories;
 
-    /** @var \FlyFoundation\Util\DirectoryList  */
+    /** @var \FlyFoundation\Util\DirectoryList */
     public $entityDefinitionDirectories;
+
+    /** @var \FlyFoundation\Util\DirectoryList */
+    public $baseFileDirectories;
 
     /** @var ValueList */
     public $entityDefinitions;
 
-    /** @var \FlyFoundation\Util\DirectoryList  */
-    public $baseFileDirectories;
-
     /** @var \FlyFoundation\Core\RoutingList  */
     public $routing;
 
-    /** @var \FlyFoundation\Util\BaseControllerList  */
-    public $baseControllers;
+    /** @var \FlyFoundation\Controllers\BaseController  */
+    public $baseController;
+
+    /** @var  DependencyMap */
+    public $dependencies;
 
     public function __construct(){
         $this->data = array();
         $this->locked = false;
-        $this->classOverrides = new ClassMap();
-        $this->baseSearchPaths = new ValueList();
         $this->modelSearchPaths = new ValueList();
         $this->viewSearchPaths = new ValueList();
         $this->controllerSearchPaths = new ValueList();
         $this->databaseSearchPaths = new ValueList();
         $this->pageDirectories = new DirectoryList();
         $this->templateDirectories = new DirectoryList();
-        $this->entityDefinitionDirectories = New DirectoryList();
-        $this->entityDefinitions = new ValueList();
+        $this->entityDefinitionDirectories = new DirectoryList();
         $this->baseFileDirectories = new DirectoryList();
+        $this->entityDefinitions = new ValueList();
         $this->routing = new RoutingList();
-        $this->baseControllers = new BaseControllerList();
+        $this->baseController = null;
+        $this->dependencies = new DependencyMap();
     }
 
     public function set($key,$value)

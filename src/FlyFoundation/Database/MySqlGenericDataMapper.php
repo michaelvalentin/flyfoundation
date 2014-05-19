@@ -1,16 +1,14 @@
 <?php
-/**
- * User: njm1992
- * Date: 09/04/14
- */
 
 namespace FlyFoundation\Database;
 
 
 use FluentPDO;
 use FlyFoundation\Core\Environment;
+use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\FlyFoundationException;
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Factory;
 use FlyFoundation\Models\PersistentEntity;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 use FlyFoundation\SystemDefinitions\EntityField;
@@ -19,7 +17,7 @@ use PDO;
 
 class MySqlGenericDataMapper implements DataMapper
 {
-    use Environment;
+    use AppConfig;
 
     /** @var FluentPDO */
     private $fpdo;
@@ -38,7 +36,7 @@ class MySqlGenericDataMapper implements DataMapper
         if($this->fpdo !== NULL){
             return $this->fpdo;
         } else {
-            $config = $this->getConfig();
+            $config = $this->getAppConfig();
             $pdo = new PDO(
                 'mysql:dbname=' . $config->get('database_name') . ';host=' . $config->get('database_host'),
                 $config->get('database_user'),
@@ -61,7 +59,7 @@ class MySqlGenericDataMapper implements DataMapper
         $tableName = $this->getTableName($this->entityDefinition);
         $entityColumns = $persistentEntity->getPersistentData();
 
-        $nameManipulator = $this->getFactory()->load("\\FlyFoundation\\Util\\NameManipulator");
+        $nameManipulator = new NameManipulator();
         foreach($entityColumns as $column => $value){
             $newColumn = $nameManipulator->toUnderscored($column);
             $entityColumns[$newColumn] = $value;
@@ -134,8 +132,7 @@ class MySqlGenericDataMapper implements DataMapper
             );
         }
 
-        $factory = $this->getFactory();
-        return $factory->loadModel($this->entityDefinition->getName(), [$this->entityDefinition,$data[0]]);
+        return Factory::loadModel($this->entityDefinition->getName(), [$this->entityDefinition,$data[0]]);
     }
 
     private function getTableName(EntityDefinition $definition)
@@ -145,7 +142,7 @@ class MySqlGenericDataMapper implements DataMapper
             return $tableName;
         }
         /** @var NameManipulator $nameManipulator */
-        $nameManipulator = $this->getFactory()->load("\\FlyFoundation\\Util\\NameManipulator");
+        $nameManipulator = new NameManipulator();
         return $nameManipulator->toUnderscored($definition->getName());
     }
 
@@ -155,7 +152,7 @@ class MySqlGenericDataMapper implements DataMapper
         if($columnName){
             return $columnName;
         }
-        $nameManipulator = $this->getFactory()->load("\\FlyFoundation\\Util\\NameManipulator");
+        $nameManipulator = new NameManipulator();
         return $nameManipulator->toUnderscored($field->getName());
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use FlyFoundation\Core\StandardRouter;
+use FlyFoundation\Factory;
 
 require_once __DIR__ . '/../test-init.php';
 
@@ -13,8 +14,8 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
     {
         $app = new \FlyFoundation\App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $context = new \FlyFoundation\Core\Context();
-        $this->router = $app->getFactory($context)->load("\\FlyFoundation\\Core\\StandardRouter");
+        Factory::setConfig($app->getConfiguration());
+        $this->router = Factory::load("\\FlyFoundation\\Core\\StandardRouter");
         parent::setUp();
     }
 
@@ -64,7 +65,7 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     public function testGetSystemQuery1(){
         $router = $this->router;
-        $router->setContext(new \FlyFoundation\Core\Context([
+        $router->setAppContext(new \FlyFoundation\Core\Context([
             "httpVerb" => "GET"
         ]));
         $systemQuery = $router->getSystemQuery("mytest/some-alias-here");
@@ -76,7 +77,7 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     public function testGetSystemQuery2(){
         $router = $this->router;
-        $router->setContext(new \FlyFoundation\Core\Context([
+        $router->setAppContext(new \FlyFoundation\Core\Context([
             "httpVerb" => "POST"
         ]));
         $systemQuery = $router->getSystemQuery("mytest/delete/41");
@@ -88,7 +89,7 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     public function testGetSystemQuery3(){
         $router = $this->router;
-        $router->setContext(new \FlyFoundation\Core\Context([
+        $router->setAppContext(new \FlyFoundation\Core\Context([
             "httpVerb" => "GET"
         ]));
         $systemQuery = $router->getSystemQuery("something-else-here");
@@ -100,7 +101,7 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     public function testGetSystemQuery4(){
         $router = $this->router;
-        $router->setContext(new \FlyFoundation\Core\Context([
+        $router->setAppContext(new \FlyFoundation\Core\Context([
             "httpVerb" => "GET"
         ]));
         $systemQuery = $router->getSystemQuery("");

@@ -2,27 +2,20 @@
 
 require_once __DIR__ . '/../test-init.php';
 
+use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Factories\DatabaseFactory;
 use FlyFoundation\Factory;
 
 class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     /** @var DatabaseFactory $dbFactory */
     private $dbFactory;
-    /** @var  Factory $factory */
-    private $factory;
 
     protected function setUp()
     {
         $app = new \FlyFoundation\App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $context = new \FlyFoundation\Core\Context();
-        $this->factory = $app->getFactory($context);
-
-        $this->factory->getConfig()->baseSearchPaths->add("\\TestApp");
-        $this->factory->getConfig()->databaseSearchPaths->add("\\Somesystem\\Tests");
-        $this->dbFactory = $this->factory->load("\\FlyFoundation\\Core\\Factories\\DatabaseFactory");
-
-
+        $app->prepareCoreDependencies("testing",new Context());
+        $this->dbFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\DatabaseFactory");
         parent::setUp();
     }
 
@@ -35,14 +28,14 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     //Load an existing DataMapper
     public function testLoadExistingDataMapper()
     {
-        $result = $this->factory->loadDataMapper("MyTest");
+        $result = Factory::loadDataMapper("MyTest");
         $this->assertInstanceOf("\\TestApp\\Database\\MySqlMyTestDataMapper",$result);
     }
 
     //Load GenericDataMapper with entity definition
     public function testLoadGenericDataMapperByNameWithEntityDefinition()
     {
-        $result = $this->factory->loadDataMapper("DemoEntity");
+        $result = Factory::loadDataMapper("DemoEntity");
         $this->assertInstanceOf("\\FlyFoundation\\Database\\MySqlGenericDataMapper",$result);
     }
 
@@ -50,20 +43,20 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadGenericDataMapperByNameWithoutEntityDefinition()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = $this->factory->loadDataMapper("NotExistingEntity");
+        $result = Factory::loadDataMapper("NotExistingEntity");
     }
 
     //Load existing DataFinder
     public function testLoadExistingDataFinder()
     {
-        $result = $this->factory->loadDataFinder("MyOtherTest");
+        $result = Factory::loadDataFinder("MyOtherTest");
         $this->assertInstanceOf("\\TestApp\\Database\\MySqlMyOtherTestDataFinder",$result);
     }
 
     //Load GenericDataFinder with entity definition
     public function testLoadGenericDataFinderByNameWithEntityDefinition()
     {
-        $result = $this->factory->loadDataFinder("DemoEntity");
+        $result = Factory::loadDataFinder("DemoEntity");
         $this->assertInstanceOf("\\FlyFoundation\\Database\\MySqlGenericDataFinder",$result);
     }
 
@@ -71,13 +64,13 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadGenericDataFinderByNameWithoutEntityDefinition()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = $this->factory->loadDataFinder("NotExistingEntity");
+        $result = Factory::loadDataFinder("NotExistingEntity");
     }
 
     //Load existing DataMethods
     public function testLoadExistingDataMethods()
     {
-        $result = $this->factory->loadDataMethods("SomeDataMethods");
+        $result = Factory::loadDataMethods("SomeDataMethods");
         $this->assertInstanceOf("\\TestApp\\Database\\MySqlSomeDataMethods",$result);
     }
 
@@ -85,13 +78,13 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadNotExistingDataMethods()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = $this->factory->loadDataMethods("SomeOtherDataMethodsDoNotExist");
+        $result = Factory::loadDataMethods("SomeOtherDataMethodsDoNotExist");
     }
 
     //Load existing Database class (not DataMapper, DataFinder or DataMethods)
     public function testLoadExistingDatabaseClassNotSpecial()
     {
-        $result = $this->factory->load("\\FlyFoundation\\Database\\SomeClass");
+        $result = Factory::load("\\FlyFoundation\\Database\\SomeClass");
         $this->assertInstanceOf("\\TestApp\\Database\\SomeClass",$result);
     }
 
@@ -99,7 +92,7 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadNotExistingDatabaseClassNotSpecial()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = $this->factory->load("\\FlyFoundation\\Database\\SomeNotExistingClass");
+        $result = Factory::load("\\FlyFoundation\\Database\\SomeNotExistingClass");
     }
 
     /**
@@ -112,70 +105,70 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     //Existence of an existing DataMapper
     public function testExistsExistingDataMapper()
     {
-        $result = $this->factory->dataMapperExists("MyTest");
+        $result = Factory::dataMapperExists("MyTest");
         $this->assertTrue($result);
     }
 
     //Existence of GenericDataMapper with entity definition
     public function testExistsDataMapperByNameWithEntityDefinition()
     {
-        $result = $this->factory->dataMapperExists("DemoEntity");
+        $result = Factory::dataMapperExists("DemoEntity");
         $this->assertTrue($result);
     }
 
     //Existence of GenericDataMapper without entity definition
     public function testExistsGenericDataMapperByNameWithoutEntityDefinition()
     {
-        $result = $this->factory->dataMapperExists("NotExistingEntity");
+        $result = Factory::dataMapperExists("NotExistingEntity");
         $this->assertFalse($result);
     }
 
     //Existence of xisting DataFinder
     public function testExistsExistingDataFinder()
     {
-        $result = $this->factory->dataFinderExists("MyOtherTest");
+        $result = Factory::dataFinderExists("MyOtherTest");
         $this->assertTrue($result);
     }
 
     //Existence of GenericDataFinder with entity definition
     public function testExistsGenericDataFinderByNameWithEntityDefinition()
     {
-        $result = $this->factory->dataFinderExists("DemoEntity");
+        $result = Factory::dataFinderExists("DemoEntity");
         $this->assertTrue($result);
     }
 
     //Existence of GenericDataFinder without entity definition
     public function testExistsGenericDataFinderByNameWithoutEntityDefinition()
     {
-        $result = $this->factory->dataFinderExists("NotExistingEntity");
+        $result = Factory::dataFinderExists("NotExistingEntity");
         $this->assertFalse($result);
     }
 
     //Existence of existing DataMethods
     public function testExistsExistingDataMethods()
     {
-        $result = $this->factory->dataMethodsExists("SomeDataMethods");
+        $result = Factory::dataMethodsExists("SomeDataMethods");
         $this->assertTrue($result);
     }
 
     //Existence of not existing DataMethods
     public function testExistsNotExistingDataMethods()
     {
-        $result = $this->factory->dataMethodsExists("SomeOtherDataMethodsDoNotExist");
+        $result = Factory::dataMethodsExists("SomeOtherDataMethodsDoNotExist");
         $this->assertFalse($result);
     }
 
     //Existence of existing Database class (not DataMapper, DataFinder or DataMethods)
     public function testExistsExistingDatabaseClassNotSpecial()
     {
-        $result = $this->factory->exists("\\FlyFoundation\\Database\\SomeClass");
+        $result = Factory::exists("\\FlyFoundation\\Database\\SomeClass");
         $this->assertTrue($result);
     }
 
     //Existence of not existing Database class (not DataMapper, DataFinder or DataMethods)
     public function testExistsNotExistingDatabaseClassNotSpecial()
     {
-        $result = $this->factory->exists("\\FlyFoundation\\Database\\SomeNotExistingClass");
+        $result = Factory::exists("\\FlyFoundation\\Database\\SomeNotExistingClass");
         $this->assertFalse($result);
     }
 

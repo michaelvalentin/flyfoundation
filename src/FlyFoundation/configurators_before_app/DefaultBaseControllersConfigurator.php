@@ -9,7 +9,7 @@ class DefaultBaseControllersConfigurator implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->baseControllers->add("\\FlyFoundation\\Controllers\\StandardBaseController");
+        $config->baseController = new \FlyFoundation\Controllers\StandardBaseController;
         return $config;
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use FlyFoundation\Core\Factories\FactoryTools;
 use FlyFoundation\Models\OpenPersistentEntity;
 use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Controllers\GenericEntityController;
@@ -8,56 +9,6 @@ use FlyFoundation\Factory;
 require_once __DIR__ . '/../test-init.php';
 
 class FactoryToolsTest extends PHPUnit_Framework_TestCase {
-    /** @var  Factory $factory */
-    private $factory;
-
-    protected function setUp()
-    {
-        $app = new \FlyFoundation\App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $context = new \FlyFoundation\Core\Context();
-        $this->factory = $app->getFactory($context);
-        $this->factory->getConfig()->baseSearchPaths->add("\\TestApp");
-        parent::setUp();
-    }
-
-    public function testGetOverride()
-    {
-        $config = new \FlyFoundation\Config();
-        $config->classOverrides = new \FlyFoundation\Util\Map();
-        $config->classOverrides->putAll([
-            "\\NewScope\\MyClass" => "\\DemoScope\\NewClass",
-            "\\OtherScope\\Demo\\MyClass" => "\\NewScope\\MyClass",
-            "\\MyScope\\Test" => "\\NewScope\\Test",
-        ]);
-        $this->factory->setConfig($config);
-
-        $result1 = $this->factory->getOverride("\\MyScope\\Test");
-        $result2 = $this->factory->getOverride("\\OtherScope\\Demo\\MyClass");
-        $result3 = $this->factory->getOverride("\\NewScope\\MyClass");
-        $result4 = $this->factory->getOverride("\\NewScope\\Testing\\DoesntExist");
-
-        $this->assertSame("\\NewScope\\Test",$result1);
-        $this->assertSame("\\DemoScope\\NewClass",$result2);
-        $this->assertSame("\\DemoScope\\NewClass",$result3);
-        $this->assertFalse($result4);
-    }
-
-    public function testGetOverrideCircular()
-    {
-        $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidConfigurationException");
-
-        $config = new \FlyFoundation\Config();
-        $config->classOverrides = new \FlyFoundation\Util\Map();
-        $config->classOverrides->putAll([
-            "\\NewScope\\MyClass" => "\\DemoScope\\NewClass",
-            "\\DemoScope\\NewClass" => "\\MyScope\\Test",
-            "\\MyScope\\Test" => "\\NewScope\\MyClass",
-        ]);
-        $this->factory->setConfig($config);
-
-        $result = $this->factory->getOverride("\\NewScope\\MyClass");
-    }
 
     public function testFindPartialClassNameInPath()
     {
@@ -72,9 +23,9 @@ class FactoryToolsTest extends PHPUnit_Framework_TestCase {
             "\\MyNamespace",
         ]);
 
-        $result = $this->factory->findPartialClassNameInPaths($className,$paths);
-        $result2 = $this->factory->findPartialClassNameInPaths($className2, $paths);
-        $result3 = $this->factory->findPartialClassNameInPaths($className3, $paths);
+        $result = FactoryTools::findPartialClassNameInPaths($className,$paths);
+        $result2 = FactoryTools::findPartialClassNameInPaths($className2, $paths);
+        $result3 = FactoryTools::findPartialClassNameInPaths($className3, $paths);
 
         $this->assertSame("MyClass",$result);
         $this->assertSame("DemoClass\\Test",$result2);
@@ -97,11 +48,11 @@ class FactoryToolsTest extends PHPUnit_Framework_TestCase {
             "\\TestApp"
         ]);
 
-        $result = $this->factory->findImplementation($className,$paths);
-        $result2 = $this->factory->findImplementation($className2, $paths);
-        $result3 = $this->factory->findImplementation($className3, $paths);
-        $result4 = $this->factory->findImplementation($className4, $paths);
-        $result5 = $this->factory->findImplementation($className5, $paths);
+        $result = FactoryTools::findImplementation($className,$paths);
+        $result2 = FactoryTools::findImplementation($className2, $paths);
+        $result3 = FactoryTools::findImplementation($className3, $paths);
+        $result4 = FactoryTools::findImplementation($className4, $paths);
+        $result5 = FactoryTools::findImplementation($className5, $paths);
 
         $this->assertFalse($result);
         $this->assertFalse($result2);
@@ -114,8 +65,8 @@ class FactoryToolsTest extends PHPUnit_Framework_TestCase {
     {
         $name = "\\Test\\Demo\\Something";
         $name2 = "\\MyClass";
-        $namePrefixed = $this->factory->prefixActualClassName($name, "Demo");
-        $namePrefixed2 = $this->factory->prefixActualClassName($name2, "SAM");
+        $namePrefixed = FactoryTools::prefixActualClassName($name, "Demo");
+        $namePrefixed2 = FactoryTools::prefixActualClassName($name2, "SAM");
         $this->assertSame("\\Test\\Demo\\DemoSomething",$namePrefixed);
         $this->assertSame("\\SAMMyClass",$namePrefixed2);
     }

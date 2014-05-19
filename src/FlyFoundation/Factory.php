@@ -5,54 +5,109 @@ namespace FlyFoundation;
 
 
 use FlyFoundation\Controllers\Controller;
-use FlyFoundation\Core\Context;
-use FlyFoundation\Core\Environment;
-use FlyFoundation\Core\Factories\AbstractFactory;
+use FlyFoundation\Core\Factories\FactoryTools;
 use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
-use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Exceptions\InvalidClassException;
+use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Util\ClassInspector;
-use FlyFoundation\Util\ValueList;
 use FlyFoundation\Views\View;
 
-class Factory extends AbstractFactory{
+class Factory {
+
+    /** @var Config */
+    private static $config;
+    private static $context;
+
+    private static $singletons = [];
+
+    public static function setConfig(Config $config)
+    {
+        self::$config = $config;
+    }
+
+    /**
+     * @return Config
+     */
+    public static function getConfig()
+    {
+        if(self::$config == null){
+            throw new InvalidOperationException("The factory must be supplied with a configuration before it can be used.");
+        }
+        return self::$config;
+    }
+
+    /**
+     * @param mixed $appDefinition
+     */
+    public static function setAppDefinition($appDefinition)
+    {
+        self::$appDefinition = $appDefinition;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getAppDefinition()
+    {
+        if(self::$appDefinition == null){
+            throw new InvalidOperationException("The factory must be supplied with an AppDefinition before it can be used.");
+        }
+        return self::$appDefinition;
+    }
+
+    /**
+     * @param mixed $context
+     */
+    public static function setContext($context)
+    {
+        self::$context = $context;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getContext()
+    {
+        if(self::$context == null){
+            throw new InvalidOperationException("The factory must be supplied with a context before it can be used.");
+        }
+        return self::$context;
+    }
+    private static $appDefinition;
 
     /**
      * @param string $actualClassName
      * @param array $arguments
      * @return object
      */
-    public function load($className, array $arguments = array())
+    public static function load($className, array $arguments = array())
     {
 
-        $actualClassName = $this->findActualClassName($className);
-
-        $specializedFactory = $this->findSpecializedFactory($actualClassName);
+        $specializedFactory = self::findSpecializedFactory($className);
 
         if($specializedFactory){
-            $result =  $specializedFactory->load($actualClassName, $arguments);
+            $result =  $specializedFactory->load($className, $arguments);
         }else{
-            $result = $this->loadWithoutOverridesAndDecoration($actualClassName, $arguments);
+            $result = self::loadAndDecorateWithoutSpecialization($className, $arguments);
         }
 
         if(class_exists($className)){
             if(!$result instanceof $className){
-                throw new InvalidClassException("The class '".$actualClassName."' is used as '".$className."' but does not extend it. This is not allowed.");
+                throw new InvalidClassException("The class '".get_class($result)."' is used as '".$className."' but does not extend it. This is not allowed.");
             }
         }
 
         return $result;
     }
 
-    public function exists($className)
+    public static function exists($className)
     {
-        $className = $this->findActualClassName($className);
 
-        $specializedFactory = $this->findSpecializedFactory($className);
+        $specializedFactory = self::findSpecializedFactory($className);
 
         if($specializedFactory){
             return $specializedFactory->exists($className);
@@ -61,47 +116,32 @@ class Factory extends AbstractFactory{
         return class_exists($className);
     }
 
-    private function findActualClassName($className)
-    {
-        $implementation = $this->getOverride($className);
-        if($implementation){
-            return $implementation;
-        }
-
-        $implementation = $this->findImplementation($className,$this->getConfig()->baseSearchPaths);
-        if($implementation){
-            return $implementation;
-        }
-
-        return $className;
-    }
-
     /**
      * @param $className
      * @return bool|AbstractFactory
      */
-    private function findSpecializedFactory($className)
+    private static function findSpecializedFactory($className)
     {
         $factorySearchPathsMap = [
-            "ControllerFactory" => $this->getConfig()->controllerSearchPaths,
-            "DatabaseFactory" => $this->getConfig()->databaseSearchPaths,
-            "ModelFactory" => $this->getConfig()->modelSearchPaths,
-            "ViewFactory" => $this->getConfig()->viewSearchPaths
+            "ControllerFactory" => self::getConfig()->controllerSearchPaths,
+            "DatabaseFactory" => self::getConfig()->databaseSearchPaths,
+            "ModelFactory" => self::getConfig()->modelSearchPaths,
+            "ViewFactory" => self::getConfig()->viewSearchPaths
         ];
 
         foreach($factorySearchPathsMap as $factory=>$paths)
         {
-            $partialClassName = $this->findPartialClassNameInPaths($className,$paths);
+            $partialClassName = FactoryTools::findPartialClassNameInPaths($className,$paths);
 
             if($partialClassName){
-                return $this->load("\\FlyFoundation\\Core\\Factories\\".$factory);
+                return self::load("\\FlyFoundation\\Core\\Factories\\".$factory);
             }
         }
 
         return false;
     }
 
-    public function loadWithoutOverridesAndDecoration($className, $arguments)
+    public static function loadAndDecorateWithoutSpecialization($className, $arguments)
     {
         if(!class_exists($className)){
             throw new UnknownClassException('Class "'.$className.'" was not found by the auto-loading mechanism');
@@ -110,28 +150,53 @@ class Factory extends AbstractFactory{
         $reflectionObject = new \ReflectionClass($className);
         $classInstance = $reflectionObject->newInstanceArgs($arguments);
 
-        $classInstance = $this->setEnvironmentVariables($classInstance);
+        $classInstance = self::addDependencies($classInstance);
 
         return $classInstance;
     }
 
-    private function setEnvironmentVariables($instance)
+    private static function addDependencies($instance)
     {
-        $traits = ClassInspector::classUsesDeep($instance);
-        if(in_array("FlyFoundation\\Core\\Environment",$traits)){
-            /** @var Environment $instance */
-            $instance->setFactory($this);
-            if($this->getConfig() != null){
-                $instance->setConfig($this->getConfig());
-            }
-            if($this->getContext() != null){
-                $instance->setContext($this->getContext());
-            }
-            if($this->getAppDefinition() != null){
-                $instance->setAppDefinition($this->getAppDefinition());
+        $instanceTraits = ClassInspector::classUsesDeep($instance);
+        $dependencies = self::getConfig()->dependencies->asArray();
+
+        //Core dependencies
+        if(in_array("FlyFoundation\\Dependencies\\AppConfig",$instanceTraits)){
+            $instance->setAppConfig(self::getConfig());
+            $instanceTraits = array_diff($instanceTraits,["\\FlyFoundation\\Dependencies\\AppConfig"]);
+        }
+        if(in_array("FlyFoundation\\Dependencies\\AppContext",$instanceTraits)){
+            $instance->setAppContext(self::getContext());
+            $instanceTraits = array_diff($instanceTraits,["\\FlyFoundation\\Dependencies\\AppContext"]);
+        }
+        if(in_array("FlyFoundation\\Dependencies\\AppDefinition",$instanceTraits)){
+            $instance->setAppDefinition(self::getAppDefinition());
+            $instanceTraits = array_diff($instanceTraits,["\\FlyFoundation\\Dependencies\\AppDefinition"]);
+        }
+
+        //Other dependencies
+        foreach($instanceTraits as $traitName)
+        {
+            if(isset($dependencies[$traitName])){
+                $traitNameParts = explode("\\",$traitName);
+                $traitLastName = array_pop($traitNameParts);
+                $dependency = self::getInstance($dependencies[$traitName][0], $$dependencies[$traitName][1]);
+                $dependency = self::addDependencies($dependency);
+                $setterMethodName = "set".$traitLastName;
+                $instance->$setterMethodName($dependency);
             }
         }
+
         return $instance;
+    }
+
+    private static function getInstance($instance, $singleton)
+    {
+        if($singleton){
+            return $instance;
+        }else{
+            return clone $instance;
+        }
     }
 
     /****************
@@ -148,16 +213,16 @@ class Factory extends AbstractFactory{
      * @param array $arguments
      * @return View
      */
-    public function loadView($viewName, $arguments = array())
+    public static function loadView($viewName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Views\\".$viewName."View";
-        return $this->load($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
-    public function viewExists($viewName)
+    public static function viewExists($viewName)
     {
         $fullClassName = "\\FlyFoundation\\Views\\".$viewName."View";
-        return $this->exists($fullClassName);
+        return self::exists($fullClassName);
     }
 
     /**
@@ -165,16 +230,16 @@ class Factory extends AbstractFactory{
      * @param array $arguments
      * @return Controller
      */
-    public function loadController($controllerName, $arguments = array())
+    public static function loadController($controllerName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Controllers\\".$controllerName."Controller";
-        return $this->load($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
-    public function controllerExists($controllerName)
+    public static function controllerExists($controllerName)
     {
         $fullClassName = "\\FlyFoundation\\Controllers\\".$controllerName."Controller";
-        return $this->exists($fullClassName);
+        return self::exists($fullClassName);
     }
 
     /**
@@ -182,16 +247,16 @@ class Factory extends AbstractFactory{
      * @param array $arguments
      * @return Model
      */
-    public function loadModel($modelName, $arguments = array())
+    public static function loadModel($modelName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Models\\".$modelName;
-        return $this->load($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
-    public function modelExists($modelName)
+    public static function modelExists($modelName)
     {
         $fullClassName = "\\FlyFoundation\\Models\\".$modelName;
-        return $this->exists($fullClassName);
+        return self::exists($fullClassName);
     }
 
     /**
@@ -199,16 +264,16 @@ class Factory extends AbstractFactory{
      * @param array $arguments
      * @return DataMapper
      */
-    public function loadDataMapper($entityName, $arguments = array())
+    public static function loadDataMapper($entityName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
-        return $this->load($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
-    public function dataMapperExists($entityName)
+    public static function dataMapperExists($entityName)
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
-        return $this->exists($fullClassName);
+        return self::exists($fullClassName);
     }
 
     /**
@@ -216,16 +281,16 @@ class Factory extends AbstractFactory{
      * @param array $arguments
      * @return DataFinder
      */
-    public function loadDataFinder($entityName, $arguments = array())
+    public static function loadDataFinder($entityName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataFinder";
-        return $this->load($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
-    public function dataFinderExists($entityName)
+    public static function dataFinderExists($entityName)
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataFinder";
-        return $this->exists($fullClassName);
+        return self::exists($fullClassName);
     }
 
     /**
@@ -233,15 +298,15 @@ class Factory extends AbstractFactory{
      * @param array $arguments
      * @return DataMethods
      */
-    public function loadDataMethods($dataMethodsName, $arguments = array())
+    public static function loadDataMethods($dataMethodsName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
-        return $this->load($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
-    public function dataMethodsExists($dataMethodsName)
+    public static function dataMethodsExists($dataMethodsName)
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
-        return $this->exists($fullClassName);
+        return self::exists($fullClassName);
     }
 }

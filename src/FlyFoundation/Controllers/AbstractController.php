@@ -3,16 +3,13 @@
 
 namespace FlyFoundation\Controllers;
 
-
-use FlyFoundation\Core\Environment;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Factory;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
 
 abstract class AbstractController implements Controller{
-
-    use Environment;
 
     private $model;
     private $view;
@@ -54,7 +51,7 @@ abstract class AbstractController implements Controller{
     public function getBaseResponse()
     {
         if($this->response == null){
-            $this->response = $this->getFactory()->load("\\FlyFoundation\\Core\\Response");
+            $this->response = Factory::load("\\FlyFoundation\\Core\\StandardResponse");
         }
         return $this->response;
     }

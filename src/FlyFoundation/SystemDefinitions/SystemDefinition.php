@@ -5,6 +5,7 @@ namespace FlyFoundation\SystemDefinitions;
 
 
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class SystemDefinition extends DefinitionComponent{
     /** @var EntityDefinition[] */
@@ -63,7 +64,7 @@ class SystemDefinition extends DefinitionComponent{
     {
         foreach($entitiesData as $entityData)
         {
-            $entity = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\EntityDefinition");
+            $entity = new EntityDefinition();
             $entity->applyOptions($entityData);
             $entity->setSystemDefinition($this);
             if(!isset($entityData["name"])){

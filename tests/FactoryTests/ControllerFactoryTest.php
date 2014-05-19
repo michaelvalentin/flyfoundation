@@ -1,5 +1,6 @@
 <?php
 
+use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Factories\ControllerFactory;
 use FlyFoundation\Factory;
 
@@ -7,8 +8,6 @@ require_once __DIR__.'/../test-init.php';
 
 
 class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
-    /** @var  Factory $factory */
-    private $factory;
     /** @var  ControllerFactory */
     private $controllerFactory;
 
@@ -16,11 +15,9 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
     {
         $app = new \FlyFoundation\App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $context = new \FlyFoundation\Core\Context();
-        $this->factory = $app->getFactory($context);
-        $this->factory->getConfig()->baseSearchPaths->add("\\TestApp");
+        $app->prepareCoreDependencies("testing",new Context());
 
-        $this->controllerFactory = $this->factory->load("\\FlyFoundation\\Core\\Factories\\ControllerFactory");
+        $this->controllerFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\ControllerFactory");
 
         parent::setUp();
     }
@@ -31,11 +28,10 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
      *  - If no implementation is found, uses default (GenericEntityController)
      *  - Controller is decorated with model and view of same name if they exist
      */
-
     //Load existing controller
     public function testLoadControllerThatExists()
     {
-        $result = $this->factory->loadController("MyModel");
+        $result = Factory::loadController("MyModel");
         $this->assertInstanceOf("\\TestApp\\Controllers\\MyModelController",$result);
 
         $model = $result->getModel();
@@ -49,7 +45,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
     //Load non-existing controller
     public function testLoadControllerThatDoesNotExist()
     {
-        $result = $this->factory->loadController("DemoEntity");
+        $result = Factory::loadController("DemoEntity");
         $this->assertInstanceOf("\\FlyFoundation\\Controllers\\GenericEntityController",$result);
 
         $model = $result->getModel();
@@ -64,7 +60,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadingControllerThatDoesNotExistAndDoesNotHaveControllerNaming()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $this->factory->load("\\FlyFoundation\\Controllers\\SomeClassNotExists");
+        Factory::load("\\FlyFoundation\\Controllers\\SomeClassNotExists");
     }
 
     /**
@@ -77,21 +73,21 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
     //Check existence with existing controller
     public function testExistsControllerWhichExists()
     {
-        $result = $this->factory->controllerExists("DemoEntity");
+        $result = Factory::controllerExists("DemoEntity");
         $this->assertTrue($result);
     }
 
     //Check existence with non-existing controller
     public function testExistsControllerWhichExistsButIsNotImplemented()
     {
-        $result = $this->factory->controllerExists("DemoEntity");
+        $result = Factory::controllerExists("DemoEntity");
         $this->assertTrue($result);
     }
 
     //Check existence with non controller naming
     public function testExistsControllerWhichDoesNotExistAndHasWrongNaming()
     {
-        $result = $this->factory->exists("\\TestApp\\Controllers\\SomeControllerDoesNotExist");
+        $result = Factory::exists("\\TestApp\\Controllers\\SomeControllerDoesNotExist");
         $this->assertFalse($result);
     }
 

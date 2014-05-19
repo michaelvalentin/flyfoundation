@@ -2,17 +2,16 @@
 
 use FlyFoundation\App;
 use FlyFoundation\Core\Context;
+use FlyFoundation\Factory;
 
 require_once __DIR__ . '/../test-init.php';
 
 
-class ResponseTest extends PHPUnit_Framework_TestCase {
+class StandardResponseTest extends PHPUnit_Framework_TestCase {
     public function testComposeHtml(){
-        $app = new App();
-        $context = new Context();
-        $factory = $app->getFactory($context);
         /** @var \FlyFoundation\Core\StandardResponse $response */
-        $response = $factory->load("\\FlyFoundation\\Core\\Response");
+        Factory::setConfig(new \FlyFoundation\Config());
+        $response = Factory::load("\\FlyFoundation\\Core\\StandardResponse");
         $response->setDataValue("demo","demo");
         $response->setDataValue("test","test-data");
         $response->setContent("This is a <b>demo</b>");
