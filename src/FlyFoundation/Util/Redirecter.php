@@ -1,6 +1,7 @@
 <?php
 
 namespace FlyFoundation\Util;
+use FlyFoundation\Exceptions\InvalidArgumentException;
 
 /**
  * Class Redirecter
@@ -17,9 +18,9 @@ class Redirecter{
      * @param $url URL to redirect to
      * @param int $type The type of redirect to be done
      * @param array|mixed $urlParameters The URL-parameters to add
-     * @throws \FlyFoundation\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public static function Redirect($url, $type = RedirectType::MovedPermanently, $urlParameters = false){
+    public static function Redirect($url, $type = RedirectType::MovedPermanently, array $urlParameters = []){
         switch($type){
             case 301 :
                 header("HTTP/1.1 301 Moved Permanently");
@@ -31,17 +32,16 @@ class Redirecter{
                 header( "HTTP/1.1 307 Temporary Redirect" );
                 break;
             default :
-                throw new \Flyf\Exceptions\InvalidArgumentException("Invalid redirect type, use \\Flyf\\Util\\RedirectType::Constant !");
+                throw new InvalidArgumentException("Invalid redirect type, use \\Flyf\\Util\\RedirectType::Constant !");
         }
-        if($urlParameters){
+        if(count($urlParameters)){
             $url .= "?";
-            $params = is_array($urlParameters) ? $urlParameters : Request::GetRequest()->getParameters();
-            foreach($params as $p=>$v){
+            foreach($urlParameters as $p=>$v){
                 $url .= "$p=$v&";
             }
-            $url = substr_replace($url,"",-1);
-            echo $url;
+            $url = rtrim($url,"&");
         }
+
         header("Location: ".$url);
         die(); //We have given the redirect -> The rest is up to the browser...!
     }

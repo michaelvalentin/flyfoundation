@@ -2,7 +2,7 @@
 
 use FlyFoundation\Core\StandardRouter;
 
-require_once __DIR__ . '/test-init.php';
+require_once __DIR__ . '/../test-init.php';
 
 
 class StandardRouterTest extends PHPUnit_Framework_TestCase {
@@ -12,7 +12,7 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         $app = new \FlyFoundation\App();
-        $app->addConfigurators(__DIR__."/TestApp/configurators");
+        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
         $context = new \FlyFoundation\Core\Context();
         $this->router = $app->getFactory($context)->load("\\FlyFoundation\\Core\\StandardRouter");
         parent::setUp();

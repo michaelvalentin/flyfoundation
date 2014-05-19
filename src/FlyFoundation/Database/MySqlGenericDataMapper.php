@@ -13,6 +13,8 @@ use FlyFoundation\Exceptions\FlyFoundationException;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Models\PersistentEntity;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
+use FlyFoundation\SystemDefinitions\EntityField;
+use FlyFoundation\Util\NameManipulator;
 use PDO;
 
 class MySqlGenericDataMapper implements DataMapper
@@ -56,8 +58,16 @@ class MySqlGenericDataMapper implements DataMapper
      */
     public function save(PersistentEntity $persistentEntity)
     {
-        $tableName = $this->entityDefinition->getTableName();
+        $tableName = $this->getTableName($this->entityDefinition);
         $entityColumns = $persistentEntity->getPersistentData();
+
+        $nameManipulator = $this->getFactory()->load("\\FlyFoundation\\Util\\NameManipulator");
+        foreach($entityColumns as $column => $value){
+            $newColumn = $nameManipulator->toUnderscored($column);
+            $entityColumns[$newColumn] = $value;
+            unset($entityColumns[$column]);
+        }
+
         $id = isset($entityColumns['id']) ? $entityColumns['id'] : 0;
 
         if(!is_int($id)){
@@ -80,7 +90,7 @@ class MySqlGenericDataMapper implements DataMapper
      */
     public function delete($id)
     {
-        $tableName = $this->entityDefinition->getTableName();
+        $tableName = $this->getTableName($this->entityDefinition);
 
         if(is_int($id)){
             $query = $this->getPdo()->delete($tableName, $id);
@@ -105,7 +115,7 @@ class MySqlGenericDataMapper implements DataMapper
      */
     public function load($id)
     {
-        $tableName = $this->entityDefinition->getTableName();
+        $tableName = $this->getTableName($this->entityDefinition);
 
         if(is_int($id)){
             $query = $this->getPdo()->from($tableName, $id);
@@ -125,6 +135,27 @@ class MySqlGenericDataMapper implements DataMapper
         }
 
         $factory = $this->getFactory();
-        return $factory->load($this->entityDefinition->getClassName(), $data[0]);
+        return $factory->loadModel($this->entityDefinition->getName(), [$this->entityDefinition,$data[0]]);
+    }
+
+    private function getTableName(EntityDefinition $definition)
+    {
+        $tableName = $definition->getSetting("database_table",false);
+        if($tableName){
+            return $tableName;
+        }
+        /** @var NameManipulator $nameManipulator */
+        $nameManipulator = $this->getFactory()->load("\\FlyFoundation\\Util\\NameManipulator");
+        return $nameManipulator->toUnderscored($definition->getName());
+    }
+
+    private function getColumnName(EntityField $field)
+    {
+        $columnName = $field->getSetting("database_column",false);
+        if($columnName){
+            return $columnName;
+        }
+        $nameManipulator = $this->getFactory()->load("\\FlyFoundation\\Util\\NameManipulator");
+        return $nameManipulator->toUnderscored($field->getName());
     }
 }

@@ -129,5 +129,93 @@ class EntityDefinitionTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($result4);
         $this->assertSame("Demo",$result5);
     }
+
+    public function testPrimaryKeyNone()
+    {
+        $this->applySingleEntityOptions([
+            "name" => "DemoEntity",
+            "fields" => [
+                [
+                    "type" => "string",
+                    "name" => "testField"
+                ],
+                [
+                    "type" => "string",
+                    "name" => "testField2"
+                ],
+                [
+                    "type" => "integer",
+                    "name" => "id"
+                ],
+            ]
+        ]);
+        $this->definition->finalize();
+        $entity = $this->definition->getEntity("DemoEntity");
+        $result = $entity->getPrimaryKeyFields();
+
+        $this->assertEquals(0, count($result));
+    }
+
+    public function testPrimaryKeySingle()
+    {
+        $this->applySingleEntityOptions([
+            "name" => "DemoEntity",
+            "fields" => [
+                [
+                    "type" => "string",
+                    "name" => "testField"
+                ],
+                [
+                    "type" => "string",
+                    "name" => "testField2"
+                ],
+                [
+                    "type" => "integer",
+                    "name" => "id",
+                    "primaryKey" => true
+                ],
+            ]
+        ]);
+        $this->definition->finalize();
+        $entity = $this->definition->getEntity("DemoEntity");
+        $result = $entity->getPrimaryKeyFields();
+
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf("\\FlyFoundation\\SystemDefinitions\\PersistentField", $result[0]);
+        $this->assertSame("id", $result[0]->getName());
+    }
+
+    public function testPrimaryKeyComposite()
+    {
+        $this->applySingleEntityOptions([
+            "name" => "DemoEntity",
+            "fields" => [
+                [
+                    "type" => "string",
+                    "name" => "testField",
+                    "primaryKey" => true
+                ],
+                [
+                    "type" => "string",
+                    "name" => "testField2"
+                ],
+                [
+                    "type" => "integer",
+                    "name" => "id",
+                    "primaryKey" => true
+                ],
+            ]
+        ]);
+        $this->definition->finalize();
+        $entity = $this->definition->getEntity("DemoEntity");
+        $result = $entity->getPrimaryKeyFields();
+
+        $this->assertEquals(2, count($result));
+        $this->assertInstanceOf("\\FlyFoundation\\SystemDefinitions\\PersistentField", $result[0]);
+        $this->assertInstanceOf("\\FlyFoundation\\SystemDefinitions\\PersistentField", $result[1]);
+        $names = $result[0]->getName().":".$result[1]->getName();
+        $hasFullPrimaryKey = $names == "id:testField" || $names == "testField:id";
+        $this->assertTrue($hasFullPrimaryKey);
+    }
 }
  

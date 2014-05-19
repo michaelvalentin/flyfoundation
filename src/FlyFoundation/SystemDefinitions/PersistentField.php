@@ -7,6 +7,7 @@ namespace FlyFoundation\SystemDefinitions;
 class PersistentField extends EntityField{
     private $defaultValue;
     private $isAutoIncremented;
+    private $isInPrimaryKey;
 
     public function getDefaultValue()
     {
@@ -17,7 +18,18 @@ class PersistentField extends EntityField{
     public function isAutoIncremented()
     {
         $this->requireFinalized();
-        return $this->isAutoIncremented;
+        return $this->isAutoIncremented ? true : false;
+    }
+
+    public function isInPrimaryKey()
+    {
+        $this->requireFinalized();
+        return $this->isInPrimaryKey ? true : false;
+    }
+
+    protected function applyPrimaryKey($isPrimaryKey)
+    {
+        $this->isInPrimaryKey = $isPrimaryKey ? true : false;
     }
 
     protected function applyDefaultValue($defaultValue)

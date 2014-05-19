@@ -7,4 +7,6 @@ $app = new FlyFoundation\App();
 
 $app->addConfigurators(__DIR__.'/configuration');
 
-$app->serve($_GET["q"]);
+$query = $_GET["q"];
+unset($_GET["q"]);
+$app->serve($query);

@@ -1,0 +1,29 @@
+{
+    "extends" : [
+        "Core/Id"
+    ],
+    "name" : "DataMapperTest",
+    "fields" : [
+        {
+            "name" : "StringField",
+            "type" : "string",
+            "settings" : {
+                "required" : true
+            }
+        },
+        {
+            "name" : "TextField",
+            "type" : "text",
+            "settings" : {
+                "required" : true
+            }
+        },
+        {
+            "name" : "DatetimeField",
+            "type" : "DateTime",
+            "settings" : {
+                "required" : true
+            }
+        }
+    ]
+}

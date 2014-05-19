@@ -171,5 +171,61 @@ class EntityFieldTest extends PHPUnit_Framework_TestCase {
         $this->definition->finalize();
         $this->assertTrue(true);
     }
+
+    public function testIsInPrimaryKeyOne()
+    {
+        $this->definition->applyOptions([
+            "name" => "Testing Definition",
+            "entities" => [
+                [
+                    "name" => "TestEntity",
+                    "fields" => [
+                        [
+                            "name" => "Test",
+                            "type" => "integer",
+                            "PrimaryKey" => true
+                        ],
+                        [
+                            "name" => "OtherTest",
+                            "type" => "string",
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->definition->finalize();
+        $result1 = $this->definition->getEntity("TestEntity")->getField("Test")->isInPrimaryKey();
+        $this->assertTrue($result1);
+        $result2 = $this->definition->getEntity("TestEntity")->getField("OtherTest")->isInPrimaryKey();
+        $this->assertFalse($result2);
+    }
+
+    public function testIsPrimaryKeyTwo()
+    {
+        $this->definition->applyOptions([
+            "name" => "Testing Definition",
+            "entities" => [
+                [
+                    "name" => "TestEntity",
+                    "fields" => [
+                        [
+                            "name" => "Test",
+                            "type" => "integer",
+                            "PrimaryKey" => true
+                        ],
+                        [
+                            "name" => "OtherTest",
+                            "type" => "string",
+                            "PrimaryKey" => true
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+        $this->definition->finalize();
+        $result1 = $this->definition->getEntity("TestEntity")->getField("Test")->isInPrimaryKey();
+        $this->assertTrue($result1);
+        $result2 = $this->definition->getEntity("TestEntity")->getField("OtherTest")->isInPrimaryKey();
+        $this->assertTrue($result2);
+    }
 }
- 

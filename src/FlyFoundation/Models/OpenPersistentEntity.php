@@ -1,8 +1,4 @@
 <?php
-/**
- * User: njm1992
- * Date: 09/04/14
- */
 
 namespace FlyFoundation\Models;
 
@@ -14,7 +10,7 @@ class OpenPersistentEntity extends PersistentEntity
     public function __construct(EntityDefinition $entityDefinition, array $data = array())
     {
         $this->entityDefinition = $entityDefinition;
-        $this->columnValuePairs = $data;
+        $this->fromArray($data);
     }
 
     public function getDefinition()
@@ -46,7 +42,7 @@ class OpenPersistentEntity extends PersistentEntity
      */
     public function getId()
     {
-        // TODO: Implement getId() method.
+        return $this->get("id");
     }
 
     /**
@@ -54,12 +50,11 @@ class OpenPersistentEntity extends PersistentEntity
      */
     public function asArray()
     {
-        // TODO: Implement asArray() method.
-        return array("test" => "This is a demo");
+        return $this->columnValuePairs;
     }
 
     public function fromArray(array $data)
     {
-        // TODO: Implement fromArray() method.
+        $this->columnValuePairs = $data;
     }
 }

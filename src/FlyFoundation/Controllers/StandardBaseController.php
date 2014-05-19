@@ -6,6 +6,7 @@ namespace FlyFoundation\Controllers;
 
 use FlyFoundation\Core\Environment;
 use FlyFoundation\Core\Response;
+use FlyFoundation\Util\SeoTools;
 
 class StandardBaseController implements BaseController{
 
@@ -13,6 +14,9 @@ class StandardBaseController implements BaseController{
 
     public function beforeController(Response $response)
     {
+        /** @var SeoTools $seoTools */
+        $seoTools = $this->getFactory()->load("\\FlyFoundation\\Util\\SeoTools");
+        $seoTools->forceLowerCaseUri();
         $response->setDataValue("baseurl",$this->getContext()->getBaseUrl());
         return $response;
     }

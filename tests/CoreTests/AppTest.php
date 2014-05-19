@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/test-init.php';
+require_once __DIR__ . '/../test-init.php';
 
 use FlyFoundation\App;
 
@@ -16,7 +16,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
     public function testConfigurationsLoading()
     {
         $app = new App();
-        $app->addConfigurators(__DIR__."/TestApp/configurators");
+        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
         $config = $app->getConfiguration();
 
         $test = $config->get("test");

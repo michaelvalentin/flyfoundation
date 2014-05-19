@@ -14,7 +14,7 @@ class SeoTools {
         $lowerCaseUri = strtolower($context->getUri());
         if($lowerCaseUri != $context->getUri()){
             Redirecter::Redirect(
-                $context->getProtocol()."://".$context->getHostName().$lowerCaseUri,
+                $context->getBaseUrl()."/".$lowerCaseUri,
                 RedirectType::MovedPermanently,
                 $context->getParameters()
             );

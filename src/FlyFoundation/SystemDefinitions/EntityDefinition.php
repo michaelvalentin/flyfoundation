@@ -66,49 +66,50 @@ class EntityDefinition extends DefinitionComponent{
         return isset($this->fields[$name]);
     }
 
-    /**
-     * @return array
-     */
     public function getPersistentFields()
     {
         $this->requireFinalized();
-        if(!is_array($this->fields)){
-            return [];
-        }
-        $result = [];
-        foreach($this->fields as $field){
-            if($field instanceof PersistentField){
-                $result[] = $field;
-            }
-        }
-        return $result;
+        return $this->getFilteredFields(function($field){
+            return $field instanceof PersistentField;
+        });
     }
 
     public function getRelationFields()
     {
         $this->requireFinalized();
-        if(!is_array($this->fields)){
-            return [];
-        }
-        $result = [];
-        foreach($this->fields as $field){
-            if($field instanceof RelationField){
-                $result[] = $field;
-            }
-        }
-        return $result;
+        return $this->getFilteredFields(function($field){
+            return $field instanceof RelationField;
+        });
     }
 
     public function getCalculatedFields()
     {
+        $this->requireFinalized();
+        return $this->getFilteredFields(function($field){
+            return $field instanceof CalculatedField;
+        });
+    }
+
+    public function getPrimaryKeyFields()
+    {
+        $this->requireFinalized();
+        return $this->getFilteredFields(function($field){
+            if(!$field instanceof PersistentField) return false;
+            return $field->isInPrimaryKey();
+        });
+    }
+
+    private function getFilteredFields(callable $check){
         if(!is_array($this->fields)){
             return [];
         }
         $result = [];
-        foreach($this->fields as $field){
-            if($field instanceof CalculatedField){
+        foreach($this->fields as $field)
+        {
+            if(call_user_func($check, $field)){
                 $result[] = $field;
             }
+
         }
         return $result;
     }
@@ -132,6 +133,7 @@ class EntityDefinition extends DefinitionComponent{
         }
         parent::validate();
     }
+
 
     protected function applyFields(array $fieldsData)
     {

@@ -12,7 +12,8 @@ class TestAppEntities implements \FlyFoundation\Configurator{
         $config->entityDefinitions->addAll([
             "DemoEntity",
             "MyImage",
-            "MyModel"
+            "MyModel",
+            "DataMapperTest"
         ]);
         return $config;
     }
