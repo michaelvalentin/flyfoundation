@@ -4,7 +4,12 @@
 namespace FlyFoundation\Core\Factories;
 
 
-class ViewFactory extends AbstractFactory{
+use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Factory;
+
+class ViewFactory{
+
+    use AppConfig;
 
     /**
      * @param string $className
@@ -13,19 +18,19 @@ class ViewFactory extends AbstractFactory{
      */
     public function load($className, array $arguments = array())
     {
-        $implementation = $this->findImplementation($className,$this->getConfig()->viewSearchPaths);
+        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->viewSearchPaths);
         $hasViewNaming = $this->hasViewNaming($className);
 
         if($hasViewNaming && !$implementation){
-            return $this->getFactory()->load("\\FlyFoundation\\Views\\DefaultView");
+            return Factory::load("\\FlyFoundation\\Views\\DefaultView");
         }
 
-        return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+        return Factory::loadAndDecorateWithoutSpecialization($implementation, $arguments);
     }
 
     public function exists($className)
     {
-        $implementation = $this->findImplementation($className,$this->getConfig()->viewSearchPaths);
+        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->viewSearchPaths);
         $hasViewNaming = $this->hasViewNaming($className);
 
         return $implementation || $hasViewNaming || class_exists($className);

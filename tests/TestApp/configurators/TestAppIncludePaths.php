@@ -9,8 +9,11 @@ class TestAppIncludePaths implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->baseSearchPaths->add("\\TestApp");
+        $config->modelSearchPaths->add("\\TestApp\\Models");
         $config->modelSearchPaths->add("\\TestApp\\ExtraModelPath");
+        $config->controllerSearchPaths->add("\\TestApp\\Controllers");
+        $config->viewSearchPaths->add("\\TestApp\\Views");
+        $config->databaseSearchPaths->add("\\TestApp\\Database");
         return $config;
     }
 }

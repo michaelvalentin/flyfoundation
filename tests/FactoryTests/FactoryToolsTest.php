@@ -7,7 +7,7 @@ use FlyFoundation\Factory;
 
 require_once __DIR__ . '/../test-init.php';
 
-class AbstractFactoryTest extends PHPUnit_Framework_TestCase {
+class FactoryToolsTest extends PHPUnit_Framework_TestCase {
     /** @var  Factory $factory */
     private $factory;
 

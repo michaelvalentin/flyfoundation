@@ -4,10 +4,15 @@
 namespace FlyFoundation\Core\Factories;
 
 
+use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Exceptions\InvalidClassException;
+use FlyFoundation\Factory;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 
-class ModelFactory extends AbstractFactory{
+class ModelFactory {
+
+    use AppConfig, AppDefinition;
 
     private $defaultModel = "\\FlyFoundation\\Models\\OpenPersistentEntity";
 
@@ -18,15 +23,15 @@ class ModelFactory extends AbstractFactory{
      */
     public function load($className, array $arguments = array())
     {
-        $implementation = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
+        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->modelSearchPaths);
 
         if($implementation){
             $arguments = $this->prepareArguments($implementation,$arguments);
-            $model = $this->getFactory()->loadWithoutOverridesAndDecoration($implementation, $arguments);
+            $model = Factory::loadAndDecorateWithoutSpecialization($implementation, $arguments);
         }else{
             $entityName = $this->getEntityName($className);
             $arguments = $this->prepareArguments($this->defaultModel, $arguments, $entityName);
-            $model = $this->getFactory()->load($this->defaultModel,$arguments);
+            $model = Factory::load($this->defaultModel,$arguments);
         }
 
         return $model;
@@ -34,7 +39,7 @@ class ModelFactory extends AbstractFactory{
 
     public function exists($className)
     {
-        $implementation = $this->findImplementation($className,$this->getConfig()->modelSearchPaths);
+        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->modelSearchPaths);
         if($implementation){
             return true;
         }
@@ -87,8 +92,8 @@ class ModelFactory extends AbstractFactory{
 
     private function getEntityName($className)
     {
-        $modelSearchPaths = $this->getConfig()->modelSearchPaths;
-        return $this->findPartialClassNameInPaths($className, $modelSearchPaths);
+        $modelSearchPaths = $this->getAppConfig()->modelSearchPaths;
+        return FactoryTools::findPartialClassNameInPaths($className, $modelSearchPaths);
     }
 
 }

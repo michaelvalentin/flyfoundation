@@ -21,21 +21,7 @@ class ConfigurationFactory {
     }
 
     public function getConfiguration(){
-        $config = $this->applyConfigurators($this->config);
-
-        foreach($config->baseSearchPaths->asArray() as $path){
-            $config->databaseSearchPaths->add($path."\\Database");
-            $config->controllerSearchPaths->add($path."\\Controllers");
-            $config->viewSearchPaths->add($path."\\Views");
-            $config->modelSearchPaths->add($path."\\Models");
-        }
-
-        foreach($config->baseFileDirectories->asArray() as $dir){
-            $config->entityDefinitionDirectories->add($dir."/entity_definitions");
-            $config->templateDirectories->add($dir."/templates");
-        }
-
-        return $config;
+        return $this->applyConfigurators($this->config);
     }
 
     public function addConfiguratorDirectory($directory){
@@ -97,6 +83,12 @@ class ConfigurationFactory {
             return false;
         }
 
-        return new $className();
+        $instance = new $className();
+
+        if(!$instance instanceof Configurator){
+            return false;
+        }
+
+        return $instance;
     }
 } 

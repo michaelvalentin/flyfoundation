@@ -3,9 +3,10 @@
 
 namespace TestApp;
 
-
-use FlyFoundation\Core\Environment;
+use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Dependencies\AppContext;
+use FlyFoundation\Dependencies\AppDefinition;
 
 class SomeClass {
-    use Environment;
+    use AppContext, AppConfig, AppDefinition;
 } 

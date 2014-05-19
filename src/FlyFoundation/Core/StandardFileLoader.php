@@ -3,18 +3,18 @@
 
 namespace FlyFoundation\Core;
 
-use FlyFoundation\Exceptions\NonExistantFileException;
+use FlyFoundation\Dependencies\AppConfig;
 
 class StandardFileLoader implements FileLoader{
 
-    use Environment;
+    use AppConfig;
 
     public function findFile($fileName, array $extensions = [])
     {
         $result = $this->findSpecialFile($fileName, $extensions);
 
         if(!$result){
-            $baseDirectories = $this->getConfig()->baseFileDirectories->asArray();
+            $baseDirectories = $this->getAppConfig()->baseFileDirectories->asArray();
             $result = $this->findFileInPaths($fileName, $baseDirectories, $extensions);
         }
 
@@ -68,13 +68,13 @@ class StandardFileLoader implements FileLoader{
 
         switch($matches[1]){
             case "templates" :
-                $paths = $this->getConfig()->templateDirectories->asArray();
+                $paths = $this->getAppConfig()->templateDirectories->asArray();
                 break;
             case "entity_definitions" :
-                $paths = $this->getConfig()->entityDefinitionDirectories->asArray();
+                $paths = $this->getAppConfig()->entityDefinitionDirectories->asArray();
                 break;
             case "pages" :
-                $paths = $this->getConfig()->pageDirectories->asArray();
+                $paths = $this->getAppConfig()->pageDirectories->asArray();
                 break;
             default :
                 $paths = [];

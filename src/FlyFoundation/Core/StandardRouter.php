@@ -3,13 +3,13 @@
 
 namespace FlyFoundation\Core;
 
-
-use FlyFoundation\Controllers\Controller;
-use FlyFoundation\Controllers\PageController;
+use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Dependencies\AppContext;
+use FlyFoundation\Factory;
 
 class StandardRouter implements Router{
 
-    use Environment;
+    use AppContext, AppConfig;
 
     /**
      * @param $query
@@ -17,9 +17,9 @@ class StandardRouter implements Router{
      */
     public function getSystemQuery($query)
     {
-        $prefixedQuery = $this->getContext()->getHttpVerb().":".$query;
+        $prefixedQuery = $this->getAppContext()->getHttpVerb().":".$query;
         list($controller, $method, $arguments) = $this->parseQuery($prefixedQuery);
-        $arguments = array_merge($this->getContext()->getParameters(),$arguments);
+        $arguments = array_merge($this->getAppContext()->getParameters(),$arguments);
 
         $result = new SystemQuery();
         $result->setController($controller);
@@ -31,7 +31,7 @@ class StandardRouter implements Router{
 
     public function parseQuery($query)
     {
-        $routings = $this->getConfig()->routing->asArray();
+        $routings = $this->getAppConfig()->routing->asArray();
 
         foreach($routings as $routing)
         {
@@ -43,7 +43,7 @@ class StandardRouter implements Router{
 
                 list($controllerName, $method) = explode("#",$action);
 
-                $controller = $this->getFactory()->loadController($controllerName);
+                $controller = Factory::loadController($controllerName);
                 $arguments = array_merge($arguments, $routing["arguments"]);
 
                 if($controller->respondsTo($method, $arguments)){
@@ -54,7 +54,7 @@ class StandardRouter implements Router{
 
         }
 
-        $controller = $this->getFactory()->loadController("Page");
+        $controller = Factory::loadController("Page");
         return [$controller, "pageNotFound", []];
     }
 

@@ -4,11 +4,16 @@
 namespace FlyFoundation\Core\Factories;
 
 
+use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Exceptions\InvalidClassException;
 use FlyFoundation\Exceptions\UnknownClassException;
+use FlyFoundation\Factory;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
 
-class DatabaseFactory extends AbstractFactory{
+class DatabaseFactory {
+
+    use AppConfig, AppDefinition;
 
     /**
      * @param string $className
@@ -17,16 +22,16 @@ class DatabaseFactory extends AbstractFactory{
      */
     public function load($className, array $arguments = array())
     {
-        $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->databaseSearchPaths);
-        $dbPrefix = $this->getConfig()->get("database_data_object_prefix");
+        $partialClassName = FactoryTools::findPartialClassNameInPaths($className, $this->getAppConfig()->databaseSearchPaths);
+        $dbPrefix = $this->getAppConfig()->get("database_data_object_prefix");
 
         $dataObjectNaming = "/^((.*)\\\\)?(".$dbPrefix.")?(.*)(DataMapper|DataFinder|DataMethods)$/";
         $matches = [];
         $hasDataObjectNaming = preg_match($dataObjectNaming, $partialClassName, $matches);
 
         if(!$hasDataObjectNaming){
-            $implementation = $this->findImplementation($className,$this->getConfig()->databaseSearchPaths);
-            return $this->getFactory()->loadWithoutOverridesAndDecoration($implementation,$arguments);
+            $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->databaseSearchPaths);
+            return Factory::loadAndDecorateWithoutSpecialization($implementation,$arguments);
         }
 
         $entityName = $matches[1].$matches[4];
@@ -34,19 +39,18 @@ class DatabaseFactory extends AbstractFactory{
         $appliedDbPrefix = $matches[3];
 
         if($appliedDbPrefix == ""){
-            $className = $this->prefixActualClassName($className, $dbPrefix);
-            return $this->getFactory()->load($className, $arguments);
+            $className = FactoryTools::prefixActualClassName($className, $dbPrefix);
         }
 
-        $implementation = $this->findImplementation($className,$this->getConfig()->databaseSearchPaths);
+        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->databaseSearchPaths);
 
         if($implementation){
             $arguments = $this->prepareArguments($implementation, $arguments, $entityName);
-            return $this->getFactory()->loadWithoutOverridesAndDecoration($className,$arguments);
+            return Factory::loadAndDecorateWithoutSpecialization($implementation,$arguments);
         }elseif($this->getAppDefinition()->hasEntity($entityName)){
             $dynamicClassName = $this->getGenericDatabaseClassName($className, $dataObjectType);
             $arguments = $this->prepareArguments($dynamicClassName, $arguments, $entityName);
-            return $this->getFactory()->load($dynamicClassName, $arguments);
+            return Factory::load($dynamicClassName, $arguments);
         }else{
             throw new UnknownClassException("The class '".$className."' could not be found neither as concrete implementation or generic implementation through definitions.");
         }
@@ -54,15 +58,16 @@ class DatabaseFactory extends AbstractFactory{
 
     public function exists($className)
     {
-        $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->databaseSearchPaths);
-        $dbPrefix = $this->getConfig()->get("database_data_object_prefix");
+        $partialClassName = FactoryTools::findPartialClassNameInPaths($className, $this->getAppConfig()->databaseSearchPaths);
+        $dbPrefix = $this->getAppConfig()->get("database_data_object_prefix");
 
         $dataObjectNaming = "/^((.*)\\\\)?(".$dbPrefix.")?(.*)(DataMapper|DataFinder|DataMethods)$/";
         $matches = [];
         $hasDataObjectNaming = preg_match($dataObjectNaming, $partialClassName, $matches);
 
         if(!$hasDataObjectNaming){
-            return class_exists($className);
+            $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->databaseSearchPaths);
+            return $implementation || class_exists($className);
         }
 
         $entityName = $matches[1].$matches[4];
@@ -70,11 +75,10 @@ class DatabaseFactory extends AbstractFactory{
         $appliedDbPrefix = $matches[3];
 
         if($appliedDbPrefix == ""){
-            $className = $this->prefixActualClassName($className, $dbPrefix);
-            return $this->getFactory()->exists($className);
+            $className = FactoryTools::prefixActualClassName($className, $dbPrefix);
         }
 
-        $implementation = $this->findImplementation($className,$this->getConfig()->databaseSearchPaths);
+        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->databaseSearchPaths);
 
         if($implementation || $this->getAppDefinition()->hasEntity($entityName)){
             return true;
@@ -91,7 +95,7 @@ class DatabaseFactory extends AbstractFactory{
             );
         }
 
-        $dbPrefix = $this->getConfig()->get("database_data_object_prefix");
+        $dbPrefix = $this->getAppConfig()->get("database_data_object_prefix");
 
         return "\\FlyFoundation\\Database\\".$dbPrefix."Generic".$dataObjectType;
     }

@@ -1,7 +1,7 @@
 <?php
 
 
-class DefaultOverridesConfigurator implements \FlyFoundation\Configurator{
+class DefaultDependencyConfigurator implements \FlyFoundation\Configurator{
 
     /**
      * @param \FlyFoundation\Config $config

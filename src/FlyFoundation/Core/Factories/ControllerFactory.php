@@ -5,11 +5,14 @@ namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Controllers\Controller;
-use FlyFoundation\Exceptions\InvalidClassException;
-use FlyFoundation\Models\Entity;
+use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Dependencies\AppDefinition;
+use FlyFoundation\Factory;
 
-class ControllerFactory extends AbstractFactory
+class ControllerFactory
 {
+    use AppConfig;
+
     private $defaultController = "\\FlyFoundation\\Controllers\\GenericEntityController";
 
     /**
@@ -19,20 +22,20 @@ class ControllerFactory extends AbstractFactory
      */
     public function load($className, array $arguments = array())
     {
-        $implementation = $this->findImplementation($className,$this->getConfig()->controllerSearchPaths);
+        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->controllerSearchPaths);
         $controllerName = $this->getControllerName($className);
 
         if(!$controllerName){
             if($implementation){
                 $className = $implementation;
             }
-            return $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+            return Factory::loadAndDecorateWithoutSpecialization($className, $arguments);
         }
 
         if($implementation){
-            $controller = $this->getFactory()->loadWithoutOverridesAndDecoration($className, $arguments);
+            $controller = Factory::loadAndDecorateWithoutSpecialization($implementation, $arguments);
         }else{
-            $controller = $this->getFactory()->load($this->defaultController,$arguments);
+            $controller = Factory::loadAndDecorateWithoutSpecialization($this->defaultController,$arguments);
         }
 
         if($controller instanceof Controller){
@@ -49,7 +52,7 @@ class ControllerFactory extends AbstractFactory
             return true;
         }
 
-        $implementation = $this->findImplementation($className,$this->getConfig()->controllerSearchPaths);
+        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->controllerSearchPaths);
         if($implementation){
             return true;
         }
@@ -59,16 +62,13 @@ class ControllerFactory extends AbstractFactory
 
     private function decorateController(Controller $controller, $controllerName)
     {
-        $factory = $this->getFactory();
 
-        if($factory->viewExists($controllerName)){
-            $view = $this->getFactory()->loadView($controllerName);
-            $controller->setView($view);
+        if(Factory::viewExists($controllerName)){
+            $controller->setView(Factory::loadView($controllerName));
         }
 
-        if($factory->modelExists($controllerName)){
-            $model = $this->getFactory()->loadModel($controllerName);
-            $controller->setModel($model);
+        if(Factory::modelExists($controllerName)){
+            $controller->setModel(Factory::loadModel($controllerName));
         }
 
         return $controller;
@@ -76,7 +76,7 @@ class ControllerFactory extends AbstractFactory
 
     public function getControllerName($className)
     {
-        $partialClassName = $this->findPartialClassNameInPaths($className, $this->getConfig()->controllerSearchPaths);
+        $partialClassName = FactoryTools::findPartialClassNameInPaths($className, $this->getAppConfig()->controllerSearchPaths);
         $controllerNaming = "/^(.*)Controller$/";
         $matches = [];
         if(preg_match($controllerNaming, $partialClassName, $matches)){

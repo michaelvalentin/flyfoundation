@@ -7,34 +7,36 @@ namespace FlyFoundation\Core\Factories;
 use FlyFoundation\Config;
 use FlyFoundation\Core\Environment;
 use FlyFoundation\Core\FileLoader;
+use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\InvalidConfigurationException;
 use FlyFoundation\Exceptions\InvalidJsonException;
 use FlyFoundation\Exceptions\NotImplementedException;
+use FlyFoundation\Factory;
 use FlyFoundation\SystemDefinitions\SystemDefinition;
 
 class SystemDefinitionFactory {
 
-    use Environment;
+    use AppConfig;
 
     /**
      * @param \FlyFoundation\Config $config
      * @return SystemDefinition
      */
-    public function loadFromConfig(Config $config){
-        $definitionData = $this->systemDefinitionSkeletonFromConfig($config);
-        $definitionData["entities"] = $this->entitiesFromConfig($config);
-        $systemDefinition = $this->getFactory()->load("\\FlyFoundation\\SystemDefinitions\\SystemDefinition");
+    public function createDefinition(){
+        $definitionData = $this->systemDefinitionSkeletonFromConfig();
+        $definitionData["entities"] = $this->entitiesFromConfig();
+        $systemDefinition = new SystemDefinition();
         $systemDefinition->applyOptions($definitionData);
         $systemDefinition->applyOptions($definitionData);
         $systemDefinition->finalize();
         return $systemDefinition;
     }
 
-    private function systemDefinitionSkeletonFromConfig(Config $config)
+    private function systemDefinitionSkeletonFromConfig()
     {
         $result = [];
-        $result["name"] = $config->get("app_name");
-        $settings = $config->get("app_settings");
+        $result["name"] = $this->getAppConfig()->get("app_name");
+        $settings = $this->getAppConfig()->get("app_settings");
         if(!$settings){
             $settings = [];
         }
@@ -43,10 +45,10 @@ class SystemDefinitionFactory {
         return $result;
     }
 
-    private function entitiesFromConfig(Config $config)
+    private function entitiesFromConfig()
     {
         $result = [];
-        foreach($config->entityDefinitions->asArray() as $entityName){
+        foreach($this->getAppConfig()->entityDefinitions->asArray() as $entityName){
             $result[] = $this->loadEntityFile($entityName);
         }
         return $result;
@@ -55,7 +57,7 @@ class SystemDefinitionFactory {
     private function loadEntityFile($entityName)
     {
         /** @var FileLoader $fileLoader */
-        $fileLoader = $this->getFactory()->load("\\FlyFoundation\\Core\\FileLoader");
+        $fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
         $fileName = $fileLoader->findEntityDefinition($entityName);
         if(!$fileName){
             throw new InvalidConfigurationException("No entity named '".$entityName."' could be found.");
@@ -76,6 +78,5 @@ class SystemDefinitionFactory {
 
         return $result;
     }
-
 
 } 

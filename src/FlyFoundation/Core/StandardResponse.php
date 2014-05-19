@@ -6,7 +6,11 @@ use Aws\Common\Exception\InvalidArgumentException;
 use FlyFoundation\Core\Response\ResponseHeaders;
 use FlyFoundation\Core\Response\ResponseMetaData;
 use FlyFoundation\Core\Response\ResponseOutputType;
+use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Dependencies\AppContext;
+use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Exceptions\InvalidOperationException;
+use FlyFoundation\Factory;
 use FlyFoundation\Util\ArrayHelper;
 use FlyFoundation\Util\Set;
 
@@ -19,7 +23,7 @@ use FlyFoundation\Util\Set;
  */
 class StandardResponse implements Response{
 
-    use Environment;
+    use AppContext, AppConfig, AppDefinition;
 
 	private $headers;
 	private $metaData;
@@ -152,7 +156,7 @@ class StandardResponse implements Response{
 
     public function getAllJavaScript()
     {
-        return array_unique(arrray_merge($this->javaScriptAfterBody->asArray(),$this->javaScriptBeforeBody));
+        return array_unique(array_merge($this->javaScriptAfterBody->asArray(),$this->javaScriptBeforeBody));
     }
 
 	public function removeJavaScript($path)
@@ -216,7 +220,7 @@ class StandardResponse implements Response{
 
     public function wrapInTemplateFile($templateName)
     {
-        $fileLoader = $this->getFactory()->load("\\FlyFoundation\\Core\\FileLoader");
+        $fileLoader = Factory::load("\\FlyFoundation\\Core\\FileLoader");
         $template_file = $fileLoader->findTemplate($templateName);
         if(!file_exists($template_file)){
             throw new InvalidOperationException('The template "'.$template_file.'" does not exist!');
