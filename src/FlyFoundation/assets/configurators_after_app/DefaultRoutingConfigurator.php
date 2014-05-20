@@ -9,7 +9,7 @@ class DefaultRoutingConfigurator implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->routing->addRouting("GET:", "Page#view",["alias"=>"index"]);
+        $config->routing->addRouting("GET:", "Page#view",["alias"=>""]);
         $config->routing->addRouting("GET:{alias}", "Page#view");
         return $config;
     }

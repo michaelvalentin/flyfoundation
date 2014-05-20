@@ -9,8 +9,9 @@ class DefaultDirectories implements \FlyFoundation\Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->baseFileDirectories->add(__DIR__."/..");
-
+        $config->pageDirectories->add(__DIR__."/../pages");
+        $config->templateDirectories->add(__DIR__."/../templates");
+        $config->entityDefinitionDirectories->add(__DIR__."/../entity_definitions");
         return $config;
     }
 }

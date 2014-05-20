@@ -20,6 +20,10 @@ class PageController extends AbstractController{
             existing page file");
         }
 
+        if($arguments["alias"] == ""){
+            $arguments["alias"] = "index";
+        }
+
         /** @var FileLoader $fileLoader */
         $fileLoaderClass = $this->getAppConfig()->getImplementation("\\FlyFoundation\\Core\\FileLoader");
         $fileLoader = Factory::load($fileLoaderClass);
@@ -39,6 +43,9 @@ class PageController extends AbstractController{
     public function viewRespondsTo($arguments){
         if(!isset($arguments["alias"]) || $arguments["alias"] == "index"){
             return false;
+        }
+        if($arguments["alias"] == ""){
+            $arguments["alias"] = "index";
         }
 
         /** @var FileLoader $fileLoader */

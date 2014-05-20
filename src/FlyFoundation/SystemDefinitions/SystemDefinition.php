@@ -76,9 +76,6 @@ class SystemDefinition extends DefinitionComponent{
 
     public function validate()
     {
-        if(!$this->name){
-            throw new InvalidArgumentException("A system definition must have a name");
-        }
         parent::validate();
     }
 } 

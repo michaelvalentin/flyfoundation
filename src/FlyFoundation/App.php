@@ -24,7 +24,7 @@ class App {
 
         $baseConfig = new Config();
         $this->configurationFactory = new ConfigurationFactory($baseConfig);
-        $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_before_app");
+        $this->configurationFactory->addConfiguratorDirectory(__DIR__."/assets/configurators_before_app");
     }
 
     /**
@@ -70,7 +70,7 @@ class App {
 
     public function addSystemDirectives($directory)
     {
-
+        $this->systemDefinitionFactory->addDirectiveDirectory($directory);
     }
 
     public function prepareCoreDependencies($uri = null)
@@ -83,14 +83,16 @@ class App {
         }
         Factory::setContext($this->context);
 
+        $this->configurationFactory->addConfiguratorDirectory(__DIR__."/assets/configurators_after_app");
         $baseConfig = $this->configurationFactory->getConfiguration();
         Factory::setConfig($baseConfig);
 
         $appDefinition = $this->systemDefinitionFactory->getSystemDefinition();
         Factory::setAppDefinition($appDefinition);
 
-        $systemConfigurator = Factory::load("\\FlyFoundation\\Core\\SystemConfigurator");
-        $config = $systemConfigurator->configurateWithSystemDefinition($baseConfig, $appDefinition);
+        $configuratorClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Core\\GenericConfigurator");
+        $configurator = Factory::load($configuratorClass);
+        $config = $configurator->apply($baseConfig);
         Factory::setConfig($config);
     }
 
