@@ -13,24 +13,18 @@ class StandardFileLoader implements FileLoader{
     {
         $result = $this->findSpecialFile($fileName, $extensions);
 
-        if(!$result){
-            $baseDirectories = $this->getAppConfig()->baseFileDirectories->asArray();
-            $result = $this->findFileInPaths($fileName, $baseDirectories, $extensions);
+        if($result){
+            return $result;
+        }elseif(is_file($fileName)){
+            return $fileName;
+        }else{
+            return false;
         }
-
-        return $result;
     }
 
     public function findTemplate($name)
     {
         return $this->findFile("templates/".$name.".mustache");
-    }
-
-    public function findEntityDefinition($name)
-    {
-        $extensions = [".lsd", ".yml", ".json"];
-
-        return $this->findFile("entity_definitions/".$name, $extensions);
     }
 
     public function findPage($name)
@@ -58,7 +52,7 @@ class StandardFileLoader implements FileLoader{
 
     private function findSpecialFile($fileName, array $extensions = [])
     {
-        $specialFilePattern = "/^(templates|entity_definitions|pages)\\/(.*)$/";
+        $specialFilePattern = "/^(templates|pages)\\/(.*)$/";
         $matches = [];
         $isSpecialFile = preg_match($specialFilePattern, $fileName, $matches);
 
@@ -69,9 +63,6 @@ class StandardFileLoader implements FileLoader{
         switch($matches[1]){
             case "templates" :
                 $paths = $this->getAppConfig()->templateDirectories->asArray();
-                break;
-            case "entity_definitions" :
-                $paths = $this->getAppConfig()->entityDefinitionDirectories->asArray();
                 break;
             case "pages" :
                 $paths = $this->getAppConfig()->pageDirectories->asArray();

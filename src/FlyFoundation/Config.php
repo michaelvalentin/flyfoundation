@@ -47,9 +47,6 @@ class Config {
     /** @var \FlyFoundation\Util\DirectoryList */
     public $baseFileDirectories;
 
-    /** @var ValueList */
-    public $entityDefinitions;
-
     /** @var \FlyFoundation\Core\RoutingList  */
     public $routing;
 
@@ -70,7 +67,6 @@ class Config {
         $this->templateDirectories = new DirectoryList();
         $this->entityDefinitionDirectories = new DirectoryList();
         $this->baseFileDirectories = new DirectoryList();
-        $this->entityDefinitions = new ValueList();
         $this->routing = new RoutingList();
         $this->baseController = null;
         $this->dependencies = new DependencyMap();

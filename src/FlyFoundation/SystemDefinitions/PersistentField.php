@@ -35,6 +35,7 @@ class PersistentField extends EntityField{
     protected function applyDefaultValue($defaultValue)
     {
         //TODO: Could use some sort of check...
+        //EDIT: Should be done in validation / finalization, when the type can be considered...
         $this->defaultValue = $defaultValue;
     }
 

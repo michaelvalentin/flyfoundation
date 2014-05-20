@@ -11,7 +11,10 @@ class ExampleAppClassPaths implements Configurator{
      */
     public function apply(\FlyFoundation\Config $config)
     {
-        $config->baseSearchPaths->add("\\ExampleApp");
+        $config->modelSearchPaths->add("\\ExampleApp\\Models");
+        $config->viewSearchPaths->add("\\ExampleApp\\Views");
+        $config->controllerSearchPaths->add("\\ExampleApp\\Controllers");
+        $config->databaseSearchPaths->add("\\ExampleApp\\Database");
         return $config;
     }
 }

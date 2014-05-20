@@ -6,6 +6,7 @@ namespace FlyFoundation\Controllers;
 use FlyFoundation\Core\FileLoader;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Factory;
 
 class PageController extends AbstractController{
 
@@ -17,11 +18,11 @@ class PageController extends AbstractController{
         }
 
         /** @var FileLoader $fileLoader */
-        $fileLoader = $this->getFactory()->load("\\FlyFoundation\\Core\\FileLoader");
+        $fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
         $filename = $fileLoader->findPage($arguments["alias"]);
 
         if(!$filename){
-            return false;
+            throw new InvalidArgumentException("No page with this name exists.");
         }
 
         $pageContent = file_get_contents($filename);
@@ -37,7 +38,7 @@ class PageController extends AbstractController{
         }
 
         /** @var FileLoader $fileLoader */
-        $fileLoader = $this->getFactory()->load("\\FlyFoundation\\Core\\FileLoader");
+        $fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
         $filename = $fileLoader->findPage($arguments["alias"]);
 
         if(!$filename){

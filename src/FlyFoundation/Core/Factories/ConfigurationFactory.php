@@ -6,22 +6,26 @@ namespace FlyFoundation\Core\Factories;
 
 use FlyFoundation\Config;
 use FlyFoundation\Configurator;
+use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Util\DirectoryList;
 
 class ConfigurationFactory {
+
     /** @var \FlyFoundation\Config  */
-    private $config;
+    private $baseConfig;
 
     /** @var \FlyFoundation\Util\DirectoryList  */
     private $configuratorDirectories;
 
     public function __construct(Config $config){
-        $this->config = $config;
+        $this->baseConfig = $config;
         $this->configuratorDirectories = new DirectoryList();
     }
 
     public function getConfiguration(){
-        return $this->applyConfigurators($this->config);
+        $config = clone $this->baseConfig;
+        $config = $this->applyConfigurators($config);
+        return $config;
     }
 
     public function addConfiguratorDirectory($directory){
