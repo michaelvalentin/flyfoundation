@@ -1,0 +1,28 @@
+! BlogPost : Article
+    Translate
+
+    < Image : Image
+        Required
+        Translate : false
+
+    <MainAuthor:Author
+        #Required
+        @Write
+
+    <>Authors:Author
+
+    >Comments:Comment
+
+    $FirstLanguage:Language
+        #Required
+        @Read
+        @Write
+
+    $Published:DateTime
+        @Write
+
+! Author : Entity
+    $ Name : String
+        # MaxLength : 100
+
+    $ Description : HtmlText

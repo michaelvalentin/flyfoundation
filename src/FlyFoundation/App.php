@@ -10,13 +10,20 @@ use FlyFoundation\Core\Factories\ConfigurationFactory;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\StandardResponse;
 use FlyFoundation\Core\Router;
+use FlyFoundation\Exceptions\InvalidConfigurationException;
 
 class App {
 
     private $configurationFactory;
+    private $systemDefinitionFactory;
+    private $context;
+    /** @var  BaseController */
+    private $baseController;
 
     public function __construct()
     {
+        $this->systemDefinitionFactory = new SystemDefinitionFactory();
+
         $baseConfig = new Config();
         $this->configurationFactory = new ConfigurationFactory($baseConfig);
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_before_app");
@@ -41,7 +48,7 @@ class App {
         $this->prepareCoreDependencies($uri, $context);
 
         /** @var Router $router */
-        $router = Factory::load("\\FlyFoundation\\Core\\Router");
+        $router = Factory::load("\\FlyFoundation\\Core\\StandardRouter");
 
         $systemQuery = $router->getSystemQuery($uri);
 
@@ -52,49 +59,64 @@ class App {
         return $this->finalizeResponse($response);
     }
 
-    public function prepareCoreDependencies($uri, $context = null)
-    {
-        if($context == null){
-            $context = new Context();
-            $context->loadFromEnvironmentBasedOnUri($uri);
-        }
-        Factory::setContext($context);
-        Factory::setConfig($this->getConfiguration());
-
-        /** @var SystemDefinitionFactory $systemDefinitionFactory */
-        $systemDefinitionFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\SystemDefinitionFactory");
-        $systemDefinition = $systemDefinitionFactory->createDefinition();
-
-        Factory::setAppDefinition($systemDefinition);
-
-        //TODO: DYNAMIC CONFIGURATIONS...
-
-        Factory::getConfig()->lock();
-    }
-
-    public function getConfiguration()
-    {
-
-        $this->configurationFactory->addConfiguratorDirectory(__DIR__."/configurators_after_app");
-        $config = $this->configurationFactory->getConfiguration();
-
-        return $config;
-    }
-
-
     public function addConfigurators($directory)
     {
         $this->configurationFactory->addConfiguratorDirectory($directory);
     }
 
+    public function setContext(Context $context)
+    {
+        $this->context = $context;
+    }
+
+    public function addSystemDirectives($directory)
+    {
+
+    }
+
+    public function prepareCoreDependencies($uri = null)
+    {
+        if($this->context === null){
+            $this->context = new Context();
+        }
+        if($uri !== null){
+            $this->context->loadFromEnvironmentBasedOnUri($uri);
+        }
+        Factory::setContext($this->context);
+
+        $baseConfig = $this->configurationFactory->getConfiguration();
+        Factory::setConfig($baseConfig);
+
+        $appDefinition = $this->systemDefinitionFactory->getSystemDefinition();
+        Factory::setAppDefinition($appDefinition);
+
+        $systemConfigurator = Factory::load("\\FlyFoundation\\Core\\SystemConfigurator");
+        $config = $systemConfigurator->configurateWithSystemDefinition($baseConfig, $appDefinition);
+        Factory::setConfig($config);
+    }
+
     private function getBaseResponse()
     {
         $response = Factory::load("\\FlyFoundation\\Core\\StandardResponse");
-        return Factory::getConfig()->baseController->beforeController($response);
+        return $this->getBaseController()->beforeController($response);
     }
 
     private function finalizeResponse($response)
     {
-        return Factory::getConfig()->baseController->afterController($response);
+        return $this->getBaseController()->afterController($response);
+    }
+
+    /**
+     * @return BaseController
+     */
+    private function getBaseController(){
+        if(!isset($this->baseController)){
+            $baseControllerName = Factory::getConfig()->baseController;
+            $this->baseController = Factory::load($baseControllerName);
+            if(!$this->baseController instanceof BaseController){
+                throw new InvalidConfigurationException("The base controller must be of class BaseController.");
+            }
+        }
+        return $this->baseController;
     }
 }

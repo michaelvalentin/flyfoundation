@@ -1,0 +1,12 @@
+? Article : Entity
+    $ Title : string
+        Required
+        #MaxLength : 65
+
+    $ Alias : string
+        Required
+        UseAsAlias
+        #MaxLength : 65
+        #RegExp : ^[A-Za-z0-9_-]+$
+
+    < Image : Image

@@ -1,0 +1,19 @@
+? Id
+    $ Id : integer
+        # NotNegative
+        AutoIncrement
+        Required
+
+? CreatedUpdated
+    $ Created : DateTime
+        Required
+    $ Update : DateTime
+
+? Archived
+    $ Archived : DateTime
+        SelectRequirement : null
+
+? Entity
+    & Id
+    & CreatedUpdate
+    & Archived

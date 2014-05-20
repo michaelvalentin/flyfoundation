@@ -73,11 +73,11 @@ Translate : false
         OnDelete : cascade
         #Required
 
-    <MainAuthor:User
+    <MainAuthor:Author
         #Required
         @Write
 
-    <>Authors:User
+    <>Authors:Author
 
     >Comments:Comment
 
@@ -96,17 +96,17 @@ Translate : false
 ###############################
 PREFIXES:
 "nothing" : an option
-!  : Class file
-$  : Independendent, object variable
+?  : Entity
+!  : Primary entity
+$  : Independent, object variable
 <  : Has a - "Points to a"    //The entity will point out towards something else..
 >  : Has many - "These point to this"   //Something will point to the integer, the integer will spread out towards many..
 <> : Many-to-many relation
 #  : Validation
 @  : Access Control
 ~  : Filter
-&  :
-%  :
-?  :
+&  : Inclusion
+%  : Index
 
 MAKING DATABASE: -> This should get rid of problems with circular dependencies...
 - Setup all tables with fields...
