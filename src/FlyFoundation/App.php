@@ -4,11 +4,9 @@ namespace FlyFoundation;
 
 use FlyFoundation\Core\Factories\SystemDefinitionFactory;
 use FlyFoundation\Core\Response;
-use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Controllers\BaseController;
 use FlyFoundation\Core\Factories\ConfigurationFactory;
 use FlyFoundation\Core\Context;
-use FlyFoundation\Core\StandardResponse;
 use FlyFoundation\Core\Router;
 use FlyFoundation\Exceptions\InvalidConfigurationException;
 
@@ -41,14 +39,15 @@ class App {
     /**
      * @param string $uri
      * @param Context $context
-     * @return StandardResponse
+     * @return Response
      */
     public function getResponse($uri, $context = null)
     {
         $this->prepareCoreDependencies($uri, $context);
 
         /** @var Router $router */
-        $router = Factory::load("\\FlyFoundation\\Core\\StandardRouter");
+        $routerClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Core\\Router");
+        $router = Factory::load($routerClass);
 
         $systemQuery = $router->getSystemQuery($uri);
 
@@ -97,7 +96,8 @@ class App {
 
     private function getBaseResponse()
     {
-        $response = Factory::load("\\FlyFoundation\\Core\\StandardResponse");
+        $responseClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Core\\Response");
+        $response = Factory::load($responseClass);
         return $this->getBaseController()->beforeController($response);
     }
 
@@ -111,8 +111,8 @@ class App {
      */
     private function getBaseController(){
         if(!isset($this->baseController)){
-            $baseControllerName = Factory::getConfig()->baseController;
-            $this->baseController = Factory::load($baseControllerName);
+            $baseControllerClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Controllers\\BaseController");
+            $this->baseController = Factory::load($baseControllerClass);
             if(!$this->baseController instanceof BaseController){
                 throw new InvalidConfigurationException("The base controller must be of class BaseController.");
             }

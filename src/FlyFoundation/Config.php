@@ -4,6 +4,7 @@ namespace FlyFoundation;
 use FlyFoundation\Core\DependencyMap;
 use FlyFoundation\Core\RoutingList;
 use FlyFoundation\Exceptions\InvalidOperationException;
+use FlyFoundation\Util\ClassMap;
 use FlyFoundation\Util\DirectoryList;
 use FlyFoundation\Util\ValueList;
 
@@ -50,11 +51,11 @@ class Config {
     /** @var \FlyFoundation\Core\RoutingList  */
     public $routing;
 
-    /** @var \FlyFoundation\Controllers\BaseController  */
-    public $baseController;
-
     /** @var  DependencyMap */
     public $dependencies;
+
+    /** @var ClassMap */
+    public $implementations;
 
     public function __construct(){
         $this->data = array();
@@ -70,6 +71,7 @@ class Config {
         $this->routing = new RoutingList();
         $this->baseController = null;
         $this->dependencies = new DependencyMap();
+        $this->implementations = new ClassMap();
     }
 
     public function set($key,$value)
@@ -116,5 +118,13 @@ class Config {
     public function isLocked()
     {
         return $this->locked;
+    }
+
+    public function getImplementation($className)
+    {
+        while($this->implementations->containsKey($className)){
+            $className = $this->implementations->get($className);
+        }
+        return $className;
     }
 }

@@ -14,6 +14,7 @@ use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Util\ClassInspector;
+use FlyFoundation\Util\ClassMap;
 use FlyFoundation\Views\View;
 
 class Factory {
@@ -21,8 +22,6 @@ class Factory {
     /** @var Config */
     private static $config;
     private static $context;
-
-    private static $singletons = [];
 
     public static function setConfig(Config $config)
     {
@@ -86,7 +85,6 @@ class Factory {
      */
     public static function load($className, array $arguments = array())
     {
-
         $specializedFactory = self::findSpecializedFactory($className);
 
         if($specializedFactory){
@@ -95,18 +93,11 @@ class Factory {
             $result = self::loadAndDecorateWithoutSpecialization($className, $arguments);
         }
 
-        if(class_exists($className)){
-            if(!$result instanceof $className){
-                throw new InvalidClassException("The class '".get_class($result)."' is used as '".$className."' but does not extend it. This is not allowed.");
-            }
-        }
-
         return $result;
     }
 
     public static function exists($className)
     {
-
         $specializedFactory = self::findSpecializedFactory($className);
 
         if($specializedFactory){

@@ -5,10 +5,13 @@ namespace FlyFoundation\Controllers;
 
 use FlyFoundation\Core\FileLoader;
 use FlyFoundation\Core\Response;
+use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Factory;
 
 class PageController extends AbstractController{
+
+    use AppConfig;
 
     public function view(Response $response, array $arguments)
     {
@@ -18,7 +21,8 @@ class PageController extends AbstractController{
         }
 
         /** @var FileLoader $fileLoader */
-        $fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
+        $fileLoaderClass = $this->getAppConfig()->getImplementation("\\FlyFoundation\\Core\\FileLoader");
+        $fileLoader = Factory::load($fileLoaderClass);
         $filename = $fileLoader->findPage($arguments["alias"]);
 
         if(!$filename){
@@ -33,12 +37,13 @@ class PageController extends AbstractController{
     }
 
     public function viewRespondsTo($arguments){
-        if(!isset($arguments["alias"])){
+        if(!isset($arguments["alias"]) || $arguments["alias"] == "index"){
             return false;
         }
 
         /** @var FileLoader $fileLoader */
-        $fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
+        $fileLoaderClass = $this->getAppConfig()->getImplementation("\\FlyFoundation\\Core\\FileLoader");
+        $fileLoader = Factory::load($fileLoaderClass);
         $filename = $fileLoader->findPage($arguments["alias"]);
 
         if(!$filename){

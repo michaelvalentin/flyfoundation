@@ -5,6 +5,7 @@ namespace FlyFoundation\Controllers;
 
 use FlyFoundation\Core\Response;
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Factory;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Views\View;
@@ -46,12 +47,13 @@ abstract class AbstractController implements Controller{
     }
 
     /**
+     * @throws \FlyFoundation\Exceptions\InvalidOperationException
      * @return Response
      */
     public function getBaseResponse()
     {
         if($this->response == null){
-            $this->response = Factory::load("\\FlyFoundation\\Core\\StandardResponse");
+            throw new InvalidOperationException("This controller does not have any base response set yet.");
         }
         return $this->response;
     }
