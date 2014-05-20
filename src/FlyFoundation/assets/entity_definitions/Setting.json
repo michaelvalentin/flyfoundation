@@ -1,18 +1,22 @@
 {
-    "extends" : [
-        "Core/CreatedUpdated"
-    ],
-
-    "name" : "Setting",
-
-    "fields" : [
+    "entities" : [
         {
-            "name" : "key",
-            "type" : "string"
-        },
-        {
-            "name" : "value",
-            "type" : "integer"
+            "includes" : [
+                "Core/CreatedUpdated"
+            ],
+
+            "name" : "Setting",
+
+            "fields" : [
+                {
+                    "name" : "key",
+                    "type" : "string"
+                },
+                {
+                    "name" : "value",
+                    "type" : "integer"
+                }
+            ]
         }
     ]
 }

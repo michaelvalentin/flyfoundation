@@ -1,9 +1,13 @@
 {
-    "name" : "DemoEntity",
-    "fields" : [
-        {
-            "name" : "TestField",
-            "type" : "string"
-        }
+    "entities" : [
+            {
+                "name" : "DemoEntity",
+                "fields" : [
+                    {
+                        "name" : "TestField",
+                        "type" : "string"
+                    }
+                ]
+            }
     ]
 }

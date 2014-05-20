@@ -5,16 +5,16 @@ namespace FlyFoundation;
 
 
 use FlyFoundation\Controllers\Controller;
+use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Factories\FactoryTools;
 use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
-use FlyFoundation\Exceptions\InvalidClassException;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
+use FlyFoundation\SystemDefinitions\SystemDefinition;
 use FlyFoundation\Util\ClassInspector;
-use FlyFoundation\Util\ClassMap;
 use FlyFoundation\Views\View;
 
 class Factory {
@@ -40,15 +40,15 @@ class Factory {
     }
 
     /**
-     * @param mixed $appDefinition
+     * @param SystemDefinition $appDefinition
      */
-    public static function setAppDefinition($appDefinition)
+    public static function setAppDefinition(SystemDefinition $appDefinition)
     {
         self::$appDefinition = $appDefinition;
     }
 
     /**
-     * @return mixed
+     * @return SystemDefinition
      */
     public static function getAppDefinition()
     {
@@ -59,15 +59,15 @@ class Factory {
     }
 
     /**
-     * @param mixed $context
+     * @param Context $context
      */
-    public static function setContext($context)
+    public static function setContext(Context $context)
     {
         self::$context = $context;
     }
 
     /**
-     * @return mixed
+     * @return Context
      */
     public static function getContext()
     {

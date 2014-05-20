@@ -5,6 +5,7 @@ namespace FlyFoundation\SystemDefinitions;
 
 
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Exceptions\InvalidSystemDefinitionException;
 use FlyFoundation\Exceptions\NotImplementedException;
 use FlyFoundation\Util\DirectoryList;
 
@@ -73,7 +74,11 @@ class SystemDefinitionBuilder {
             throw new InvalidArgumentException("The supplied file is not a valid file name in the file system");
         }
         $data = $this->readDataFromDefinitionFile($file);
-        $systemDefinition->applyOptions($data);
+        try{
+            $systemDefinition->applyOptions($data);
+        }catch(\Exception $exception){
+            throw new InvalidSystemDefinitionException("Error in adding data from file: ".$file." with message: ".$exception->getMessage());
+        }
         return $systemDefinition;
     }
 
@@ -90,7 +95,11 @@ class SystemDefinitionBuilder {
 
     private function readDataFromJsonFile($file)
     {
-        return json_decode(file_get_contents($file));
+        $result = json_decode(file_get_contents($file),true);
+        if($result === null){
+            throw new InvalidSystemDefinitionException("The system definition in file '".$file."' is not valid and could not be parsed as JSON.");
+        }
+        return $result;
     }
 
     private function readDataFromLsdFile($file)

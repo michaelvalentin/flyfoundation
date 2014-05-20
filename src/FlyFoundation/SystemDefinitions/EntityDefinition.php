@@ -19,6 +19,10 @@ class EntityDefinition extends DefinitionComponent{
     protected $indexes;
     /** @var  SystemDefinition */
     private $systemDefinition;
+    /** @var  string */
+    private $parent;
+    /** @var  array */
+    private $includes;
 
     /**
      * @param SystemDefinition $systemDefinition
@@ -127,10 +131,22 @@ class EntityDefinition extends DefinitionComponent{
         return $this->indexes;
     }
 
+    public function getParent()
+    {
+        $this->requireFinalized();
+        return $this->parent;
+    }
+
+    public function getIncludes()
+    {
+        $this->requireFinalized();
+        return $this->includes;
+    }
+
     public function validate()
     {
         if(!is_array($this->fields) || count($this->fields)<1){
-            throw new InvalidArgumentException("An entity definition must have at least one field.");
+            throw new InvalidArgumentException("An entity definition must have at least one field. (In ".$this->name.")");
         }
         parent::validate();
     }
@@ -180,5 +196,15 @@ class EntityDefinition extends DefinitionComponent{
             $this->validations[] = $index;
         }
         */
+    }
+
+    protected function applyParent($parent)
+    {
+        $this->parent = $parent;
+    }
+
+    protected function applyIncludes(array $includes)
+    {
+        $this->includes = $includes;
     }
 }

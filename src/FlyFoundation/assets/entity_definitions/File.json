@@ -1,19 +1,23 @@
 {
-    "extends" : [
-        "Core/Id",
-        "Core/CreatedUpdated"
-    ],
-
-    "name" : "File",
-
-    "fields" : [
+    "entities" : [
         {
-            "name" : "title",
-            "type" : "string"
-        },
-        {
-            "name" : "url",
-            "type" : "string"
+            "includes" : [
+                "Core/Id",
+                "Core/CreatedUpdated"
+            ],
+
+            "name" : "File",
+
+            "fields" : [
+                {
+                    "name" : "title",
+                    "type" : "string"
+                },
+                {
+                    "name" : "url",
+                    "type" : "string"
+                }
+            ]
         }
     ]
 }

@@ -14,7 +14,7 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
     {
         $app = new \FlyFoundation\App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        Factory::setConfig($app->getConfiguration());
+        $app->prepareCoreDependencies();
         $this->router = Factory::load("\\FlyFoundation\\Core\\StandardRouter");
         parent::setUp();
     }

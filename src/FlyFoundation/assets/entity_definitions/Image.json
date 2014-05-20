@@ -1,22 +1,24 @@
 {
-    "extends" : [
-        "File"
-    ],
+    "entities" : [
+        {
+            "parent" : "File",
 
-    "name" : "Image",
+            "name" : "Image",
 
-    "fields" : [
-        {
-            "name" : "alternative",
-            "type" : "string"
-        },
-        {
-            "name" : "height",
-            "type" : "integer"
-        },
-        {
-            "name" : "width",
-            "type" : "integer"
+            "fields" : [
+                {
+                    "name" : "alternative",
+                    "type" : "string"
+                },
+                {
+                    "name" : "height",
+                    "type" : "integer"
+                },
+                {
+                    "name" : "width",
+                    "type" : "integer"
+                }
+            ]
         }
     ]
 }

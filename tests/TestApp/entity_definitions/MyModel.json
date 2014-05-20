@@ -1,9 +1,13 @@
 {
-    "name" : "MyModel",
-    "fields" : [
+    "entities" : [
         {
-            "name" : "MyField",
-            "type" : "string"
+            "name" : "MyModel",
+            "fields" : [
+                {
+                    "name" : "MyField",
+                    "type" : "string"
+                }
+            ]
         }
     ]
 }

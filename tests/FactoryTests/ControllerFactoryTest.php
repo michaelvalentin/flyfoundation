@@ -15,7 +15,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
     {
         $app = new \FlyFoundation\App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies("testing",new Context());
+        $app->prepareCoreDependencies();
 
         $this->controllerFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\ControllerFactory");
 

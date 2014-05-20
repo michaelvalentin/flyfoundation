@@ -31,6 +31,11 @@ class SystemDefinitionFactory {
         $this->directiveDirectories->add($directory);
     }
 
+    public function setDirectiveDirectories(DirectoryList $directories)
+    {
+        $this->directiveDirectories = $directories;
+    }
+
     /**
      * @return SystemDefinition
      */

@@ -1,7 +1,0 @@
-{
-    "extends" : [
-        "Core/Id",
-        "Core/CreatedUpdated",
-        "Core/Trashing"
-    ]
-}

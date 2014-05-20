@@ -14,6 +14,7 @@ class App {
 
     private $configurationFactory;
     private $systemDefinitionFactory;
+    /** @var  Context */
     private $context;
     /** @var  BaseController */
     private $baseController;
@@ -63,16 +64,6 @@ class App {
         $this->configurationFactory->addConfiguratorDirectory($directory);
     }
 
-    public function setContext(Context $context)
-    {
-        $this->context = $context;
-    }
-
-    public function addSystemDirectives($directory)
-    {
-        $this->systemDefinitionFactory->addDirectiveDirectory($directory);
-    }
-
     public function prepareCoreDependencies($uri = null)
     {
         if($this->context === null){
@@ -87,6 +78,7 @@ class App {
         $baseConfig = $this->configurationFactory->getConfiguration();
         Factory::setConfig($baseConfig);
 
+        $this->systemDefinitionFactory->setDirectiveDirectories($baseConfig->entityDefinitionDirectories);
         $appDefinition = $this->systemDefinitionFactory->getSystemDefinition();
         Factory::setAppDefinition($appDefinition);
 

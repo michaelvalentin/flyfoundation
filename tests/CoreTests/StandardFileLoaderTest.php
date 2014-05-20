@@ -14,14 +14,14 @@ class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {
     {
         $app = new App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        Factory::setConfig($app->getConfiguration());
+        $app->prepareCoreDependencies();
 
         $this->fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
     }
 
     public function testFindSomeFile()
     {
-        $result = $this->fileLoader->findFile("readme.md");
+        $result = $this->fileLoader->findFile(TEST_BASE."/TestApp/readme.md");
         $readme_contents_result = file_get_contents($result);
         $readme_contents = file_get_contents(TEST_BASE."/TestApp/readme.md");
         $this->assertSame($readme_contents, $readme_contents_result);
@@ -33,27 +33,19 @@ class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($result);
     }
 
-    public function testLoadingEntityDefinitionInExtraDir()
-    {
-        $result = $this->fileLoader->findEntityDefinition("demo");
-        $contents_result = file_get_contents($result);
-        $contents = file_get_contents(TEST_BASE."/TestApp/entities/demo.json");
-        $this->assertSame($contents, $contents_result);
-    }
-
     public function testLoadingTemplateFile()
     {
         $result = $this->fileLoader->findTemplate("demo");
         $contents_result = file_get_contents($result);
-        $contents = file_get_contents(TEST_BASE."/../src/FlyFoundation/templates/demo.mustache");
+        $contents = file_get_contents(TEST_BASE."/../src/FlyFoundation/assets/templates/demo.mustache");
         $this->assertSame($contents, $contents_result);
     }
 
     public function testLoadingFileImplementedInBothFlyFoundationAndTestApp()
     {
-        $result = $this->fileLoader->findFile("entity_definitions/readme.md");
+        $result = $this->fileLoader->findFile("pages/index.mustache");
         $contents_result = file_get_contents($result);
-        $contents = file_get_contents(TEST_BASE."/TestApp/entity_definitions/readme.md");
+        $contents = file_get_contents(TEST_BASE."/TestApp/pages/index.mustache");
         $this->assertSame($contents, $contents_result);
     }
 }
