@@ -1,5 +1,5 @@
 #System Definition Loading
-- All relevant data should be loaded external means
+- All relevant data should be loaded by external means
 - All directives are parsed in an AST
 - The model is build, honoring includes and extensions (the relevant content is loaded from the ast AND a note is added on the model)
     o In terms of inclusion / extension circular dependencies are not allowed but could occur and should result in an error
@@ -31,4 +31,8 @@
 #Application architecture in relation to system definitions
 - Generic classes, validators, forms, etc. react on system definition classes
   and hence do not need worry about the configuration or execution context
--
+- Generic classes are configured by a factory, according to the system definition
+- Validators, forms, etc. are configured according to the system definitions, independent of the generic class, which could have been changed
+- Think of the system definition as a contract, that should always be honoured by generic classes, unless the specific class is explicitly changed
+    o Meaning changes should be made in the system definitions as much as possible
+

@@ -10,7 +10,9 @@ class OpenPersistentEntity extends PersistentEntity
     public function __construct(EntityDefinition $entityDefinition, array $data = array())
     {
         $this->entityDefinition = $entityDefinition;
-        $this->fromArray($data);
+        foreach($data as $key=>$value){
+            $this->set($key, $value);
+        }
     }
 
     public function getDefinition()
@@ -25,7 +27,7 @@ class OpenPersistentEntity extends PersistentEntity
      */
     public function get($key)
     {
-        return $this->columnValuePairs[$key];
+        return $this->getPersistentValue($key);
     }
 
     /**
@@ -34,15 +36,7 @@ class OpenPersistentEntity extends PersistentEntity
      */
     public function set($key, $value)
     {
-        $this->columnValuePairs[$key] = $value;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->get("id");
+        $this->setPersistentValue($key, $value);
     }
 
     /**
@@ -51,10 +45,5 @@ class OpenPersistentEntity extends PersistentEntity
     public function asArray()
     {
         return $this->columnValuePairs;
-    }
-
-    public function fromArray(array $data)
-    {
-        $this->columnValuePairs = $data;
     }
 }

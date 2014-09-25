@@ -78,10 +78,14 @@ abstract class EntityField extends DefinitionComponent{
             "Time"
         ];
         $isSimpleType = in_array($this->type,$simpleTypeNames);
-        $isEntity = $this->getEntityDefinition()->getSystemDefinition()->hasEntity($this->type);
-        if(!$isSimpleType && !$isEntity){
-            throw new InvalidArgumentException("The type '".$this->type."' is not a valid field type");
+        if($isSimpleType){
+            return;
         }
+        $isEntity = $this->getEntityDefinition()->getSystemDefinition()->hasEntity($this->type);
+        if($isEntity){
+            return;
+        }
+        throw new InvalidArgumentException("The type '".$this->type."' is not a valid field type");
     }
 
 

@@ -6,7 +6,7 @@ use FlyFoundation\App;
 
 class AppTest extends \PHPUnit_Framework_TestCase {
 
-    public function testInstansiation()
+    public function testInstantiation()
     {
         $app = new App();
         $this->assertInstanceOf("\\FlyFoundation\\App",$app);
@@ -38,5 +38,15 @@ class AppTest extends \PHPUnit_Framework_TestCase {
 
         $result = $systemDefinition->hasEntity("DemoEntity");
         $this->assertTrue($result);
+    }
+
+    public function testContext()
+    {
+        $app = new App();
+        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
+        $app->prepareCoreDependencies();
+
+        $context = \FlyFoundation\Factory::getContext();
+        $this->assertInstanceOf("\\FlyFoundation\\Core\\Context",$context);
     }
 }

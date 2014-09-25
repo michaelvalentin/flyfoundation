@@ -5,7 +5,7 @@ implementations handled by the configuration and dependency traits handled
 by the factory.
 
 ##Implementations in configuration
-By querying the database with a class name we can get the relevant
+By querying the configuration with a class name we can get the relevant
 implementation. This allows our code to load classes while the ability
 to swap the files lies in the configuration. This should be use for class
 instantiation, where no pre-configured options are required and the

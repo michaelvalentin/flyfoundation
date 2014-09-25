@@ -1,9 +1,16 @@
 ! BlogPost : Article
-    Translate
+
+    $ Title : String //Overrides settings in Article Field
+            Translate
+            ~ String
+            # MinLength : 8
+            # MaxLength : 255
+            # RegExp : ^[a-zA-Z0-9\s]*$
+                ErrorMessage : "Only letters a-z and numbers allowed."
+            # Required
 
     < Image : Image
         Required
-        Translate : false
 
     <MainAuthor:Author
         #Required
