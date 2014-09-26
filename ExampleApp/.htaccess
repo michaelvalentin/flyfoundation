@@ -1,19 +1,24 @@
-#1 : Rettina Images
-
 Options All -Indexes
 Options +FollowSymlinks
 
 RewriteEngine On
-DirectorySlash On
+DirectorySlash Off
 RewriteBase /
 
-###Forbid access to php and template files
-RewriteCond %{REQUEST_URI} !dispatcher\.php$
-#RewriteCond %{REQUEST_URI} !retinaimages\.php$
-RewriteCond %{REQUEST_URI} (\.php|\.phtml)+$
+### Rewrite vendor folder request to 404-not-found
+RewriteCond %{REQUEST_URI} ^vendor/.*$
+RewriteCond %{REQUEST_URI} (Signibase/+.*)$
 RewriteCond %{REQUEST_FILENAME} -f
-RewriteCond $1#%{REQUEST_URI} ([^#]*)#(.*)\1$
-RewriteRule ^(.*)$ %2404NotFound [L]
+RewriteCond $1#%{REQUEST_URI} ([^#]*)#(.*?)\1$
+RewriteRule ^(.*)$ dispatcher.php?q=$1 [L]
+
+###Forbid access to php and template files
+#RewriteCond %{REQUEST_URI} !dispatcher\.php$
+#RewriteCond %{REQUEST_URI} !retinaimages\.php$
+#RewriteCond %{REQUEST_URI} (\.php|\.phtml)+$
+#RewriteCond %{REQUEST_FILENAME} -f
+#RewriteCond $1#%{REQUEST_URI} ([^#]*)#(.*)\1$
+#RewriteRule ^(.*)$ %2404NotFound [L]
 
 ### Rewrite Requests
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -27,8 +32,8 @@ RewriteRule ^(.*)$ %2dispatcher.php?q=$1 [QSA,L]
 #RewriteRule ^(.*\.(?:jpe?g|gif|png|bmp))$ %2retinaimages.php [NC,L]
 
 
-ErrorDocument 400 /index.php?q=400BadRequest
-ErrorDocument 401 /index.php?q=401Unauthorized
-ErrorDocument 403 /index.php?q=403Forbidden
-ErrorDocument 404 /index.php?q=404NotFound
-ErrorDocument 500 /index.php?q=500ServerError
+#ErrorDocument 400 /index.php?q=400BadRequest
+#ErrorDocument 401 /index.php?q=401Unauthorized
+#ErrorDocument 403 /index.php?q=403Forbidden
+#ErrorDocument 404 /index.php?q=404NotFound
+#ErrorDocument 500 /index.php?q=500ServerError
