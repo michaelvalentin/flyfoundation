@@ -14,11 +14,9 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "lichtner/fluentpdo": "dev-master",
         "znarkus/postmark": "dev-master",
-        "mustache/mustache": "dev-dev",
-        "aws/aws-sdk-php": "2.6.0",
-        "symfony/yaml" : "2.5.*@dev"
+        "mustache/mustache": "v2.7.0",
+        "aws/aws-sdk-php": "2.6.0"
     },
     "autoload": {
         "psr-0": {
