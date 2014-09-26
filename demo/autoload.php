@@ -1,5 +1,5 @@
 <?php
-namespace TestApp;
+namespace Basefly;
 
 /**
  * AutoLoader to make sure that we don't have to do includes. Loads based on the namespace defined
@@ -15,8 +15,11 @@ class AutoLoader {
      */
     public static function LoadClass($name) {
 
-        $basedir = __DIR__."/../";
-        $filename = $basedir.str_replace("\\","/",$name).".php";
+        $basedir = __DIR__."/";
+        $nameParts = explode("\\",$name);
+        array_shift($nameParts);
+        $name = implode("/",$nameParts);
+        $filename = $basedir.$name.".php";
 
         if (file_exists($filename)) {
             require_once $filename;

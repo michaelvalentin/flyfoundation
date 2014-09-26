@@ -1,0 +1,14 @@
+{
+    "repositories":[
+        {
+            "type" : "vcs",
+            "url" : "git@bitbucket.org:signifly/flyfoundation.git"
+        }
+    ],
+    "require": {
+        "signifly/FlyFoundation" : "master-dev",
+        "znarkus/postmark": "dev-master",
+        "mustache/mustache": "v2.7.0",
+        "aws/aws-sdk-php": "2.6.0"
+    }
+}

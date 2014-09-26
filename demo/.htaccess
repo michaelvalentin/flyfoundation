@@ -1,0 +1,32 @@
+Options All -Indexes
+Options +FollowSymlinks
+
+RewriteEngine On
+DirectorySlash Off
+RewriteBase /
+
+### Rewrite vendor folder request to 404-not-found
+RewriteCond %{REQUEST_URI} !public/.*$
+RewriteCond %{REQUEST_URI} !dispatcher.php$
+RewriteCond %{REQUEST_URI} !retinaimages.php$
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond $1#%{REQUEST_URI} ([^#]*)#(.*?)\1$
+RewriteRule ^(.*)$ %2dispatcher.php?q=$1 [L]
+
+### Rewrite Requests
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond $1#%{REQUEST_URI} ([^#]*)#(.*)\1$
+RewriteRule ^(.*)$ %2dispatcher.php?q=$1 [QSA,L]
+
+### Retina images
+RewriteCond %{HTTP:Cookie} devicePixelRatio [NC]
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond $1#%{REQUEST_URI} ([^#]*)#(.*)\1$
+RewriteRule ^(.*\.(?:jpe?g|gif|png|bmp))$ %2retinaimages.php [NC,L]
+
+### 400 errors
+ErrorDocument 400 /dispatcher.php?q=400-bad-request
+ErrorDocument 401 /dispatcher.php?q=401-unauthorized
+ErrorDocument 403 /dispatcher.php?q=403-forbidden
+ErrorDocument 404 /dispatcher.php?q=404-not-found
+ErrorDocument 405 /dispatcher.php?q=405-server-error
