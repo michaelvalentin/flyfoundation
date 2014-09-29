@@ -8,7 +8,6 @@ use FlyFoundation\Core\Response\ResponseMetaData;
 use FlyFoundation\Core\Response\ResponseOutputType;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Dependencies\AppContext;
-use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Factory;
 use FlyFoundation\Util\ArrayHelper;
@@ -23,7 +22,7 @@ use FlyFoundation\Util\Set;
  */
 class StandardResponse implements Response{
 
-    use AppContext, AppConfig, AppDefinition;
+    use AppContext, AppConfig;
 
 	private $headers;
 	private $metaData;

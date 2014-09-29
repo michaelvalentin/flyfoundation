@@ -46,6 +46,8 @@ class App {
     {
         $this->prepareCoreDependencies($uri, $context);
 
+        //TODO: Here it should be possible to do something dynamic, based on the definition but before the router is used!!
+
         /** @var Router $router */
         $routerClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Core\\Router");
         $router = Factory::load($routerClass);
@@ -56,7 +58,10 @@ class App {
 
         $response = $systemQuery->execute($baseResponse);
 
-        return $this->finalizeResponse($response);
+        //TODO: Here it should be possible to do something dynamic, based on the definition, after all other is done..
+
+        $response = $this->finalizeResponse($response);
+        return $response;
     }
 
     public function addConfigurators($directory)
@@ -77,10 +82,6 @@ class App {
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/assets/configurators_after_app");
         $baseConfig = $this->configurationFactory->getConfiguration();
         Factory::setConfig($baseConfig);
-
-        $this->systemDefinitionFactory->setDirectiveDirectories($baseConfig->entityDefinitionDirectories);
-        $appDefinition = $this->systemDefinitionFactory->getSystemDefinition();
-        Factory::setAppDefinition($appDefinition);
 
         $configuratorClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Core\\GenericConfigurator");
         $configurator = Factory::load($configuratorClass);

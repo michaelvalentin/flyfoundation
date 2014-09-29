@@ -28,18 +28,6 @@ class AppTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame("This is a demo",$test2);
     }
 
-    public function testEntityDefinition()
-    {
-        $app = new App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
-
-        $systemDefinition = \FlyFoundation\Factory::getAppDefinition();
-
-        $result = $systemDefinition->hasEntity("DemoEntity");
-        $this->assertTrue($result);
-    }
-
     public function testContext()
     {
         $app = new App();

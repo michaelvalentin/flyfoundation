@@ -6,7 +6,6 @@ namespace FlyFoundation\Core\Factories;
 
 use FlyFoundation\Config;
 use FlyFoundation\Configurator;
-use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Util\DirectoryList;
 
 class ConfigurationFactory {

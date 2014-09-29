@@ -1,6 +1,6 @@
 #FlyFoundation
 
-<i>FlyFoundation is a platform for developing simple, data-intensive web-applications fast.</i>
+*FlyFoundation is a platform for developing simple, data-intensive web-applications fast.*
 
 It is currently under development, but is going to include a DSL for defining system aspects
 such as data model, validations and routing centrally and with a minimum of hazzle. In the

@@ -5,14 +5,12 @@ namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Dependencies\AppConfig;
-use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Exceptions\InvalidClassException;
 use FlyFoundation\Factory;
-use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class ModelFactory {
 
-    use AppConfig, AppDefinition;
+    use AppConfig;
 
     private $defaultModel = "\\FlyFoundation\\Models\\OpenPersistentEntity";
 
@@ -44,11 +42,6 @@ class ModelFactory {
             return true;
         }
 
-        $entityName = $this->getEntityName($className);
-        if($this->getAppDefinition()->hasEntity($entityName)){
-            return true;
-        }
-
         return false;
     }
 
@@ -69,22 +62,6 @@ class ModelFactory {
 
         if(count($constructorParameters) < 1){
             return $arguments;
-        }
-
-        $constructorFirstParameterClass = $constructorParameters[0]->getClass()->getName();
-        $takesEntityDefinitionAsFirstParameter = $constructorFirstParameterClass == "FlyFoundation\\SystemDefinitions\\EntityDefinition";
-
-        $firstParameterIsEntityDefinition = false;
-        if(isset($arguments[0])){
-            $firstParameterIsEntityDefinition = $arguments[0] instanceof EntityDefinition;
-        }
-
-        if($takesEntityDefinitionAsFirstParameter && !$firstParameterIsEntityDefinition){
-            if(!$this->getAppDefinition()->hasEntity($entityName)){
-                throw new InvalidClassException("No entity definition '".$entityName."' exists, and the class '".$className."' can not be loaded.");
-            }
-            $entityDefinition = $this->getAppDefinition()->getEntity($entityName);
-            array_unshift($arguments,$entityDefinition);
         }
 
         return $arguments;

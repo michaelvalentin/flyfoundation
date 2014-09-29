@@ -42,9 +42,6 @@ class Config {
     /** @var \FlyFoundation\Util\DirectoryList */
     public $templateDirectories;
 
-    /** @var \FlyFoundation\Util\DirectoryList */
-    public $entityDefinitionDirectories;
-
     /** @var \FlyFoundation\Core\RoutingList  */
     public $routing;
 
@@ -63,7 +60,6 @@ class Config {
         $this->databaseSearchPaths = new ValueList();
         $this->pageDirectories = new DirectoryList();
         $this->templateDirectories = new DirectoryList();
-        $this->entityDefinitionDirectories = new DirectoryList();
         $this->routing = new RoutingList();
         $this->baseController = null;
         $this->dependencies = new DependencyMap();

@@ -40,25 +40,6 @@ class Factory {
     }
 
     /**
-     * @param SystemDefinition $appDefinition
-     */
-    public static function setAppDefinition(SystemDefinition $appDefinition)
-    {
-        self::$appDefinition = $appDefinition;
-    }
-
-    /**
-     * @return SystemDefinition
-     */
-    public static function getAppDefinition()
-    {
-        if(self::$appDefinition == null){
-            throw new InvalidOperationException("The factory must be supplied with an AppDefinition before it can be used.");
-        }
-        return self::$appDefinition;
-    }
-
-    /**
      * @param Context $context
      */
     public static function setContext(Context $context)
@@ -159,10 +140,6 @@ class Factory {
         if(in_array("FlyFoundation\\Dependencies\\AppContext",$instanceTraits)){
             $instance->setAppContext(self::getContext());
             $instanceTraits = array_diff($instanceTraits,["\\FlyFoundation\\Dependencies\\AppContext"]);
-        }
-        if(in_array("FlyFoundation\\Dependencies\\AppDefinition",$instanceTraits)){
-            $instance->setAppDefinition(self::getAppDefinition());
-            $instanceTraits = array_diff($instanceTraits,["\\FlyFoundation\\Dependencies\\AppDefinition"]);
         }
 
         //Other dependencies

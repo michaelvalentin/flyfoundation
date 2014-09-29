@@ -1,3 +1,19 @@
+#System Definitions position in the system
+All systems should be able to function independently of the System Defintions, meaning
+one should be able to make use of their full feature-set through an API, perhaps even
+with an internal DSL ish' syntax. This makes it possible to test all parts.
+
+The System definitions are then used for centrally defining aspects, so they are not repeated
+over several sub-systems (eg. database, validation & model). The centralisation also
+groups naturally related aspects better, giving a better overview of the system in a
+vertical, rather than horizontal fashion.
+
+The system definitions informs the system through factories and configurators,
+that read the definition and applies the relevant aspects to the given model, form,
+validator, database class or whatever might be relevant. The system definition
+can also be used to inform derived models, such as models for language and/or
+version control.
+
 #System Definition Loading
 - All relevant data should be loaded by external means
 - All directives are parsed in an AST

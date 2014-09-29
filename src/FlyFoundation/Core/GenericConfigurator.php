@@ -6,11 +6,8 @@ namespace FlyFoundation\Core;
 
 use FlyFoundation\Config;
 use FlyFoundation\Configurator;
-use FlyFoundation\Dependencies\AppDefinition;
 
 class GenericConfigurator implements Configurator{
-
-    use AppDefinition;
 
     /**
      * @param Config $config

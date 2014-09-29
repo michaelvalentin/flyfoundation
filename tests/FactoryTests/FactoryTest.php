@@ -55,11 +55,9 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $result = Factory::load("\\TestApp\\SomeClass");
         $config = $result->getAppConfig();
         $context = $result->getAppContext();
-        $appDefinition = $result->getAppDefinition();
 
         $this->assertInstanceOf("\\FlyFoundation\\Config",$config);
         $this->assertInstanceOf("\\FlyFoundation\\Core\\Context",$context);
-        $this->assertInstanceOf("\\FlyFoundation\\SystemDefinitions\\SystemDefinition",$appDefinition);
     }
 
     public function testLoadClassTheUsesOneCoreDependencyTrait()
@@ -70,7 +68,6 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
 
         $this->assertInstanceOf("\\FlyFoundation\\Config",$config);
         $this->assertFalse(method_exists($result,"getAppContext"));
-        $this->assertFalse(method_exists($result,"getAppDefinition"));
     }
 
     //Load existing class that does not use environment
@@ -78,8 +75,6 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
     {
         $result = Factory::load("\\TestApp\\DemoClass");
         $this->assertFalse(method_exists($result,"getAppContext"));
-        $this->assertFalse(method_exists($result,"getAppDefinition"));
-        $this->assertFalse(method_exists($result, "getAppConfig"));
     }
 
     /**
@@ -117,7 +112,6 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $result = Factory::loadAndDecorateWithoutSpecialization("\\TestApp\\SomeClass",[]);
         $config = $result->getAppConfig();
         $context = $result->getAppContext();
-        $appDefinition = $result->getAppDefinition();
 
         $this->assertInstanceOf("\\FlyFoundation\\Config",$config);
         $this->assertInstanceOf("\\FlyFoundation\\Core\\Context",$context);

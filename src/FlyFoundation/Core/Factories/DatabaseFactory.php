@@ -5,15 +5,13 @@ namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Dependencies\AppConfig;
-use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Exceptions\InvalidClassException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Factory;
-use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class DatabaseFactory {
 
-    use AppConfig, AppDefinition;
+    use AppConfig;
 
     /**
      * @param string $className
@@ -47,10 +45,6 @@ class DatabaseFactory {
         if($implementation){
             $arguments = $this->prepareArguments($implementation, $arguments, $entityName);
             return Factory::loadAndDecorateWithoutSpecialization($implementation,$arguments);
-        }elseif($this->getAppDefinition()->hasEntity($entityName)){
-            $dynamicClassName = $this->getGenericDatabaseClassName($className, $dataObjectType);
-            $arguments = $this->prepareArguments($dynamicClassName, $arguments, $entityName);
-            return Factory::load($dynamicClassName, $arguments);
         }else{
             throw new UnknownClassException("The class '".$className."' could not be found neither as concrete implementation or generic implementation through definitions.");
         }
@@ -80,7 +74,7 @@ class DatabaseFactory {
 
         $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->databaseSearchPaths);
 
-        if($implementation || $this->getAppDefinition()->hasEntity($entityName)){
+        if($implementation){
             return true;
         }
 
@@ -112,22 +106,6 @@ class DatabaseFactory {
 
         if(count($constructorParameters) < 1){
             return $arguments;
-        }
-
-        $constructorFirstParameterClass = $constructorParameters[0]->getClass()->getName();
-        $takesEntityDefinitionAsFirstParameter = $constructorFirstParameterClass == "FlyFoundation\\SystemDefinitions\\EntityDefinition";
-
-        $firstParameterIsEntityDefinition = false;
-        if(isset($arguments[0])){
-            $firstParameterIsEntityDefinition = $arguments[0] instanceof EntityDefinition;
-        }
-
-        if($takesEntityDefinitionAsFirstParameter && !$firstParameterIsEntityDefinition){
-            if(!$this->getAppDefinition()->hasEntity($entityName)){
-                throw new InvalidClassException("No entity definition '".$entityName."' exists, and hence the class '".$className."' can not be loaded.");
-            }
-            $entityDefinition = $this->getAppDefinition()->getEntity($entityName);
-            array_unshift($arguments,$entityDefinition);
         }
 
         return $arguments;

@@ -1,12 +1,9 @@
 <?php
 
-
 namespace FlyFoundation\Core\Factories;
-
 
 use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Dependencies\AppConfig;
-use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Factory;
 
 class ControllerFactory

@@ -11,9 +11,3 @@ define('TEST_BASE',__DIR__);
 //TODO: This could be better mock objects...
 \FlyFoundation\Factory::setConfig(new Config());
 \FlyFoundation\Factory::setContext(new Context());
-$mockSystemDefinition = new SystemDefinition();
-$mockSystemDefinition->applyOptions([
-    "name" => "TestApp"
-]);
-$mockSystemDefinition->finalize();
-\FlyFoundation\Factory::setAppDefinition($mockSystemDefinition);
