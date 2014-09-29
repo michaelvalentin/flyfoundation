@@ -57,4 +57,23 @@ class Map implements Collection{
     public function asArray(){
         return $this->data;
     }
+
+    public function keysAsArray()
+    {
+        $result = [];
+        foreach($this->data as $key => $value){
+            $result[] = $key;
+        }
+        return $result;
+    }
+
+
+    public function valuesAsArray()
+    {
+        $result = [];
+        foreach($this->data as $key => $value){
+            $result[] = $value;
+        }
+        return $result;
+    }
 }
