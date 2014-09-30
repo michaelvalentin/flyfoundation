@@ -23,7 +23,8 @@ class Set implements Collection{
 	 * @param mixed $element The element to add
 	 */
 	public function add($element){
-		$this->data[$element] = true;
+        $hash = $this->hash($element);
+		$this->data[$hash] = $element;
 	}
 
     public function addAll($elements){
@@ -38,7 +39,8 @@ class Set implements Collection{
 	 * @param mixed $element The element to remove
 	 */
 	public function remove($element){
-		if(isset($this->data[$element])) unset($this->data[$element]);
+        $hash = $this->hash($element);
+		if(isset($this->data[$hash])) unset($this->data[$hash]);
 	}
 	
 	/**
@@ -47,14 +49,15 @@ class Set implements Collection{
 	 * @return boolean True if the element is contained in the set
 	 */
 	public function contains($element){
-		return array_key_exists($element, $this->data);
+        $hash = $this->hash($element);
+		return array_key_exists($hash, $this->data);
 	}
 	
 	/**
 	 * @return array: All elements from the set as array
 	 */
 	public function asArray(){
-		return array_keys($this->data);
+		return array_values($this->data);
 	}
 
     /**
@@ -77,6 +80,17 @@ class Set implements Collection{
     public function clear()
     {
         $this->data = array();
+    }
+
+    private function hash($value)
+    {
+        if(is_object($value)){
+            return spl_object_hash($value);
+        }elseif(is_array($value)){
+            return md5(serialize($value));
+        }else{
+            return md5($value);
+        }
     }
 }
 ?>
