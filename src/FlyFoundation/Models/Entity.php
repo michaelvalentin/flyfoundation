@@ -4,10 +4,26 @@
 namespace FlyFoundation\Models;
 
 
-use FlyFoundation\SystemDefinitions\EntityDefinition;
-
 interface Entity {
-    public function __construct(EntityDefinition $entityDefinition, array $data = array());
+    public function __construct(array $data = []);
 
-    public function getDefinition();
-} 
+    /**
+     * @return EntityField[]
+     */
+    public function getFields();
+
+    /**
+     * @return EntityValidation[]
+     */
+    public function getValidations();
+
+    /**
+     * @return bool
+     */
+    public function validate();
+
+    /**
+     * @return string[]
+     */
+    public function getErrors();
+}
