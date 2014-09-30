@@ -1,0 +1,78 @@
+// display:box; must be used for any of the other flexbox mixins to work properly
+@mixin display-box {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+// Default box orientation, assuming that the user wants something less block-like
+// $css3-default-box-orient
+
+// Box orientation [ horizontal | vertical | inline-axis | block-axis | inherit ]
+@mixin box-orient($orientation: $css3-default-box-orient) {
+  @include vendors(box-orient, $orientation, moz webkit ms default);
+}
+
+// Default box-align
+// $css3-default-box-align
+
+// Box align [ start | end | center | baseline | stretch ]
+@mixin box-align($alignment: $css3-default-box-align) {
+  @include vendors(box-align, $alignment, moz webkit ms default);
+}
+
+// Default box flex
+// $css3-default-box-flex
+
+// mixin which takes an int argument for box flex. Apply this to the children inside the box.
+//
+// For example: "div.display-box > div.child-box" would get the box flex mixin.
+@mixin box-flex($flex: $css3-default-box-flex) {
+  @include vendors(box-flex, $flex, moz webkit);
+  @include vendors(flex, $flex, webkit ms default);
+}
+
+// Default flex group
+// $css3-default-box-flex-group
+
+// mixin which takes an int argument for flexible grouping
+@mixin box-flex-group($group: $css3-default-box-flex-group) {
+  @include vendors(box-flex-group, $group, moz webkit ms default);
+}
+
+// default for ordinal group
+// $css3-default-box-order
+
+// mixin which takes an int argument for ordinal grouping and rearranging the order
+@mixin box-order($order: $css3-default-box-order) {
+  @include vendors(box-ordinal-group, $order, moz webkit);
+  @include vendors(flex-order, $order, ms);
+  @include vendors(order, $order, webkit default);
+}
+
+// Box direction default value
+// $css3-default-box-direction
+
+// mixin for box-direction [ normal | reverse | inherit ]
+@mixin box-direction($direction: $css3-default-box-direction) {
+  @include vendors(box-direction, $direction, moz webkit ms default);
+}
+
+// default for box lines
+// $css3-default-box-lines
+
+// mixin for box lines [ single | multiple ]
+@mixin box-lines($lines: $css3-default-box-lines) {
+  @include vendors(box-lines, $lines, moz webkit ms default);
+}
+
+// default for box pack
+// $css3-default-box-pack
+
+// mixin for box pack [ start | end | center | justify ]
+@mixin box-pack($pack: $css3-default-box-pack) {
+  @include vendors(box-pack, $pack, moz webkit ms default);
+}
+

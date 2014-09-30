@@ -1,0 +1,83 @@
+// Background property support for vendor prefixing within values.
+@mixin background($backgrounds...) {
+  @if length($backgrounds) > 1 {
+    background: nth($backgrounds, -1);
+    background: $backgrounds;
+  }
+  @else {
+    background: $backgrounds;
+  }
+}
+
+
+// Background image property support for vendor prefixing within values.
+@mixin background-image($images...) {
+  @if length($images) > 1 {
+    background-image: nth($images, -1);
+    background-image: $images;
+  }
+  @else {
+    background-image: $images;
+  }
+}
+
+// The default value is `padding-box` -- the box model used by modern browsers.
+//
+// If you wish to do so, you can override the default constant with `border-box`
+//
+// To override to the default border-box model, use this code:
+//     $css3-default-background-clip: border-box
+
+// Clip the background (image and color) at the edge of the padding or border.
+//
+// Legal Values:
+//
+//   * padding-box
+//   * border-box
+//   * text
+
+@mixin background-clip($clip: $css3-default-background-clip) {
+  // webkit and mozilla use the deprecated short [border | padding]
+  $deprecated: $clip;
+  @if $clip == padding-box { $deprecated: padding; }
+  @if $clip == border-box { $deprecated: border; }
+  // Support for webkit and mozilla's use of the deprecated short form
+  @include vendors(background-clip, $deprecated, moz webkit);
+  @include vendors(background-clip, $clip, default);
+
+}
+
+// Position the background off the edge of the padding, border or content
+//
+// * Possible values:
+//   * `padding-box`
+//   * `border-box`
+//   * `content-box`
+// * browser defaults to `padding-box`
+// * mixin defaults to `content-box`
+
+
+@mixin background-origin($origin: $css3-default-background-origin) {
+  // webkit and mozilla use the deprecated short [border | padding | content]
+  $deprecated: $origin;
+  @if $origin == padding-box { $deprecated: padding; }
+  @if $origin == border-box  { $deprecated: border;  }
+  @if $origin == content-box { $deprecated: content; }
+
+  // Support for webkit and mozilla's use of the deprecated short form
+  @include vendors(background-origin, $deprecated, webkit moz);
+  @include vendors(background-origin, $origin, ms o default);
+}
+
+// Set the size of background images using px, width and height, or percentages.
+// Currently supported in: Opera, Gecko, Webkit.
+//
+// * percentages are relative to the background-origin (default = padding-box)
+// * mixin defaults to: `$css3-default-background-size`
+@mixin background-size($sizes...) {
+  @if length($sizes) == 0 {
+    $sizes: $css3-default-background-size;
+  }
+  @include vendors(background-size, $sizes, moz webkit o default);
+}
+

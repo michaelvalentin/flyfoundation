@@ -1,0 +1,145 @@
+@mixin linear-gradient($angle, $colors...) {
+
+	$webkit-angles: (
+
+		to top: 			(left bottom, left top),
+		0deg: 				(left bottom, left top),
+		360deg: 			(left bottom, left top),
+		-360deg: 			(left bottom, left top),
+
+		to right: 			(left top, right top),
+		90deg: 				(left top, right top),
+		-270deg: 			(left top, right top),
+
+		to bottom: 			(left top, left bottom),
+		180deg: 			(left top, left bottom),
+		-180deg: 			(left top, left bottom),
+
+		to left: 			(right top, left top),
+		270deg: 			(right top, left top),
+		-90deg: 			(right top, left top),
+
+		to top left: 		(right bottom, left top),
+		315deg: 			(right bottom, left top),
+		-45deg: 			(right bottom, left top),
+
+		to top right: 		(left bottom, right top),
+		45deg: 				(left bottom, right top),
+		-315deg: 			(left bottom, right top),
+
+		to bottom right: 	(left top, right bottom),
+		135deg: 			(left top, right bottom),
+		-225deg: 			(left top, right bottom),
+
+		to bottom left: 	(right top, left bottom),
+		225deg: 			(right top, left bottom),
+		-135deg: 			(right top, left bottom)
+	);
+
+	$simple-angles: (
+
+		to top: 			bottom,
+		0deg: 				bottom,
+		360deg: 			bottom,
+		-360deg: 			bottom,
+
+		to right: 			left,
+		90deg: 				left,
+		-270deg: 			left,
+
+		to bottom: 			top,
+		180deg: 			top,
+		-180deg: 			top,
+
+		to left: 			right,
+		270deg: 			right,
+		-90deg: 			right,
+
+		to top left: 		bottom right,
+		315deg: 			bottom right,
+		-45deg: 			bottom right,
+
+		to top right: 		bottom left,
+		45deg: 				bottom left,
+		-315deg: 			bottom left,
+
+		to bottom right: 	top left,
+		135deg: 			top left,
+		-225deg: 			top left,
+
+		to bottom left: 	top right,
+		225deg: 			top right,
+		-135deg: 			top right
+	);
+	
+	$webkit-angle: top left, bottom left;
+	@if map-has-key($webkit-angles, $angle) {
+		$webkit-angle: map-get($webkit-angles, $angle);
+	}
+	@else {
+		$webkit-keys: map-keys($webkit-angles);
+		$closest-key: null;
+		$closest-abs: 0;
+		@each $key in $webkit-keys {
+			@if type-of($key) == number {
+				$abs: abs($angle - $key);
+				@if not $closest-key or $abs < $closest-abs {
+					$closest-key: $key;
+					$closest-abs: $abs;
+				}
+			} 
+		}
+		$webkit-angle: map-get($webkit-angles, $closest-key);
+	}
+
+	$simple-angle: top left, bottom left;
+	@if map-has-key($simple-angles, $angle) {
+		$simple-angle: map-get($simple-angles, $angle);
+	}
+	@else {
+		$simple-keys: map-keys($simple-angles);
+		$closest-key: null;
+		$closest-abs: 0;
+		@each $key in $simple-keys {
+			@if type-of($key) == number {
+				$abs: abs($angle - $key);
+				@if not $closest-key or $abs < $closest-abs {
+					$closest-key: $key;
+					$closest-abs: $abs;
+				}
+			} 
+		}
+		$simple-angle: map-get($simple-angles, $closest-key);
+	}
+
+	$webkit-colors: ();
+	@for $i from 1 through length($colors) {
+		$color: nth($colors, $i);
+		
+		$position: ($i - 1) / (length($colors) - 1);
+
+		@if length($color) > 1 {
+			$percent: nth($color, 2);
+			$position: $percent / 100%;
+		}
+
+		$webkit-colors: append($webkit-colors, color-stop($position, nth($color, 1)), comma);
+	}
+	
+	/* Safari 4, Chrome 1-9, iOS 3.2-4.3, Android 2.1-3.0 */
+	background-image: -webkit-gradient(linear, $webkit-angle, $webkit-colors);
+
+	/* Safari 5.1, iOS 5.0-6.1, Chrome 10-25, Android 4.0-4.3 */
+	background-image: -webkit-linear-gradient($simple-angle, $colors);
+
+	/* Firefox 3.6 - 15 */
+	background-image: -moz-linear-gradient($simple-angle, $colors);
+
+	/* Opera 11.1 - 12 */
+	background-image: -o-linear-gradient($simple-angle, $colors);
+
+	/* Opera 15+, Chrome 25+, IE 10+, Firefox 16+, Safari 6.1+, iOS 7+, Android 4.4+ */
+	background-image: linear-gradient($angle, $colors);
+
+}
+

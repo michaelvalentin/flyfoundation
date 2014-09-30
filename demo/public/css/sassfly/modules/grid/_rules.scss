@@ -1,0 +1,326 @@
+/* ELEMENTS */
+
+/* HTML & BODY */
+html, body {
+    height: 100%;
+
+    @if $grid-responsive {
+        min-width: $grid-minimum;
+    }
+    @else {
+        min-width: $grid-fixed-width;
+    }
+}
+
+/* EXTEND-ONLY CLASSES */
+
+/* ALL COLUMNS */
+%all-columns {
+    position: relative;
+    min-height: 1px;
+
+    @include gutter(padding-right padding-left);
+}
+
+/* CLASSES */
+
+/* MAX COLUMN */
+.col-max {
+    @extend %all-columns;
+}
+
+@if $grid-responsive {
+    .col-max-s, .col-max-m, .col-max-l {
+        @extend %all-columns;
+    }
+}
+
+.col-max { 
+	float: left;
+	width: 100%;
+}
+
+@if $grid-responsive {
+
+    @include grid-small {
+        .col-max-s { 
+            float: left;
+            width: 100%;
+        }
+    }
+
+    @include grid-medium {
+        .col-max-m { 
+            float: left;
+            width: 100%;
+        }
+    }
+
+    @include grid-large {
+        .col-max-l { 
+            float: left;
+            width: 100%;
+        }  
+    }
+
+}
+
+@if $grid-default {
+
+    /* DEFAULT COLUMNS */
+    @include grid-columns {
+        @extend %all-columns;
+    }
+    
+    @if $grid-responsive {
+
+        @include grid-columns($grid-columns, 's') {
+            @extend %all-columns;
+        }
+
+        @include grid-columns($grid-columns, 'm') {
+            @extend %all-columns;
+        }
+
+        @include grid-columns($grid-columns, 'l') {
+            @extend %all-columns;
+        }
+
+    }
+
+
+    @include grid-offsets;
+
+    @if $grid-responsive {
+
+        @include grid-offsets($grid-columns, 's');
+
+        @include grid-offsets($grid-columns, 'm');
+
+        @include grid-offsets($grid-columns, 'l');
+
+    }
+
+
+    @include grid-push-pull;
+
+    @if $grid-responsive {
+
+        @include grid-push-pull($grid-columns, 's');
+
+        @include grid-push-pull($grid-columns, 'm');
+
+        @include grid-push-pull($grid-columns, 'l');
+
+    }
+
+}
+
+/* CONTAINER */
+.container {
+    @extend .clearfix;
+
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    @if $grid-responsive {
+
+        min-width: $grid-minimum;
+        width: $grid-width;
+        padding-left: $grid-gutter;
+        padding-right: $grid-gutter;
+
+        @include grid-small {
+            width: $grid-width-s;
+            padding-left: $grid-gutter-s;
+            padding-right: $grid-gutter-s;
+        }
+
+        @include grid-medium {
+            width: $grid-width-m;
+            padding-left: $grid-gutter-m;
+            padding-right: $grid-gutter-m;
+        }
+
+        @include grid-large {
+            width: $grid-width-l;
+            padding-left: $grid-gutter-l;
+            padding-right: $grid-gutter-l;
+        }
+
+    }
+    @else {
+
+        width: $grid-fixed-width;
+        padding-left: $grid-fixed-gutter;
+        padding-right: $grid-fixed-gutter;
+
+    }
+}
+
+/* ROW */
+.row {
+    @extend .clearfix;
+    @include gutter(margin-right margin-left, -1);
+}
+
+/* NO GUTTER */
+.no-gutter {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+/* VERTICAL GUTTER */
+.vertical-gutter {
+	@include gutter(padding-top padding-bottom);
+}
+
+/* HIDE AND SHOW */
+.hide {
+    display: none !important;
+}
+
+
+@if $grid-responsive {
+
+    .show {
+        display: inherit !important;
+    }
+
+    .hide-only, .show-only-s, .show-only-m, .show-only-l {
+        @extend .hide;
+    }
+
+    .show-only, .hide-only-s, .hide-only-m, .hide-only-l {
+        @extend .show;
+    }
+
+    @include grid-small {
+
+        .hide-s, .hide-only-s, .show-only, .show-only-m, .show-only-l{
+            display: none !important;
+        }
+
+        .show-s, .show-only-s, .hide-only, .hide-only-m, .hide-only-l{
+            display: inherit !important;
+        }
+
+    }
+
+    @include grid-medium {
+
+        .hide-m, .hide-only-m, .show-only, .show-only-s, .show-only-l{
+            display: none !important;
+        }
+
+        .show-m, .show-only-m, .hide-only, .hide-only-s, .hide-only-l{
+            display: inherit !important;
+        }
+
+    }
+
+    @include grid-large {
+
+        .hide-l, .hide-only-l, .show-only, .show-only-s, .show-only-m{
+            display: none !important;
+        }
+
+        .show-l, .show-only-l, .hide-only, .hide-only-s, .hide-only-m{
+            display: inherit !important;
+        }
+
+    }
+
+}
+
+
+
+/* TEXT ALIGN */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;  
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+@if $grid-responsive {
+
+    @include grid-small {
+        .text-left-s {
+            text-align: left;
+        }
+
+        .text-center-s {
+            text-align: center;
+        }
+
+        .text-right-s {
+            text-align: right;  
+        }
+
+        .text-justify-s {
+            text-align: justify;
+        }
+    }
+
+    @include grid-medium {
+        .text-left-m {
+            text-align: left;
+        }
+
+        .text-center-m {
+            text-align: center;
+        }
+
+        .text-right-m {
+            text-align: right;  
+        }
+
+        .text-justify-m {
+            text-align: justify;
+        }
+    }
+
+    @include grid-large {
+        .text-left-l {
+            text-align: left;
+        }
+
+        .text-center-l {
+            text-align: center;
+        }
+
+        .text-right-l {
+            text-align: right;  
+        }
+
+        .text-justify-l {
+            text-align: justify;
+        }
+    }
+}
+
+/* VIDEO */
+.video-16-9 {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+}
+
+.video-16-9 .video-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

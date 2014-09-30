@@ -6,9 +6,9 @@ namespace Basefly\Controllers;
 use FlyFoundation\Controllers\AbstractController;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Dependencies\AppConfig;
-use FlyFoundation\Models\Forms\Required;
-use FlyFoundation\Models\Forms\StandardForm;
-use FlyFoundation\Models\Forms\TextField;
+use FlyFoundation\Models\Forms\Builders\TextFieldBuilder;
+use FlyFoundation\Models\Forms\FormFields\TextField;
+use FlyFoundation\Models\Forms\GenericForm;
 
 class FormController extends AbstractController
 {
@@ -17,25 +17,30 @@ class FormController extends AbstractController
     public function view(Response $response, array $arguments)
     {
 
-        $form = new StandardForm();
+        $form = new GenericForm();
 
-        $title = new TextField();
+        $textFieldA = new TextField();
+        $textFieldB = new TextField();
 
-        $title->setName('title');
-        $title->setLabel('Set the title');
-        $title->addClass('input-text required');
+        $textFieldABuilder = new TextFieldBuilder($form, $textFieldA);
+        $textFieldABuilder
+            ->setName('field_a')
+            ->setLabel('Field A')
+            ->addClass('input-text')
+            ->setRequired('This field is required!');
 
-        $form->addField($title);
+        $textFieldBBuilder = new TextFieldBuilder($form, $textFieldB);
+        $textFieldBBuilder
+            ->setName('field_b')
+            ->addClass('input-text')
+            ->setLabel('Field B');
 
-        $required = new Required();
-        $required->setName('required');
-        $required->setFields($form->getFields());
-
-        $form->addValidation($required);
 
         $response->setDataValue('form', $form->asArray());
 
-        $response->setContent("{{#form}}{{#fields}}{{name}}{{/fields}}{{/form}}");
+        $response->setDataValue('test', 'Awesome');
+
+        $response->wrapInTemplateFile('form');
 
         return $response;
     }

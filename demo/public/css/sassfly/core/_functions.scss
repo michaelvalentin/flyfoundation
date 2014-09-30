@@ -1,0 +1,71 @@
+/* FUNCTIONS */
+
+// Lists
+@function unquote-list($list){
+	$output: ();
+	@each $item in $list {
+		$output: append($output, unquote($item));
+	}
+	@return $output;
+}
+
+@function contains($list, $var) {
+	$output: false;
+	@each $item in $list{
+		@if $item == $var {
+			$output: true;
+		}
+	}
+	@return $output;
+}
+
+// zIndex
+@function z-group($group, $list: $core-default-zgroups){
+	$z-index: index($list, $group);
+
+	@if $z-index {
+		@return $z-index;
+	}
+
+	@warn 'There is no item "#{$element}" in this list; choose one of: #{$list}';
+	@return null;
+}
+
+// Vendor prefixing
+@mixin vendors($property, $values, $vendors: $core-default-vendors) {
+	@each $vendor in $vendors {
+		@if $vendor != default {
+			-#{$vendor}-#{$property}: $values;
+		} 
+		@else {
+			#{$property}: $values;
+		}
+	}
+}
+
+// Media queries
+@mixin after($width) {
+	@media all and (min-width: $width) {
+		@content;
+	}
+}
+
+@mixin before($width) {
+	@media all and (max-width: $width) {
+		@content;
+	}
+}
+
+@mixin within($min-width, $max-width) {
+	@media all and (min-width: $min-width) and (max-width: $max-width) {
+		@content;
+	}
+}
+
+// Image replace
+@mixin image-replace {
+	overflow: hidden;
+	text-indent: 100%;
+	white-space: nowrap;
+}
+

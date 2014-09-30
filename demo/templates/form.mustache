@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form</title>
+    <link rel="stylesheet" href="public/css/screen.min.css"/>
+</head>
+<body>
+<div class="container">
+
+    {{#form}}
+        <form class="admin-form">
+
+            <div class="admin-controls text-right">
+                <input type="submit" class="btn" value="SAVE">
+                <a class="btn" href="list.php">CANCEL</a>
+            </div>
+
+            <fieldset>
+                <legend>Fields</legend>
+
+                <div class="fields">
+
+                    {{#fields}}
+
+                        <div class="field">
+                            <div class="label">{{label}}</div>
+                            <div class="control">{{{fieldHTML}}}</div>
+                        </div>
+
+                    {{/fields}}
+
+                </div>
+
+            </fieldset>
+
+            <div class="admin-controls text-right">
+                <input type="submit" class="btn" value="SAVE">
+                <a class="btn" href="list.php">CANCEL</a>
+            </div>
+
+        </form>
+    {{/form}}
+</div>
+</body>
+</html>

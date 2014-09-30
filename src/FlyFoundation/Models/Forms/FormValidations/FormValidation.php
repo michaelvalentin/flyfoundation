@@ -1,18 +1,26 @@
 <?php
 
-namespace FlyFoundation\Models\Forms;
+namespace FlyFoundation\Models\Forms\FormValidations;
 
 
 use FlyFoundation\Models\Model;
+use FlyFoundation\Models\Forms\FormFields\FormField;
 
 abstract class FormValidation implements Model
 {
+    /**
+     * @var string
+     */
     protected $name;
 
     /**
      * @var FormField[]
      */
     protected $fields;
+
+    /**
+     * @var string
+     */
     protected $errorText;
 
     /**
@@ -53,6 +61,19 @@ abstract class FormValidation implements Model
     public function getErrorText()
     {
         return $this->errorText;
+    }
+
+    /**
+     * @return array
+     */
+    public function asArray()
+    {
+        $output = array();
+
+        $output['name'] = $this->getName();
+        $output['errorText'] = $this->getErrorText();
+
+        return $output;
     }
 
     /**

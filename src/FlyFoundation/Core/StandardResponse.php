@@ -219,7 +219,7 @@ class StandardResponse implements Response{
 
     public function wrapInTemplateFile($templateName)
     {
-        $fileLoader = Factory::load("\\FlyFoundation\\Core\\FileLoader");
+        $fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
         $template_file = $fileLoader->findTemplate($templateName);
         if(!file_exists($template_file)){
             throw new InvalidOperationException('The template "'.$template_file.'" does not exist!');

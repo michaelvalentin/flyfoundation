@@ -1,0 +1,35 @@
+// VARIABLES
+
+// Grid is responsive
+$grid-responsive: true !default;
+
+// Create default columns
+$grid-default: true !default;
+
+// Amount of default columns
+$grid-columns: 12 !default;
+
+// Responsive absolute minimum width
+$grid-minimum: 320px !default;
+
+// Responsive breakpoints
+$grid-break-s: 768px !default; 
+$grid-break-m: 992px !default;
+$grid-break-l: 1200px !default;
+
+// Responsive widths
+$grid-width: 100% !default;
+$grid-width-s: 750px !default;
+$grid-width-m: 970px !default;
+$grid-width-l: 1170px !default;
+
+// Responsive gutters
+$grid-gutter: 15px !default;
+$grid-gutter-s: 15px !default;
+$grid-gutter-m: 15px !default;
+$grid-gutter-l: 15px !default;
+
+// Fixed parameters
+$grid-fixed-columns: 12 !default;
+$grid-fixed-width: 970px !default;
+$grid-fixed-gutter: 15px !default;

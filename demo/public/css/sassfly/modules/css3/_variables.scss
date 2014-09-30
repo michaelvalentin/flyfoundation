@@ -1,0 +1,70 @@
+// background
+$css3-default-background-clip: padding-box !default;
+$css3-default-background-origin: content-box !default;
+$css3-default-background-size: 100% auto !default;
+
+// border-radius
+$css3-default-border-radius: 5px !default;
+
+// box-shadow
+$css3-default-box-shadow: 0px 0px 5px #333333 !default;
+
+// box
+$css3-default-box-orient: horizontal !default;
+$css3-default-box-align: stretch !default;
+$css3-default-box-flex: 0 !default;
+$css3-default-box-flex-group: 1 !default;
+$css3-default-box-order: 1 !default;
+$css3-default-box-direction: normal !default;
+$css3-default-box-lines: single !default;
+$css3-default-box-pack: start !default;
+
+// transform
+
+// The default x-origin for transforms
+$css3-default-transform-origin-x    : 50%                   !default;
+// The default y-origin for transforms
+$css3-default-transform-origin-y    : 50%                   !default;
+// The default z-origin for transforms
+$css3-default-transform-origin-z    : 50%                   !default;
+
+
+// The default x-multiplier for scaling
+$css3-default-transform-scale-x     : 1.25                  !default;
+// The default y-multiplier for scaling
+$css3-default-transform-scale-y     : $css3-default-transform-scale-x      !default;
+// The default z-multiplier for scaling
+$css3-default-transform-scale-z     : $css3-default-transform-scale-x      !default;
+
+
+// The default angle for rotations
+$css3-default-transform-rotate      : 45deg                 !default;
+
+
+// The default x-vector for the axis of 3d rotations
+$css3-default-transform-vector-x    : 1                     !default;
+// The default y-vector for the axis of 3d rotations
+$css3-default-transform-vector-y    : 1                     !default;
+// The default z-vector for the axis of 3d rotations
+$css3-default-transform-vector-z    : 1                     !default;
+
+
+// The default x-length for translations
+$css3-default-transform-translate-x : 1em                   !default;
+// The default y-length for translations
+$css3-default-transform-translate-y : $css3-default-transform-translate-x  !default;
+// The default z-length for translations
+$css3-default-transform-translate-z : $css3-default-transform-translate-x  !default;
+
+
+// The default x-angle for skewing
+$css3-default-transform-skew-x      : 5deg                  !default;
+// The default y-angle for skewing
+$css3-default-transform-skew-y      : 5deg                  !default;
+
+// transition
+$css3-default-transition-property: all !default;
+$css3-default-transition-duration: 1s !default;
+$css3-default-transition-function: false !default;
+$css3-default-transition-delay: false !default;
+

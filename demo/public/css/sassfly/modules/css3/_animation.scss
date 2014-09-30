@@ -1,0 +1,5 @@
+/* animation mixin */
+@mixin animation($values...) {
+	@include vendors(animation, $values, webkit moz o default);
+}
+

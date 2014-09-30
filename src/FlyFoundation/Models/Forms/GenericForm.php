@@ -2,10 +2,11 @@
 
 namespace FlyFoundation\Models\Forms;
 
-
+use FlyFoundation\Models\Forms\FormFields\FormField;
+use FlyFoundation\Models\Forms\FormValidations\FormValidation;
 use FlyFoundation\Dependencies\AppContext;
 
-class StandardForm implements Form
+class GenericForm implements Form
 {
     use AppContext;
 
@@ -23,6 +24,13 @@ class StandardForm implements Form
      * @var string[]
      */
     private $errors;
+
+    public function __construct()
+    {
+        $this->fields = array();
+        $this->validations = array();
+        $this->errors = array();
+    }
 
     /**
      * @param FormField $field
@@ -89,11 +97,20 @@ class StandardForm implements Form
     public function getData()
     {
         $context = $this->getAppContext();
-        return $context->getPostData();
+        $postData = $context->getPostData();
+
+        $data = array();
+
+        foreach($this->getFields() as $field){
+            $fieldName = $field->getName();
+            if(isset($postData[$fieldName])) $data[$fieldName] = $postData[$fieldName];
+        }
+
+        return $data;
     }
 
     /**
-     * @return FormError[]
+     * @return string[]
      */
     public function getErrors()
     {

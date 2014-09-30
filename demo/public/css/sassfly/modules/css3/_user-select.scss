@@ -1,0 +1,11 @@
+// This property controls the selection model and granularity of an element.
+//
+// @param $select
+//   [ none | text | toggle | element | elements | all | inherit ]
+@mixin user-select($select) {
+  $select: unquote($select);
+  @include vendors(user-select, $select,
+    moz webkit default
+  );
+}
+

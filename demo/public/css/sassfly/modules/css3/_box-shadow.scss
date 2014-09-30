@@ -1,0 +1,14 @@
+// Provides cross-browser for Webkit, Gecko, and CSS3 box shadows when one or more box
+// shadows are needed.
+// Each shadow argument should adhere to the standard css3 syntax for the
+// box-shadow property.
+// Override $css3-default-box-shadow to override default
+@mixin box-shadow($shadows...) {
+
+  @if length($shadows) == 0 {
+	$shadows: $css3-default-box-shadow;
+  }
+
+  @include vendors(box-shadow, $shadows, moz webkit default);
+}
+

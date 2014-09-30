@@ -1,0 +1,138 @@
+// CSS Transitions
+// Currently only works in Webkit.
+//
+// * expected in CSS3, FireFox 3.6/7 and Opera Presto 2.3
+// * We'll be prepared.
+//
+// Including this submodule sets following defaults for the mixins:
+//
+//     $css3-default-transition-property : all
+//     $css3-default-transition-duration : 1s
+//     $css3-default-transition-function : false
+//     $css3-default-transition-delay    : false
+//
+// Override them if you like. Timing-function and delay are set to false for browser defaults (ease, 0s).
+
+$transitionable-prefixed-values: transform, transform-origin !default;
+
+// One or more properties to transition
+//
+// * for multiple, use a comma-delimited list
+// * also accepts "all" or "none"
+@mixin transition-property($properties...) {
+  @if length($properties) == 0 {
+    $properties: $css3-default-transition-property;
+  }
+
+  -webkit-transition-property : prefixed-for-transition(webkit, $properties);
+  -moz-transition-property : prefixed-for-transition(moz, $properties);
+  -o-transition-property : prefixed-for-transition(o, $properties);
+  transition-property : $properties;
+}
+
+// One or more durations in seconds
+//
+// * for multiple, use a comma-delimited list
+// * these durations will affect the properties in the same list position
+@mixin transition-duration($durations...) {
+  @if length($durations) == 0 {
+    $durations: $css3-default-transition-duration;
+  }
+  @include vendors(transition-duration, $durations,
+    moz webkit o default
+  );
+}
+
+// One or more timing functions
+//
+// * [ ease | linear | ease-in | ease-out | ease-in-out | cubic-bezier(x1, y1, x2, y2)]
+// * For multiple, use a comma-delimited list
+// * These functions will effect the properties in the same list position
+
+@mixin transition-timing-function($functions...) {
+  @if length($functions) == 0 {
+    $functions: $css3-default-transition-function;
+  }
+  @include vendors(transition-timing-function, $functions,
+    moz webkit o default
+  );
+}
+
+// One or more transition-delays in seconds
+//
+// * for multiple, use a comma-delimited list
+// * these delays will effect the properties in the same list position
+
+@mixin transition-delay($delays) {
+  @if length($delays) == 0 {
+    $delays: $css3-default-transition-delay;
+  }
+  @include vendors(transition-delay, $delays,
+    moz webkit o default
+  );
+}
+
+// Transition all-in-one shorthand
+@mixin transition($transitions...) {
+  @if length($transitions) == 0 {
+    $transitions: $css3-default-transition-property $css3-default-transition-duration $css3-default-transition-function $css3-default-transition-delay;
+  }
+
+  $delays: ();
+  $has-delays: false;
+  $webkit-value: ();
+  $moz-value: ();
+  $o-value: ();
+
+  @each $transition in $transitions {
+    $property: nth($transition, 1);
+    $duration: false;
+    $timing-function: false;
+    $delay: false;
+    @if length($transition) > 1 { $duration:        nth($transition, 2); }
+    @if length($transition) > 2 { $timing-function: nth($transition, 3); }
+    @if length($transition) > 3 { $delay:           nth($transition, 4); $has-delays: true; }
+
+    // If a delay is provided without a timing function
+    @if type-of($timing-function) == number and not $delay { 
+        $delay: $timing-function; 
+        $timing-function: false; 
+        $has-delays: true; 
+    }
+
+    // Keep a list of delays in case one is specified
+    $delays: append($delays, if($delay, $delay, 0s));
+
+    $webkit-value: append($webkit-value, prefixed-for-transition(webkit, $property) $duration $timing-function, comma);
+    $moz-value: append($moz-value, prefixed-for-transition(moz, $property) $duration $timing-function $delay, comma);
+    $o-value: append($o-value, prefixed-for-transition(o, $property) $duration $timing-function $delay, comma);
+
+  }
+
+  -webkit-transition : $webkit-value;
+    // old webkit doesn't support the delay parameter in the shorthand so we progressively enhance it.
+  @if $has-delays {
+    -webkit-transition-delay : $delays;
+  }
+  -moz-transition : $moz-value;
+  -o-transition : $o-value;
+  transition : $transitions;
+}
+
+// Returns `$property` with the given prefix if it is found in `$transitionable-prefixed-values`.
+@function prefixed-for-transition($prefix, $property) {
+  @if type-of($property) == list {
+    $new-list: ();
+    @each $v in $property {
+      $new-list: append($new-list, prefixed-for-transition($prefix, $v), comma);
+    }
+    @return $new-list;
+  } @else {
+    @if index($transitionable-prefixed-values, $property) {
+      @return -#{$prefix}-#{$property};
+    } @else {
+      @return $property;
+    }
+  }
+}
+

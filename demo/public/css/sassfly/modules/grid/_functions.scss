@@ -1,0 +1,323 @@
+// FUNCTIONS
+
+// GRID WIDTH
+@function column-width($column-amount: 1, $column-max: $grid-columns){
+	@return ((100 / $column-max) * $column-amount) + 0%;
+}
+
+
+// MIXINS
+
+// MEDIA QUERIES
+@mixin grid-small {
+	@include after($grid-break-s - 1px) {
+		@content;
+	}
+}
+
+@mixin grid-medium {
+	@include after($grid-break-m - 1px) {
+		@content;
+	}
+}
+
+@mixin grid-large {
+	@include after($grid-break-l - 1px) {
+		@content;
+	}
+}
+
+@mixin grid-mobile-only {
+	@include within(0px, $grid-break-s - 1px) {
+		@content;
+	}
+}
+
+@mixin grid-small-only {
+	@include within($grid-break-s, $grid-break-m - 1px) {
+		@content;
+	}
+}
+
+@mixin grid-medium-only {
+	@include within($grid-break-m, $grid-break-l - 1px) {
+		@content;
+	}
+}
+
+// CREATE COLUMN CLASSES
+@mixin grid-columns($column-amount: $grid-columns, $suffix: '') {
+	
+	@if $suffix != '' {
+		$suffix: '-'+$suffix;
+	}
+
+	@for $column from 1 to $column-amount {
+		.col-#{$column + $suffix} {
+			@content;
+		}
+	}
+
+	@if $suffix == '-s' {
+		@include grid-small {
+
+			%column-float-#{$column-amount + $suffix} {
+				float: left;
+			}
+
+			@for $column from 1 to $column-amount {
+				.col-#{$column + $suffix} {
+					@extend %column-float-#{$column-amount + $suffix};
+					width: column-width($column);
+				}
+			}
+		}
+	}
+	@else if $suffix == '-m' {
+		@include grid-medium {
+
+			%column-float-#{$column-amount + $suffix} {
+				float: left;
+			}
+
+			@for $column from 1 to $column-amount {
+				.col-#{$column + $suffix} {
+					@extend %column-float-#{$column-amount + $suffix};
+					width: column-width($column);
+				}
+			}
+		}
+	}
+	@else if $suffix == '-l' {
+		@include grid-large {
+
+			%column-float-#{$column-amount + $suffix} {
+				float: left;
+			}
+
+			@for $column from 1 to $column-amount {
+				.col-#{$column + $suffix} {
+					@extend %column-float-#{$column-amount + $suffix};
+					width: column-width($column);
+				}
+			}
+		}
+	}
+	@else {
+
+		%column-float-#{$column-amount + $suffix} {
+			float: left;
+		}
+
+		@for $column from 1 to $column-amount {
+			.col-#{$column + $suffix} {
+				@extend %column-float-#{$column-amount + $suffix};
+				width: column-width($column);
+			}
+		}
+	}
+
+}
+
+// CREATE OFFSETS CLASSES
+@mixin grid-offsets($column-amount: $grid-columns, $suffix: '') {
+
+	@if $suffix != '' {
+		$suffix: '-'+$suffix;
+	}
+
+	@if $suffix == '-s' {
+		@include grid-small {
+			@for $column from 1 to $column-amount {
+				.offset-left-#{$column + $suffix} {
+					margin-left: column-width($column, $column-amount);
+				}
+
+				.offset-right-#{$column + $suffix} {
+					margin-right: column-width($column, $column-amount);
+				}
+			}
+		}
+	}
+	@else if $suffix == '-m' {
+		@include grid-medium {
+			@for $column from 1 to $column-amount {
+				.offset-left-#{$column + $suffix} {
+					margin-left: column-width($column, $column-amount);
+				}
+
+				.offset-right-#{$column + $suffix} {
+					margin-right: column-width($column, $column-amount);
+				}
+			}
+		}
+	}
+	@else if $suffix == '-l' {
+		@include grid-large {
+			@for $column from 1 to $column-amount {
+				.offset-left-#{$column + $suffix} {
+					margin-left: column-width($column, $column-amount);
+				}
+
+				.offset-right-#{$column + $suffix} {
+					margin-right: column-width($column, $column-amount);
+				}
+			}
+		}
+	}
+	@else {
+		@for $column from 1 to $column-amount {
+			.offset-left-#{$column + $suffix} {
+				margin-left: column-width($column, $column-amount);
+			}
+
+			.offset-right-#{$column + $suffix} {
+				margin-right: column-width($column, $column-amount);
+			}
+		}
+	}
+
+}
+
+// CREATE PUSH AND PULL CLASSES
+@mixin grid-push-pull($column-amount: $grid-columns, $suffix: '') {
+
+	@if $suffix != '' {
+		$suffix: '-'+$suffix;
+	}
+
+	@if $suffix == '-s' {
+		@include grid-small {
+			@for $column from 1 to $column-amount {
+				.push-#{$column + $suffix} {
+					left: column-width($column, $column-amount);
+				}
+
+				.pull-#{$column + $suffix} {
+					right: column-width($column, $column-amount);
+				}
+			}
+		}
+	}
+	@else if $suffix == '-m' {
+		@include grid-medium {
+			@for $column from 1 to $column-amount {
+				.push-#{$column + $suffix} {
+					left: column-width($column, $column-amount);
+				}
+
+				.pull-#{$column + $suffix} {
+					right: column-width($column, $column-amount);
+				}
+			}
+		}
+	}
+	@else if $suffix == '-l' {
+		@include grid-large {
+			@for $column from 1 to $column-amount {
+				.push-#{$column + $suffix} {
+					left: column-width($column, $column-amount);
+				}
+
+				.pull-#{$column + $suffix} {
+					right: column-width($column, $column-amount);
+				}
+			}
+		}
+	}
+	@else {
+		@for $column from 1 to $column-amount {
+			.push-#{$column + $suffix} {
+				left: column-width($column, $column-amount);
+			}
+
+			.pull-#{$column + $suffix} {
+				right: column-width($column, $column-amount);
+			}
+		}
+	}
+
+}
+
+// ADD GUTTER
+@mixin gutter($properties, $amounts: 1) {
+
+	$amount-default: nth($amounts, length($amounts));
+	$amount: 0;
+	$property: '';
+
+	@for $i from 1 through length($properties) {
+		
+		@if $i <= length($amounts) {
+			$amount: nth($amounts, $i);
+		}
+		@else {
+			$amount: $amount-default;
+		}
+
+		$property: nth($properties, $i);
+
+		@if $grid-responsive {
+			#{$property}: $grid-gutter * $amount;
+		}
+		@else {
+			#{$property}: $grid-fixed-gutter * $amount;
+		}
+
+	}
+
+	@if $grid-responsive {
+
+		@include grid-small {
+			@for $i from 1 through length($properties) {
+		
+				@if $i <= length($amounts) {
+					$amount: nth($amounts, $i);
+				} 
+				@else {
+					$amount: $amount-default;
+				}
+
+				$property: nth($properties, $i);
+
+				#{$property}: $grid-gutter-s * $amount;
+
+			}
+		}
+
+		@include grid-medium {
+			@for $i from 1 through length($properties) {
+		
+				@if $i <= length($amounts) {
+					$amount: nth($amounts, $i);
+				} 
+				@else {
+					$amount: $amount-default;
+				}
+
+				$property: nth($properties, $i);
+
+				#{$property}: $grid-gutter-m * $amount;
+
+			}
+		}
+
+		@include grid-large {
+			@for $i from 1 through length($properties) {
+		
+				@if $i <= length($amounts) {
+					$amount: nth($amounts, $i);
+				} 
+				@else {
+					$amount: $amount-default;
+				}
+
+				$property: nth($properties, $i);
+
+				#{$property}: $grid-gutter-l * $amount;
+
+			}
+		}
+
+	}
+}
