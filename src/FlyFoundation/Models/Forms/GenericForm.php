@@ -2,7 +2,10 @@
 
 namespace FlyFoundation\Models\Forms;
 
+
+use FlyFoundation\Models\Forms\Builders\TextFieldBuilder;
 use FlyFoundation\Models\Forms\FormFields\FormField;
+use FlyFoundation\Models\Forms\FormFields\TextField;
 use FlyFoundation\Models\Forms\FormValidations\FormValidation;
 use FlyFoundation\Dependencies\AppContext;
 
@@ -139,6 +142,12 @@ class GenericForm implements Form
         }
 
         return $output;
+    }
+
+    public function addTextField()
+    {
+        $textField = new TextField();
+        return new TextFieldBuilder($this, $textField);
     }
 
 }

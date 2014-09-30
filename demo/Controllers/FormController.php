@@ -19,22 +19,16 @@ class FormController extends AbstractController
 
         $form = new GenericForm();
 
-        $textFieldA = new TextField();
-        $textFieldB = new TextField();
-
-        $textFieldABuilder = new TextFieldBuilder($form, $textFieldA);
-        $textFieldABuilder
+        $form->addTextField()
             ->setName('field_a')
             ->setLabel('Field A')
             ->addClass('input-text')
             ->setRequired('This field is required!');
 
-        $textFieldBBuilder = new TextFieldBuilder($form, $textFieldB);
-        $textFieldBBuilder
+        $form->addTextField()
             ->setName('field_b')
             ->addClass('input-text')
             ->setLabel('Field B');
-
 
         $response->setDataValue('form', $form->asArray());
 
