@@ -54,27 +54,30 @@ abstract class FormFieldBuilder
 
         $this->field->addClass('required');
         $this->form->addValidation($required);
+        return $this;
     }
 
     public function setMinimumLength($limit, $errorText)
     {
         $minimumLength = new MinimumLength();
         $minimumLength->setName($this->field->getName().'-MinimumLength');
-        $minimumLength->setFields($this->field);
+        $minimumLength->setFields(array($this->field));
         $minimumLength->setLimit($limit);
         $minimumLength->setErrorText($errorText);
 
         $this->form->addValidation($minimumLength);
+        return $this;
     }
 
     public function setMaximumLength($limit, $errorText)
     {
         $maximumLength = new MaximumLength();
         $maximumLength->setName($this->field->getName().'-MaximumLength');
-        $maximumLength->setFields($this->field);
+        $maximumLength->setFields(array($this->field));
         $maximumLength->setLimit($limit);
         $maximumLength->setErrorText($errorText);
 
         $this->form->addValidation($maximumLength);
+        return $this;
     }
 }

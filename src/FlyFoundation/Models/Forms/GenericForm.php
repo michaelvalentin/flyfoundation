@@ -3,8 +3,10 @@
 namespace FlyFoundation\Models\Forms;
 
 
+use FlyFoundation\Models\Forms\Builders\SelectListBuilder;
 use FlyFoundation\Models\Forms\Builders\TextFieldBuilder;
 use FlyFoundation\Models\Forms\FormFields\FormField;
+use FlyFoundation\Models\Forms\FormFields\SelectList;
 use FlyFoundation\Models\Forms\FormFields\TextField;
 use FlyFoundation\Models\Forms\FormValidations\FormValidation;
 use FlyFoundation\Dependencies\AppContext;
@@ -84,6 +86,7 @@ class GenericForm implements Form
      */
     public function validate()
     {
+        $this->errors = array();
         foreach($this->validations as $validation){
             if(!$validation->validate()){
                 $this->errors[] = $validation->getErrorText();
@@ -144,10 +147,22 @@ class GenericForm implements Form
         return $output;
     }
 
+    /**
+     * @return TextFieldBuilder
+     */
     public function addTextField()
     {
         $textField = new TextField();
         return new TextFieldBuilder($this, $textField);
+    }
+
+    /**
+     * @return SelectListBuilder
+     */
+    public function addSelectList()
+    {
+        $selectList = new SelectList();
+        return new SelectListBuilder($this, $selectList);
     }
 
 }

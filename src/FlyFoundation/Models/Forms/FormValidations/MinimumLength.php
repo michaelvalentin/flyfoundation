@@ -21,7 +21,12 @@ class MinimumLength extends FormValidation{
     public function validate()
     {
         foreach($this->fields as $field){
-            if(count($field->getValue()) < $this->limit) return false;
+            $value = $field->getValue();
+            if(is_int($value)){
+                if($value < $this->limit) return false;
+            } else {
+                if(strlen($value) < $this->limit) return false;
+            }
         }
         return true;
     }

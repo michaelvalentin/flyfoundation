@@ -30,9 +30,12 @@ class FormController extends AbstractController
             ->addClass('input-text')
             ->setLabel('Field B');
 
-        $response->setDataValue('form', $form->asArray());
+        $form->addSelectList()
+            ->setName('field_c')
+            ->setLabel('Field C')
+            ->setOptions(array('Value 1', 'Value 2', 'Value 3'));
 
-        $response->setDataValue('test', 'Awesome');
+        $response->setDataValue('form', $form->asArray());
 
         $response->wrapInTemplateFile('form');
 

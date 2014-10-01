@@ -8,26 +8,106 @@ use FlyFoundation\Models\Forms\FormValidations\Required;
 
 class GenericFormTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var GenericForm
+     */
+    private $form;
+
+    /**
+     * @var TextField
+     */
+    private $field;
+
+    /**
+     * @var Required
+     */
+    private $validation;
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->form = new GenericForm();
+
+        $this->field = new TextField();
+        $this->field->setName('demo');
+        $this->field->setValue('5');
+
+        $this->validation = new Required();
+        $this->validation->setName('required-demo');
+        $this->validation->setFields([$this->field]);
+        $this->validation->setErrorText('demo error');
+    }
+
+    public function testAddField()
+    {
+        $this->form->addField($this->field);
+        $this->assertSame(array('demo' => $this->field), $this->form->getFields());
+    }
+
     public function testRemoveField()
     {
-        $form = new GenericForm();
+        $this->form->addField($this->field);
+        $this->form->removeField('demo');
+        $this->assertSame(array(), $this->form->getFields());
+    }
 
-        $fieldA = new TextField();
-        $fieldA->setName('fieldA');
+    public function testValidate()
+    {
+        $this->form->addValidation($this->validation);
+        $this->assertSame(true, $this->form->validate());
+    }
 
-        $fieldB = new TextField();
-        $fieldB->setName('fieldB');
+    public function testValidateFail()
+    {
+        $this->field->setValue('');
+        $this->validation->setFields([$this->field]);
+        $this->form->addValidation($this->validation);
+        $this->assertSame(false, $this->form->validate());
+    }
 
-        $fieldC = new TextField();
-        $fieldC->setName('fieldC');
+    public function testRemoveValidation()
+    {
+        $this->field->setValue('');
+        $this->validation->setFields([$this->field]);
+        $this->form->addValidation($this->validation);
+        $this->assertSame(false, $this->form->validate());
+        $this->form->removeValidation('required-demo');
+        $this->assertSame(true, $this->form->validate());
+    }
 
-        $form->addField($fieldA);
-        $form->addField($fieldB);
-        $form->addField($fieldC);
+    public function testGetErrors()
+    {
+        $this->field->setValue('');
+        $this->validation->setFields([$this->field]);
+        $this->form->addValidation($this->validation);
+        $this->assertSame(false, $this->form->validate());
+        $this->assertSame(array('demo error'), $this->form->getErrors());
+    }
 
-        $form->removeField('fieldB');
+    public function testAsArray()
+    {
+        $this->form->addField($this->field);
+        $this->field->setValue('');
+        $this->validation->setFields([$this->field]);
+        $this->form->addValidation($this->validation);
+        $this->assertSame(false, $this->form->validate());
+        $expected = array(
+            'fields' => array($this->field->asArray()),
+            'errors' => array('demo error')
+        );
+        $this->assertSame($expected, $this->form->asArray());
+    }
 
-        $this->assertArrayNotHasKey('fieldB', $form->getFields());
-        $this->assertCount(2, $form->getFields());
+    public function testAddTextField()
+    {
+        $textFieldBuilder = $this->form->addTextField();
+        $this->assertInstanceOf('\\FlyFoundation\\Models\\Forms\\Builders\\TextFieldBuilder', $textFieldBuilder);
+    }
+
+    public function testAddSelectList()
+    {
+        $selectListBuilder = $this->form->addSelectList();
+        $this->assertInstanceOf('\\FlyFoundation\\Models\\Forms\\Builders\\SelectListBuilder', $selectListBuilder);
     }
 }
