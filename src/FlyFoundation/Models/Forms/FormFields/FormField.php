@@ -15,6 +15,9 @@ abstract class FormField implements Model
 
     public function __construct()
     {
+        $this->name = '';
+        $this->label = '';
+        $this->value = '';
         $this->classes = new Set();
     }
 

@@ -8,8 +8,14 @@
 <body>
 <div class="container">
 
+    {{#data}}
+        <p>{{field_a}}</p>
+        <p>{{field_b}}</p>
+        <p>{{field_c}}</p>
+    {{/data}}
+
     {{#form}}
-        <form class="admin-form">
+        <form class="admin-form" method="post" action="">
 
             <div class="admin-controls text-right">
                 <input type="submit" class="btn" value="SAVE">

@@ -4,9 +4,11 @@ namespace FlyFoundation\Models\Forms;
 
 
 use FlyFoundation\Models\Forms\Builders\SelectListBuilder;
+use FlyFoundation\Models\Forms\Builders\TextAreaBuilder;
 use FlyFoundation\Models\Forms\Builders\TextFieldBuilder;
 use FlyFoundation\Models\Forms\FormFields\FormField;
 use FlyFoundation\Models\Forms\FormFields\SelectList;
+use FlyFoundation\Models\Forms\FormFields\TextArea;
 use FlyFoundation\Models\Forms\FormFields\TextField;
 use FlyFoundation\Models\Forms\FormValidations\FormValidation;
 use FlyFoundation\Dependencies\AppContext;
@@ -109,7 +111,10 @@ class GenericForm implements Form
 
         foreach($this->getFields() as $field){
             $fieldName = $field->getName();
-            if(isset($postData[$fieldName])) $data[$fieldName] = $postData[$fieldName];
+            if(isset($postData[$fieldName])){
+                $data[$fieldName] = $postData[$fieldName];
+                $field->setValue($postData[$fieldName]);
+            }
         }
 
         return $data;
@@ -163,6 +168,15 @@ class GenericForm implements Form
     {
         $selectList = new SelectList();
         return new SelectListBuilder($this, $selectList);
+    }
+
+    /**
+     * @return TextAreaBuilder
+     */
+    public function addTextArea()
+    {
+        $textArea = new TextArea();
+        return new TextAreaBuilder($this, $textArea);
     }
 
 }
