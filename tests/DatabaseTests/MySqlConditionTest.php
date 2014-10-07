@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . '/../test-init.php';
 
-use FlyFoundation\Database\GenericCondition;
-class GenericConditionTest extends \PHPUnit_Framework_TestCase
+use FlyFoundation\Database\MySqlCondition;
+class MySqlConditionTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var GenericCondition
+     * @var MySqlCondition
      */
     private $condition;
 
@@ -13,7 +13,7 @@ class GenericConditionTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->condition = new GenericCondition('test');
+        $this->condition = new MySqlCondition('test');
     }
 
     public function testInvert()
