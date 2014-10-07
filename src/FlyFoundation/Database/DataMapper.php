@@ -1,28 +1,27 @@
 <?php
 
-
 namespace FlyFoundation\Database;
 
-use FlyFoundation\Models\PersistentEntity;
+use FlyFoundation\Database\Table;
+use FlyFoundation\Models\Entity;
 
-interface DataMapper {
-
+interface DataMapper
+{
     /**
-     * @param PersistentEntity $persistentEntity
-     *
-     * @return void
+     * @param Entity $entity
+     * @return int
      */
-    public function save(PersistentEntity $persistentEntity);
+    public function save(Entity $entity);
 
     /**
-     * @param integer $id
+     * @param int $id
+     * @return Entity
+     */
+    public function load($id);
+
+    /**
+     * @param int $id
      * @return void
      */
     public function delete($id);
-
-    /**
-     * @param integer $id
-     * @return PersistentEntity
-     */
-    public function load($id);
-} 
+}
