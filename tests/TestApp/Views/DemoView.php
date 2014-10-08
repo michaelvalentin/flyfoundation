@@ -4,8 +4,8 @@
 namespace TestApp\Views;
 
 
-use FlyFoundation\Views\DefaultView;
+use FlyFoundation\Views\GenericView;
 
-class DemoView extends DefaultView{
+class DemoView extends GenericView{
 
 }

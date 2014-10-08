@@ -65,4 +65,10 @@ class PageController extends AbstractController{
         $response->getHeaders()->SetHeader("HTTP/1.0 404 Not Found",false);
         return $this->view($response, ["alias" => "404-not-found"]);
     }
+
+    public function pageNotFoundRespondsTo(array $arguments)
+    {
+        //We can always say "page not found" no matter the input arguments...
+        return true;
+    }
 } 

@@ -4,6 +4,6 @@
 namespace FlyFoundation\Views;
 
 
-class DefaultView extends AbstractView{
+class GenericView extends AbstractView{
 
 }

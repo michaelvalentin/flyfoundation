@@ -22,7 +22,7 @@ class ViewFactory{
         $hasViewNaming = $this->hasViewNaming($className);
 
         if($hasViewNaming && !$implementation){
-            return Factory::load("\\FlyFoundation\\Views\\DefaultView");
+            return Factory::load("\\FlyFoundation\\Views\\GenericView");
         }
 
         return Factory::loadAndDecorateWithoutSpecialization($implementation, $arguments);

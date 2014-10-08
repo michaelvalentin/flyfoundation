@@ -4,8 +4,8 @@
 namespace TestApp\Views;
 
 
-use FlyFoundation\Views\DefaultView;
+use FlyFoundation\Views\GenericView;
 
-class DemoEntityView extends DefaultView{
+class DemoEntityView extends GenericView{
 
 } 

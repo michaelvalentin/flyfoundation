@@ -16,29 +16,14 @@ interface Controller {
     public function setModel(Model $model);
 
     /**
-     * @return Model
-     */
-    public function getModel();
-
-    /**
      * @param View $view
      */
     public function setView(View $view);
 
     /**
-     * @return View
-     */
-    public function getView();
-
-    /**
      * @param Response $response
      */
     public function setBaseResponse(Response $response);
-
-    /**
-     * @return Response
-     */
-    public function getBaseResponse();
 
     /**
      * @param $action

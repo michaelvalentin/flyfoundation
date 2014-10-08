@@ -14,6 +14,19 @@ class StandardBaseController implements BaseController{
 
     use AppContext;
 
+    /**
+     * @param Response $response
+     * @return Response
+     */
+    public function beforeApp(Response $response)
+    {
+        // TODO: Implement beforeApp() method.
+    }
+
+    /**
+     * @param Response $response
+     * @return Response
+     */
     public function beforeController(Response $response)
     {
         /** @var SeoTools $seoTools */
@@ -23,10 +36,23 @@ class StandardBaseController implements BaseController{
         return $response;
     }
 
+    /**
+     * @param Response $response
+     * @return Response
+     */
     public function afterController(Response $response)
     {
         //TODO: This is silly, lets change it soon ;-)
         $response->wrapInTemplate('<div style="width:50%; margin: 30px auto;">{{{content}}}</div>');
         return $response;
+    }
+
+    /**
+     * @param Response $response
+     * @return Response
+     */
+    public function afterApp(Response $response)
+    {
+        // TODO: Implement afterApp() method.
     }
 }

@@ -20,7 +20,7 @@ class Redirecter{
      * @param array|mixed $urlParameters The URL-parameters to add
      * @throws InvalidArgumentException
      */
-    public static function Redirect($url, $type = RedirectType::MovedPermanently, array $urlParameters = []){
+    public static function redirect($url, $type = RedirectType::MovedPermanently, array $urlParameters = []){
         switch($type){
             case 301 :
                 header("HTTP/1.1 301 Moved Permanently");
