@@ -8,14 +8,15 @@ interface Entity {
     public function __construct(array $data = []);
 
     /**
-     * @return EntityField[]
+     * @param string $calledFromDb
+     * @return string[]
      */
-    public function getFields();
+    public function getPersistentData($calledFromDb);
 
     /**
-     * @return EntityValidation[]
+     * @return string[]
      */
-    public function getValidations();
+    public function getPrimaryKeyNames();
 
     /**
      * @return bool

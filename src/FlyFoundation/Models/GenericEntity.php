@@ -7,12 +7,13 @@ namespace FlyFoundation\Models;
 use FlyFoundation\Models\EntityFields\EntityField;
 use FlyFoundation\Models\EntityValidations\EntityValidation;
 use FlyFoundation\Util\Map;
+use string;
 
 abstract class GenericEntity implements Entity{
     private $data;
     /** @var \FlyFoundation\Util\Map */
-    private $fields;
-    private $validations;
+    protected $fields;
+    protected $validations;
     private $validationErrors;
 
     public function __construct(array $data = [])
@@ -25,7 +26,15 @@ abstract class GenericEntity implements Entity{
 
     public function getPersistentData($mustBeCalledFromDB)
     {
+        // TODO: Implement getPersistentData() method.
+    }
 
+    /**
+     * @return string[]
+     */
+    public function getPrimaryKeyNames()
+    {
+        // TODO: Implement getPrimaryKeyNames() method.
     }
 
     public function addField(EntityField $field)
@@ -46,27 +55,6 @@ abstract class GenericEntity implements Entity{
     public function removeValidation($validationName)
     {
         $this->validations->remove($validationName);
-    }
-
-    /**
-     * @return EntityField[]
-     */
-    public function getFields()
-    {
-        return $this->fields->asArray();
-    }
-
-    protected function getFieldsMap()
-    {
-        return $this->fields;
-    }
-
-    /**
-     * @return EntityValidation[]
-     */
-    public function getValidations()
-    {
-        return $this->validations->asArray();
     }
 
     /**

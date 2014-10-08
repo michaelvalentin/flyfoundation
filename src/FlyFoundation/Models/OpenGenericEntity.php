@@ -10,7 +10,7 @@ use FlyFoundation\Models\EntityFields\EntityField;
 class OpenGenericEntity extends GenericEntity{
     public function get($fieldName)
     {
-        $field = $this->getFieldsMap()->get($fieldName);
+        $field = $this->fields->get($fieldName);
         if(!$field instanceof EntityField){
             throw new InvalidArgumentException("The field '".$fieldName."' does not exist");
         }
@@ -19,7 +19,7 @@ class OpenGenericEntity extends GenericEntity{
 
     public function set($fieldName, $value)
     {
-        $field = $this->getFieldsMap()->get($fieldName);
+        $field = $this->fields->get($fieldName);
         if(!$field instanceof EntityField){
             throw new InvalidArgumentException("The field '".$fieldName."' does not exist");
         }
@@ -32,7 +32,8 @@ class OpenGenericEntity extends GenericEntity{
     public function getAll()
     {
         $result = [];
-        foreach($this->getFields() as $field){
+        foreach($this->fields->asArray() as $field){
+            /** @var $field EntityField */
             $result[$field->getName()] = $this->get($field->getName());
         }
         return $result;
