@@ -6,6 +6,7 @@ namespace FlyFoundation\Controllers;
 
 use FlyFoundation\Core\Environment;
 use FlyFoundation\Core\Response;
+use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Dependencies\AppContext;
 use FlyFoundation\Factory;
 use FlyFoundation\Util\SeoTools;
@@ -13,6 +14,7 @@ use FlyFoundation\Util\SeoTools;
 class StandardBaseController implements BaseController{
 
     use AppContext;
+    use AppConfig;
 
     /**
      * @param Response $response
@@ -33,6 +35,13 @@ class StandardBaseController implements BaseController{
         $seoTools = Factory::load("\\FlyFoundation\\Util\\SeoTools");
         $seoTools->forceLowerCaseUri();
         $response->setDataValue("baseurl",$this->getAppContext()->getBaseUrl());
+
+        /* Globals */
+        $globals_path = $this->getAppConfig()->get('globals_path', '/globals.json');
+        if(file_exists($globals_path)){
+            $response->setData(json_decode(file_get_contents($globals_path), true));
+        }
+
         return $response;
     }
 
@@ -43,7 +52,7 @@ class StandardBaseController implements BaseController{
     public function afterController(Response $response)
     {
         //TODO: This is silly, lets change it soon ;-)
-        $response->wrapInTemplate('<div style="width:50%; margin: 30px auto;">{{{content}}}</div>');
+        $response->wrapInTemplateFile('base');
         return $response;
     }
 
