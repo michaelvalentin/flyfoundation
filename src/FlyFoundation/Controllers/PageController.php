@@ -28,7 +28,7 @@ class PageController extends AbstractController{
         $fileLoaderClass = $this->getAppConfig()->getImplementation("\\FlyFoundation\\Core\\FileLoader");
         $fileLoader = Factory::load($fileLoaderClass);
         $filename = $fileLoader->findPage($arguments["alias"]);
-        $jsonFilename = $fileLoader->findFile($arguments["alias"].'.json');
+        $jsonFilename = $fileLoader->findFile('pages/'.$arguments["alias"].'.json');
 
         if(!$filename){
             throw new InvalidArgumentException("No page with this name exists.");
