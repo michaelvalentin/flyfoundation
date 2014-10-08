@@ -43,7 +43,7 @@ class StandardBaseController implements BaseController{
     public function afterController(Response $response)
     {
         //TODO: This is silly, lets change it soon ;-)
-        $response->wrapInTemplate('<div style="width:50%; margin: 30px auto;">{{{content}}}</div>');
+        $response->wrapInTemplateFile('base');
         return $response;
     }
 
