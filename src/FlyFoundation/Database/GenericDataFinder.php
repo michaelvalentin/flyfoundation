@@ -114,7 +114,7 @@ class GenericDataFinder implements DataFinder
 
     private function getPDO()
     {
-        if($this->pdo instanceof PDO) return $htis->pdo;
+        if($this->pdo instanceof PDO) return $this->pdo;
         else {
             $config = $this->getAppConfig();
 
