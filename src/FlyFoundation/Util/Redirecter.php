@@ -25,6 +25,9 @@ class Redirecter{
             case 301 :
                 header("HTTP/1.1 301 Moved Permanently");
                 break;
+            case 302 :
+                header("HTTP/1.1 302 Found");
+                break;
             case 303 :
                 header("HTTP/1.1 303 See Other");
                 break;
@@ -56,6 +59,7 @@ class Redirecter{
  */
 class RedirectType {
     const MovedPermanently = 301;
+    const Found = 302;
     const SeeOther = 303;
     const TemporaryRedirect = 307;
 }
