@@ -2,7 +2,7 @@
 
 namespace FlyFoundation\Database;
 
-use FlyFoundation\Database\Table;
+use FlyFoundation\Database\DataStore;
 use FlyFoundation\Models\Entity;
 
 interface DataMapper

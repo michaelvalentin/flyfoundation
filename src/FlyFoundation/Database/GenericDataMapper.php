@@ -6,7 +6,7 @@ namespace FlyFoundation\Database;
 use FlyFoundation\Factory;
 use FlyFoundation\Models\Entity;
 use FlyFoundation\Models\EntityFields\EntityField;
-use FlyFoundation\Database\Table;
+use FlyFoundation\Database\DataStore;
 
 class GenericDataMapper implements DataMapper
 {
@@ -14,9 +14,9 @@ class GenericDataMapper implements DataMapper
     private $entityName;
 
     /**
-     * @var Table
+     * @var DataStore
      */
-    private $table;
+    private $dataStore;
 
     /**
      * @param Entity $entity
@@ -33,7 +33,7 @@ class GenericDataMapper implements DataMapper
      */
     public function load($id)
     {
-        $data = $this->table->readRow($id);
+        $data = $this->dataStore->readRow($id);
         return Factory::load($this->entityName, $data);
     }
 
@@ -43,16 +43,16 @@ class GenericDataMapper implements DataMapper
      */
     public function delete($id)
     {
-        $this->table->deleteRow($id);
+        $this->dataStore->deleteRow($id);
     }
 
     /**
-     * @param Table $dataTable
+     * @param DataStore $dataTable
      * @return void
      */
-    public function setTable(Table $table)
+    public function setDataStore(DataStore $table)
     {
-        $this->table = $table;
+        $this->dataStore = $table;
     }
 
     public function setEntityName($entityName)

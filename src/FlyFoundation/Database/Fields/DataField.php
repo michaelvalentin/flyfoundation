@@ -1,19 +1,16 @@
 <?php
 
-namespace FlyFoundation\Database;
+namespace FlyFoundation\Database\Fields;
 
 
-class Field
+use FlyFoundation\Exceptions\InvalidArgumentException;
+
+abstract class DataField
 {
     /**
      * @var string
      */
     private $name;
-
-    /**
-     * @var string
-     */
-    private $dataType;
 
     /**
      * @var bool
@@ -33,7 +30,12 @@ class Field
     /**
      * @var bool
      */
-    private $primaryKey;
+    private $inIdentifier;
+
+    /**
+     * @var integer
+     */
+    private $maxLength;
 
     /**
      * @return boolean
@@ -102,17 +104,14 @@ class Field
     /**
      * @return boolean
      */
-    public function isPrimaryKey()
+    public function isInIdentifier()
     {
-        return $this->primaryKey;
+        return $this->inIdentifier === true;
     }
 
-    /**
-     * @param boolean $primaryKey
-     */
-    public function setPrimaryKey($primaryKey)
+    public function setInIdentifier()
     {
-        $this->primaryKey = $primaryKey;
+        $this->inIdentifier = true;
     }
 
     /**
@@ -120,16 +119,37 @@ class Field
      */
     public function isRequired()
     {
-        return $this->required;
+        return $this->required === true;
     }
 
-    /**
-     * @param boolean $required
-     */
-    public function setRequired($required)
+    public function setRequired()
     {
-        $this->required = $required;
+        $this->required = true;
     }
 
+    public function getMaxLength()
+    {
+        if(!$this->maxLength){
+            return 0;
+        }
+        return $this->maxLength;
+    }
 
+    public function setMaxLength($maxLength)
+    {
+        if(!is_int($maxLength)){
+            throw new InvalidArgumentException(
+                "Max length must be of type integer"
+            );
+        }
+        $this->maxLength = $maxLength;
+    }
+
+    public abstract function validateValue($value);
+
+    public function getErrorText()
+    {
+        return "The given value did not match the criterion
+                for the datatype: ".get_class($this);
+    }
 } 

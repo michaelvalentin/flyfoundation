@@ -2,18 +2,18 @@
 
 namespace FlyFoundation\Database;
 
-use FlyFoundation\Database\Condition;
+use FlyFoundation\Database\DataCondition;
 use FlyFoundation\Models\Entity;
 interface DataFinder
 {
     /**
-     * @param Condition[] $conditions
+     * @param DataCondition[] $conditions
      * @return Entity[]
      */
     public function fetch($conditions);
 
     /**
-     * @param Condition[] $conditions
+     * @param DataCondition[] $conditions
      * @return Entity[]
      */
     public function fetchRaw($conditions);

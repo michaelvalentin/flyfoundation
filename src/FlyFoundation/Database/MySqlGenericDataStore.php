@@ -1,40 +1,22 @@
 <?php
 
+
 namespace FlyFoundation\Database;
 
+
 use FlyFoundation\Dependencies\AppConfig;
-use FlyFoundation\Database\Field;
+use FlyFoundation\Exceptions\InvalidArgumentException;
 use PDO;
 use PDOException;
-use FlyFoundation\Exceptions\InvalidArgumentException;
 
-class GenericTable implements Table
-{
+class MySqlGenericDataStore extends GenericDataStore{
+
     use AppConfig;
 
-    /**
-     * @var string
-     */
-    private $table;
-
-    /**
-     * @var Field[]
-     */
-    private $fields = array();
-
-    /**
-     * @var PDO
-     */
     private $pdo;
 
-    /**
-     * @param string $tableName
-     * @throws \FlyFoundation\Exceptions\UnsetDependencyException
-     * @throws PDOException
-     */
-    public function __construct($tableName)
+    public function __construct()
     {
-        $this->table = $tableName;
 
         $config = $this->getAppConfig();
 
@@ -47,10 +29,11 @@ class GenericTable implements Table
             $this->pdo = new PDO('mysql:dbname='.$dbName.';host='.$dbHost,$dbUser,$dbPass,array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
         } catch(PDOException $e){
             // TODO: Exception handling
+            throw $e;
         }
 
+        parent::__construct();
     }
-
 
     /**
      * @param array $data
@@ -58,11 +41,11 @@ class GenericTable implements Table
      */
     public function createRow(array $data)
     {
-        $query = 'INSERT INTO '.$this->table.' SET';
+        $query = 'INSERT INTO '.$this->getName().' SET';
 
-        $fieldCount = count($this->fields);
+        $fieldCount = count($this->getFields());
         $values = array();
-        foreach($this->fields as $i => $field){
+        foreach($this->getFields() as $i => $field){
 
             $fieldName = $field->getName();
 
@@ -106,8 +89,8 @@ class GenericTable implements Table
     public function readRow($id)
     {
         $output = array();
-        foreach($this->fields as $field){
-            if($field->isPrimaryKey()){
+        foreach($this->getFields() as $field){
+            if($field->isInIdentifier()){
                 $query = 'SELECT * FROM '.$this->table.' WHERE `'.$field->getName().' = ?';
                 $stmt = $this->pdo->prepare($query);
                 $success = $stmt->execute(array($id));
@@ -129,9 +112,9 @@ class GenericTable implements Table
     {
         $query = 'UPDATE '.$this->table.' SET';
 
-        $fieldCount = count($this->fields);
+        $fieldCount = count($this->getFields());
         $values = array();
-        foreach($this->fields as $i => $field){
+        foreach($this->getFields() as $i => $field){
 
             $fieldName = $field->getName();
 
@@ -175,8 +158,8 @@ class GenericTable implements Table
      */
     public function deleteRow($id)
     {
-        foreach($this->fields as $field){
-            if($field->isPrimaryKey()){
+        foreach($this->getFields() as $field){
+            if($field->isInIdentifier()){
                 $query = 'DELETE FROM '.$this->table.' WHERE `'.$field->getName().'` = ?';
                 $stmt = $this->pdo->prepare($query);
                 $success = $stmt->execute(array($id));

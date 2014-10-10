@@ -5,7 +5,7 @@ namespace FlyFoundation\Database;
 
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Models\Entity;
-use FlyFoundation\Database\Condition;
+use FlyFoundation\Database\DataCondition;
 use PDO;
 use PDOException;
 
@@ -24,12 +24,12 @@ class GenericDataFinder implements DataFinder
     private $tableName;
 
     /**
-     * @var Condition[]
+     * @var DataCondition[]
      */
     private $defaultConditions = array();
 
     /**
-     * @var Condition[]
+     * @var DataCondition[]
      */
     private $allConditions = array();
 
@@ -39,7 +39,7 @@ class GenericDataFinder implements DataFinder
     private $pdo;
 
     /**
-     * @param Condition[] $conditions
+     * @param DataCondition[] $conditions
      * @return Entity[]
      */
     public function fetch($conditions)
@@ -65,7 +65,7 @@ class GenericDataFinder implements DataFinder
     }
 
     /**
-     * @param Condition[] $conditions
+     * @param DataCondition[] $conditions
      * @return Entity[]
      */
     public function fetchRaw($conditions)
@@ -105,9 +105,9 @@ class GenericDataFinder implements DataFinder
     }
 
     /**
-     * @param Condition $condition
+     * @param DataCondition $condition
      */
-    public function addDefaultCondition(Condition $condition)
+    public function addDefaultCondition(DataCondition $condition)
     {
         $this->defaultConditions[] = $condition;
     }

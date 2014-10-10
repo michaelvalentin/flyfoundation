@@ -3,7 +3,7 @@
 namespace FlyFoundation\Database;
 
 use FlyFoundation\Database\Field;
-interface Table
+interface DataStore
 {
     /**
      * @param array $data
