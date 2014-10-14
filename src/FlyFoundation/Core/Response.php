@@ -27,6 +27,8 @@ interface Response {
 
     public function getOutputType();
 
+    public function setContentType($type,$charset);
+
     public function setTitle($title);
 
     public function getTitle($title);

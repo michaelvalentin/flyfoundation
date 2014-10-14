@@ -61,7 +61,8 @@ class StandardResponse implements Response{
     {
 
         $supportedOutputs = [
-            "Html"
+            "Html",
+            "Json"
         ];
 
         if(!in_array($this->outputType,$supportedOutputs)){
@@ -107,6 +108,11 @@ class StandardResponse implements Response{
         }
 
         return $output;
+    }
+
+    public function composeJson()
+    {
+        return json_encode($this->content);
     }
 
     public function setOutputType($outputType)
