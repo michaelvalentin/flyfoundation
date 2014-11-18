@@ -78,5 +78,66 @@ class GenericEntityTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue($result);
     }
+
+    public function testSetAndGetName()
+    {
+        $this->entity->setName("MyEntityNumber56");
+        $result = $this->entity->getName();
+
+        $this->assertEquals("MyEntityNumber56",$result);
+    }
+
+    public function testSetNameSpecialChar()
+    {
+        $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidArgumentException");
+        $this->entity->setName("Some%value");
+    }
+
+    public function testSetNameWhiteSpace()
+    {
+        $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidArgumentException");
+        $this->entity->setName("Some value");
+    }
+
+    public function testSetNameNumberFirst()
+    {
+        $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidArgumentException");
+        $this->entity->setName("5SomeValue");
+    }
+
+    public function testSetAll()
+    {
+        $this->entity->setAll([
+            "test" => "value1",
+            "demo" => "value2"
+        ]);
+        $res1 = $this->entity->get("test");
+        $res2 = $this->entity->get("demo");
+
+        $this->assertEquals("value1",$res1);
+        $this->assertEquals("value2",$res2);
+    }
+
+    public function testGetAll()
+    {
+        $this->entity->set("test","myVal 1");
+        $this->entity->set("demo","myVal 2");
+        $res = $this->entity->getAll();
+
+        $this->assertInternalType("array",$res);
+        $this->assertCount(2,$res);
+        $this->assertEquals("myVal 1",$res["test"]);
+        $this->assertEquals("myVal 2",$res["demo"]);
+    }
+
+    public function testGetAllEmpty()
+    {
+        $res = $this->entity->getAll();
+
+        $this->assertInternalType("array",$res);
+        $this->assertCount(2,$res);
+        $this->assertNull($res["test"]);
+        $this->assertNull($res["demo"]);
+    }
 }
  

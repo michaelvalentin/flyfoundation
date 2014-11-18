@@ -114,7 +114,7 @@ class GenericDataFinder implements DataFinder
 
     private function getPDO()
     {
-        if($this->pdo instanceof PDO) return $this->pdo;
+        if($this->getMySqlDatabase instanceof PDO) return $this->getMySqlDatabase;
         else {
             $config = $this->getAppConfig();
 
@@ -124,8 +124,8 @@ class GenericDataFinder implements DataFinder
             $dbName = $config->get('db_name');
 
             try{
-                $this->pdo = new PDO('mysql:dbname='.$dbName.';host='.$dbHost,$dbUser,$dbPass,array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-                return $this->pdo;
+                $this->getMySqlDatabase = new PDO('mysql:dbname='.$dbName.';host='.$dbHost,$dbUser,$dbPass,array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+                return $this->getMySqlDatabase;
             } catch(PDOException $e){
                 // TODO: Exception handling
             }

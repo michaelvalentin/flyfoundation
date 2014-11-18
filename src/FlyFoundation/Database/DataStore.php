@@ -9,24 +9,24 @@ interface DataStore
      * @param array $data
      * @return int
      */
-    public function createRow(array $data);
+    public function createEntry(array $data);
 
     /**
-     * @param $id
+     * @param array $identity
      * @return array
      */
-    public function readRow($id);
+    public function readEntry(array $identity);
 
     /**
      * @param array $data
-     * @param int $id
+     * @param array $id
      * @return void
      */
-    public function updateRow(array $data, $id);
+    public function updateEntry(array $data);
 
     /**
-     * @param int $id
+     * @param array $id
      * @return void
      */
-    public function deleteRow($id);
+    public function deleteEntry(array $id);
 }

@@ -33,7 +33,7 @@ class GenericDataMapper implements DataMapper
      */
     public function load($id)
     {
-        $data = $this->dataStore->readRow($id);
+        $data = $this->dataStore->readEntry($id);
         return Factory::load($this->entityName, $data);
     }
 
@@ -43,7 +43,7 @@ class GenericDataMapper implements DataMapper
      */
     public function delete($id)
     {
-        $this->dataStore->deleteRow($id);
+        $this->dataStore->deleteEntry($id);
     }
 
     /**

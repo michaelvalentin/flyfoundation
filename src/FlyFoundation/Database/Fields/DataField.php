@@ -18,11 +18,6 @@ abstract class DataField
     private $required;
 
     /**
-     * @var mixed
-     */
-    private $defaultValue;
-
-    /**
      * @var bool
      */
     private $autoIncrement;
@@ -38,6 +33,11 @@ abstract class DataField
     private $maxLength;
 
     /**
+     * @var string
+     */
+    private $errorText;
+
+    /**
      * @return boolean
      */
     public function isAutoIncrement()
@@ -48,41 +48,9 @@ abstract class DataField
     /**
      * @param boolean $autoIncrement
      */
-    public function setAutoIncrement($autoIncrement)
+    public function setAutoIncrement()
     {
-        $this->autoIncrement = $autoIncrement;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDataType()
-    {
-        return $this->dataType;
-    }
-
-    /**
-     * @param string $dataType
-     */
-    public function setDataType($dataType)
-    {
-        $this->dataType = $dataType;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultValue()
-    {
-        return $this->defaultValue;
-    }
-
-    /**
-     * @param mixed $defaultValue
-     */
-    public function setDefaultValue($defaultValue)
-    {
-        $this->defaultValue = $defaultValue;
+        $this->autoIncrement = true;
     }
 
     /**
@@ -145,11 +113,33 @@ abstract class DataField
         $this->maxLength = $maxLength;
     }
 
-    public abstract function validateValue($value);
+    public function validateValue($value, $ignoreAutoIncrement=false){
+
+        $ai = $this->isAutoIncrement() && !$ignoreAutoIncrement;
+
+        if($value === null && $this->isRequired() && !$ai){
+            $this->setValidationError("The field ".$this->getName()." is required, and cannot be null.");
+            return false;
+        }elseif($value === null){
+            return true;
+        }
+
+        return $this->validateTypeCompatibility($value);
+    }
 
     public function getErrorText()
     {
-        return "The given value did not match the criterion
-                for the datatype: ".get_class($this);
+        return $this->errorText;
     }
+
+    protected abstract function validateTypeCompatibility($value);
+
+    protected function setValidationError($text)
+    {
+        $this->errorText = $text;
+    }
+
+    public abstract function convertToStorageFormat($value);
+
+    public abstract function convertFromStorageFormat($value);
 } 

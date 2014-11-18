@@ -3,38 +3,62 @@
 
 namespace FlyFoundation\Models;
 
-
+use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Models\EntityFields\EntityField;
 use FlyFoundation\Models\EntityValidations\EntityValidation;
 use FlyFoundation\Util\Map;
-use string;
 
 abstract class GenericEntity implements Entity{
-    private $data;
+    private $name;
+
     /** @var \FlyFoundation\Util\Map */
     protected $fields;
     protected $validations;
     private $validationErrors;
 
-    public function __construct(array $data = [])
+    public function __construct()
     {
-        $this->data = $data;
         $this->fields = new Map();
         $this->validations = new Map();
         $this->validationErrors = [];
     }
 
-    public function getPersistentData($mustBeCalledFromDB)
+    public function setName($name)
     {
-        // TODO: Implement getPersistentData() method.
+        $namePattern = "/^[A-Za-z][A-Za-z0-9]*$/";
+        if(!preg_match($namePattern,$name)){
+            throw new InvalidArgumentException("The name '".$name."' is not a valid entity name.");
+        }
+        $this->name = $name;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getPrimaryKeyNames()
+    public function getName()
     {
-        // TODO: Implement getPrimaryKeyNames() method.
+        return $this->name;
+    }
+
+    public function getPersistentData($mustBeCalledFromDataStore)
+    {
+        if($mustBeCalledFromDataStore != "This is called from data store"){
+
+            $notFromDataStoreText = "The get persistent data
+            function can only be called from the data store (persistence layer).
+            If you need to access properties of an entity, use the relevant
+            accessor functions (eg. get(fieldName)).";
+
+            throw new InvalidOperationException($notFromDataStoreText);
+        }
+
+        $result = [];
+
+        foreach($this->fields as $field)
+        {
+            /** @var $field \FlyFoundation\Models\EntityFields\EntityField */
+            $result[$field->getName()] = $field->getValue();
+        }
+
+        return $result;
     }
 
     public function addField(EntityField $field)

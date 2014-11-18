@@ -3,171 +3,121 @@
 
 namespace FlyFoundation\Database;
 
-
 use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Dependencies\MySqlDatabase;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use PDO;
 use PDOException;
 
 class MySqlGenericDataStore extends GenericDataStore{
 
-    use AppConfig;
-
-    private $pdo;
-
-    public function __construct()
-    {
-
-        $config = $this->getAppConfig();
-
-        $dbHost = $config->get('db_host', 'localhost');
-        $dbUser = $config->get('db_user');
-        $dbPass = $config->get('db_pass');
-        $dbName = $config->get('db_name');
-
-        try{
-            $this->pdo = new PDO('mysql:dbname='.$dbName.';host='.$dbHost,$dbUser,$dbPass,array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-        } catch(PDOException $e){
-            // TODO: Exception handling
-            throw $e;
-        }
-
-        parent::__construct();
-    }
+    use MySqlDatabase;
 
     /**
      * @param array $data
      * @return int
      */
-    public function createRow(array $data)
+    public function createEntry(array $data)
     {
-        $query = 'INSERT INTO '.$this->getName().' SET';
+        $this->validateData($data);
 
-        $fieldCount = count($this->getFields());
-        $values = array();
-        foreach($this->getFields() as $i => $field){
+        $columns = array_keys($data);
+        $prefixedColumns = array_map(function($value){return ":".$value;},$columns);
+        $storageData = $this->convertToStorageFormat($data);
+        $bindData = array_combine($prefixedColumns,array_values($storageData));
 
-            $fieldName = $field->getName();
+        $insertQuery = 'INSERT INTO '.$this->getName().' ('.implode(",",$columns).') VALUES ('.implode(",",$prefixedColumns).')';
 
-            $query .= $fieldName.'=:'.$fieldName;
-
-            if($field->isRequired() && empty($data[$fieldName])){
-                throw new InvalidArgumentException('Table field "'.$field->getName().'" is required, but received no data.');
-            }
-
-            if(empty($data[$fieldName]) && $field->getDefaultValue()){
-                $value = $field->getDefaultValue();
-            } elseif($field->isAutoIncrement() || empty($data[$fieldName])){
-                $value = null;
-            } else {
-                $value = $data[$fieldName];
-            }
-
-            $values[':'.$fieldName] = $value;
-
-            if($i+1 !== $fieldCount) $query .= ', ';
-        }
-
-        $stmt = $this->pdo->prepare($query);
-        foreach($values as $parameter => &$value){
-            $stmt->bindParam($parameter, $value);
-        }
+        $preapredInsertStatement = $this->getMySqlDatabase()->prepare($insertQuery);
 
         try{
-            $stmt->execute();
-            return $this->pdo->lastInsertId();
+            $preapredInsertStatement->execute($bindData);
+            return $this->getMySqlDatabase()->lastInsertId();
         } catch(PDOException $e){
-            // TODO: Error exception
+            // TODO: Handle exceptions
+            throw $e;
         }
 
     }
 
     /**
-     * @param $id
+     * @param array $identity
      * @return array
      */
-    public function readRow($id)
+    public function readEntry(array $identity)
     {
-        $output = array();
-        foreach($this->getFields() as $field){
-            if($field->isInIdentifier()){
-                $query = 'SELECT * FROM '.$this->table.' WHERE `'.$field->getName().' = ?';
-                $stmt = $this->pdo->prepare($query);
-                $success = $stmt->execute(array($id));
-                if($success){
-                    $output = $stmt->fetch(PDO::FETCH_ASSOC);
-                    break;
-                }
-            }
+        $this->validateIdentity($identity);
+        $columns = array_keys($identity);
+        $prefixedColumns = array_map(function($value){return ":".$value;},$columns);
+        $bindData = array_combine($prefixedColumns,array_values($identity));
+
+        $conditions = [];
+        foreach(array_combine($columns, $prefixedColumns) as $column => $prefixedColumn){
+            $conditions[] = '`'.$column.'` = '.$prefixedColumn;
         }
-        return $output;
+
+        $selectQuery = 'SELECT * FROM '.$this->getName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
+        $preparedSelectStatement = $this->getMySqlDatabase()->prepare($selectQuery);
+        if(!$preparedSelectStatement->execute($bindData)){
+            throw new InvalidArgumentException("No entry with the identity (".implode(",",$identity).") could be found in the DataStore: ".$this->getName());
+        }
+
+        $resultData = $preparedSelectStatement->fetch(PDO::FETCH_ASSOC);
+        return $this->convertFromStorageFormat($resultData);
     }
 
     /**
      * @param array $data
-     * @param int $id
      * @return void
      */
-    public function updateRow(array $data, $id)
+    public function updateEntry(array $data)
     {
-        $query = 'UPDATE '.$this->table.' SET';
+        $this->validateData($data);
+        $identity = $this->extractIdentity($data);
+        $this->validateIdentity($identity);
 
-        $fieldCount = count($this->getFields());
-        $values = array();
-        foreach($this->getFields() as $i => $field){
+        $columns = array_keys($data);
+        $prefixedColumns = array_map(function($value){return ":".$value;},$columns);
+        $bindData = array_combine($prefixedColumns,array_values($data));
 
-            $fieldName = $field->getName();
-
-            $query .= $fieldName.'=:'.$fieldName;
-
-            if($field->isRequired() && empty($data[$fieldName])){
-                throw new InvalidArgumentException('Table field "'.$field->getName().'" is required, but received no data.');
-            }
-
-            if(empty($data[$fieldName]) && $field->getDefaultValue()){
-                $value = $field->getDefaultValue();
-            } elseif(empty($data[$fieldName])){
-                $value = null;
-            } else {
-                $value = $data[$fieldName];
-            }
-
-            $values[':'.$fieldName] = $value;
-
-            if($i+1 !== $fieldCount) $query .= ', ';
+        $updateConditions = [];
+        $fieldNamesWithoutIdentity = array_diff(array_keys($data),array_keys($identity));
+        foreach($fieldNamesWithoutIdentity as $fieldName){
+            $updateConditions[] = "`".$fieldName."` = :".$fieldName;
         }
 
-        $query .= ' WHERE `id`==:update_id';
-        $values[':update_id'] = $id;
-
-        $stmt = $this->pdo->prepare($query);
-        foreach($values as $parameter => &$value){
-            $stmt->bindParam($parameter, $value);
+        $identityConditions = [];
+        foreach(array_keys($identity) as $fieldName){
+            $identityConditions[] = "`".$fieldName."` = :".$fieldName;
         }
 
-        try{
-            $stmt->execute();
-        } catch(PDOException $e){
-            // TODO: Error exception
+        $updateQuery = 'UPDATE '.$this->getName().' SET '.implode(",",$updateConditions).' WHERE '.implode(" AND ",$identityConditions);
+        $preparedUpdateStatement = $this->getMySqlDatabase()->prepare($updateQuery);
+        if(!$preparedUpdateStatement->execute($bindData)){
+            throw new InvalidArgumentException("An error occured. It might be that no entry with the identity (".implode(",",$identity).") could be found in the DataStore: ".$this->getName());
         }
     }
 
     /**
-     * @param int $id
+     * @param array $id
      * @return void
      */
-    public function deleteRow($id)
+    public function deleteEntry(array $identity)
     {
-        foreach($this->getFields() as $field){
-            if($field->isInIdentifier()){
-                $query = 'DELETE FROM '.$this->table.' WHERE `'.$field->getName().'` = ?';
-                $stmt = $this->pdo->prepare($query);
-                $success = $stmt->execute(array($id));
-                if($success){
-                    break;
-                }
-            }
+        $this->validateIdentity($identity);
+        $columns = array_keys($identity);
+        $prefixedColumns = array_map(function($value){return ":".$value;},$columns);
+        $bindData = array_combine($prefixedColumns,array_values($identity));
+
+        $conditions = [];
+        foreach(array_combine($columns, $prefixedColumns) as $column => $prefixedColumn){
+            $conditions[] = '`'.$column.'` = '.$prefixedColumn;
+        }
+
+        $deleteQuery = 'DELETE FROM '.$this->getName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
+        $preparedDeleteStatement = $this->getMySqlDatabase()->prepare($deleteQuery);
+        if(!$preparedDeleteStatement->execute($bindData)){
+            throw new InvalidArgumentException("No entry with the identity (".implode(",",$identity).") could be found in the DataStore: ".$this->getName());
         }
     }
-
-} 
+}
