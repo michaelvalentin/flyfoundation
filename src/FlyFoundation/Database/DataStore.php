@@ -3,11 +3,13 @@
 namespace FlyFoundation\Database;
 
 use FlyFoundation\Database\Field;
+use FlyFoundation\Database\Fields\DataField;
+
 interface DataStore
 {
     /**
      * @param array $data
-     * @return int
+     * @return mixed
      */
     public function createEntry(array $data);
 
@@ -34,13 +36,13 @@ interface DataStore
      * @param array $data
      * @return bool
      */
-    public function validateData(array $data);
+    public function isValidData(array $data);
 
     /**
      * @param array $identity
      * @return bool
      */
-    public function validateIdentity(array $identity);
+    public function isValidIdentity(array $identity);
 
     /**
      * @param array $data
@@ -53,4 +55,20 @@ interface DataStore
      * @return bool
      */
     public function containsEntry(array $identity);
+
+    /**
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * @param string $name
+     * @return DataField
+     */
+    public function getField($name);
+
+    /**
+     * @return DataField[]
+     */
+    public function getFields();
 }

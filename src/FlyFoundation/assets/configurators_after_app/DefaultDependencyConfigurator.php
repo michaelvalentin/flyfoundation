@@ -11,7 +11,7 @@ class DefaultDependencyConfigurator implements \FlyFoundation\Configurator{
     {
 
         // MySqlDatabase
-        $dbHost = $config->get('mysql_database_host', 'localhost');
+        $dbHost = $config->get('mysql_database_host');
         $dbUser = $config->get('mysql_database_user');
         $dbPass = $config->get('mysql_database_password');
         $dbName = $config->get('mysql_database_name');
@@ -21,7 +21,8 @@ class DefaultDependencyConfigurator implements \FlyFoundation\Configurator{
             // TODO: Exception handling (perhaps it should try again...)
             throw $e;
         }
-        $config->dependencies->putDependency("\\FlyFoundation\\Dependencies\\MySqlDatabase",$pdo,true);
+
+        $config->dependencies->putDependency("FlyFoundation\\Dependencies\\MySqlDatabase",$pdo,true);
         // EOF MySqlDatabase
 
         return $config;

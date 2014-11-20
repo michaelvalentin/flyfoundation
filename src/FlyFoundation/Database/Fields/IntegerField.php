@@ -30,6 +30,6 @@ class IntegerField extends DataField{
 
     public function convertFromStorageFormat($value)
     {
-        return $value;
+        return (int) $value;
     }
 }

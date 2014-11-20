@@ -36,10 +36,11 @@ abstract class PersistentField implements EntityField{
      */
     public function setValue($data)
     {
-        if(!$this->acceptsValue($data)){
+        if($this->acceptsValue($data) || $data === null){
+            $this->value = $data;
+        }else{
             throw new InvalidArgumentException("The value supplied for the ".get_called_class()." '".$this->name."' is not a compatible type for the field.");
         }
-        $this->value = $data;
     }
 
     /**

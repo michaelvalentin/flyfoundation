@@ -12,6 +12,16 @@ use FlyFoundation\Util\ValueList;
 class DependencyMap extends Map{
     public function putDependency($traitName, $dependencyInstance, $singleton = false)
     {
+        $startsWithBackslash = preg_match("/^\\\/",$traitName);
+
+        if($startsWithBackslash){
+            throw new InvalidArgumentException(
+                "The traitName '$traitName' should not start with a backslash.
+                It is not a valid class name, and will not be matched by the
+                dependency loader"
+            );
+        }
+
         parent::put($traitName,[$dependencyInstance,$singleton]);
     }
 

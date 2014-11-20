@@ -3,13 +3,14 @@
 namespace FlyFoundation\Database;
 
 
+use FlyFoundation\Core\Generic;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Models\Entity;
 use FlyFoundation\Database\DataCondition;
 use PDO;
 use PDOException;
 
-class GenericDataFinder implements DataFinder
+class GenericDataFinder implements DataFinder, Generic
 {
     use AppConfig;
 
@@ -130,5 +131,13 @@ class GenericDataFinder implements DataFinder
                 // TODO: Exception handling
             }
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function afterConfiguration()
+    {
+        // TODO: Implement afterConfiguration() method.
     }
 }

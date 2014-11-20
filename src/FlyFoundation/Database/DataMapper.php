@@ -11,7 +11,7 @@ interface DataMapper
      * @param Entity $entity
      * @return int
      */
-    public function save(Entity $entity);
+    public function save(Entity &$entity);
 
     /**
      * @param array $identifier
@@ -20,8 +20,8 @@ interface DataMapper
     public function load(array $identifier);
 
     /**
-     * @param array $identifier
+     * @param Entity $entity
      * @return void
      */
-    public function delete(array $identifier);
+    public function delete(Entity &$entity);
 }

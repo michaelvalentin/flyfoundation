@@ -3,13 +3,14 @@
 
 namespace FlyFoundation\Models;
 
+use FlyFoundation\Core\Generic;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Models\EntityFields\EntityField;
 use FlyFoundation\Models\EntityValidations\EntityValidation;
 use FlyFoundation\Util\Map;
 
-abstract class GenericEntity implements Entity{
+abstract class GenericEntity implements Entity, Generic{
     private $name;
 
     /** @var \FlyFoundation\Util\Map */
@@ -52,7 +53,7 @@ abstract class GenericEntity implements Entity{
 
         $result = [];
 
-        foreach($this->fields as $field)
+        foreach($this->fields->asArray() as $field)
         {
             /** @var $field \FlyFoundation\Models\EntityFields\EntityField */
             $result[$field->getName()] = $field->getValue();
@@ -73,11 +74,13 @@ abstract class GenericEntity implements Entity{
             throw new InvalidOperationException($notFromDataMapperText);
         }
 
-        foreach($this->fields as $field)
+        foreach($this->fields->asArray() as $field)
         {
             /** @var $field \FlyFoundation\Models\EntityFields\EntityField */
             if(isset($data[$field->getName()])){
                 $field->setValue($data[$field->getName()]);
+            }else{
+                $field->setValue(null);
             }
         }
     }

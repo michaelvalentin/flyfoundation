@@ -48,4 +48,12 @@ class OpenGenericEntity extends GenericEntity{
             $this->set($name, $value);
         }
     }
-} 
+
+    /**
+     * @return void
+     */
+    public function afterConfiguration()
+    {
+        // TODO: Implement afterConfiguration() method.
+    }
+}

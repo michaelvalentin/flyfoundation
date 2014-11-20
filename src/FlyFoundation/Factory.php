@@ -7,13 +7,14 @@ namespace FlyFoundation;
 use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Factories\FactoryTools;
+use FlyFoundation\Core\Generic;
 use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
+use FlyFoundation\Core\Dependant;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
-use FlyFoundation\SystemDefinitions\SystemDefinition;
 use FlyFoundation\Util\ClassInspector;
 use FlyFoundation\Views\View;
 
@@ -72,6 +73,10 @@ class Factory {
             $result =  $specializedFactory->load($className, $arguments);
         }else{
             $result = self::loadAndDecorateWithoutSpecialization($className, $arguments);
+        }
+
+        if($result instanceof Generic){
+            $result->afterConfiguration();
         }
 
         return $result;
@@ -148,11 +153,15 @@ class Factory {
             if(isset($dependencies[$traitName])){
                 $traitNameParts = explode("\\",$traitName);
                 $traitLastName = array_pop($traitNameParts);
-                $dependency = self::getInstance($dependencies[$traitName][0], $$dependencies[$traitName][1]);
+                $dependency = self::getInstance($dependencies[$traitName][0], $dependencies[$traitName][1]);
                 $dependency = self::addDependencies($dependency);
                 $setterMethodName = "set".$traitLastName;
                 $instance->$setterMethodName($dependency);
             }
+        }
+
+        if($instance instanceof Dependant){
+            $instance->onDependenciesLoaded();
         }
 
         return $instance;

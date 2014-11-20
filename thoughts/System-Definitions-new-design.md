@@ -1,7 +1,8 @@
 #System Definitions position in the system
 All systems should be able to function independently of the System Defintions, meaning
 one should be able to make use of their full feature-set through an API, perhaps even
-with an internal DSL ish' syntax. This makes it possible to test all parts.
+with an internal DSL'ish syntax. This makes it possible to test all parts, independent
+of the system definitions.
 
 The System definitions are then used for centrally defining aspects, so they are not repeated
 over several sub-systems (eg. database, validation & model). The centralisation also
@@ -17,7 +18,7 @@ version control.
 #System Definition Loading
 - All relevant data should be loaded by external means
 - All directives are parsed in an AST
-- The model is build, honoring includes and extensions (the relevant content is loaded from the ast AND a note is added on the model)
+- The model is build, honoring includes and extensions (the relevant content is loaded from the AST AND a note is added on the model)
     o In terms of inclusion / extension circular dependencies are not allowed but could occur and should result in an error
 - The model is checked after it's build, ensuring that all relations, etc. are sound
     o In terms of types, Circular dependencies can occur and should not be a problem, as the it is only the existence that is checked at this point
