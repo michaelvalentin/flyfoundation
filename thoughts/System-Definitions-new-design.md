@@ -28,7 +28,7 @@ version control.
 - The system definitions are finalized before use
 - Parsing from DSL to text-tree should be done separately
 
-##System model class design
+##System definition class design
 - A system definition is a collection of definition components, the system definition a component itself
 - Every system component contains a number of options and potentially a number of nested definition components
 - A definition component is build by supplying one or more arrays of options
@@ -46,8 +46,9 @@ version control.
      care about them
 
 #Application architecture in relation to system definitions
-- Generic classes, validators, forms, etc. react on system definition classes
-  and hence do not need worry about the configuration or execution context
+- Generic classes, validators, forms, etc. are constructed by the factory with
+  system definition classes as the recipe and hence do not need worry about the
+  configuration or execution context
 - Generic classes are configured by a factory, according to the system definition
 - Validators, forms, etc. are configured according to the system definitions, independent of the generic class, which could have been changed
 - Think of the system definition as a contract, that should always be honoured by generic classes, unless the specific class is explicitly changed
