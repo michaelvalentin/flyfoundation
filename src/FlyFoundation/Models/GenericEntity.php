@@ -38,16 +38,16 @@ abstract class GenericEntity implements Entity{
         return $this->name;
     }
 
-    public function getPersistentData($mustBeCalledFromDataStore)
+    public function getPersistentData($mustBeCalledFromDataMapper)
     {
-        if($mustBeCalledFromDataStore != "This is called from data store"){
+        if($mustBeCalledFromDataMapper != "This is called from the data mapper"){
 
-            $notFromDataStoreText = "The get persistent data
+            $notFromDataMapperText = "The get persistent data
             function can only be called from the data store (persistence layer).
             If you need to access properties of an entity, use the relevant
             accessor functions (eg. get(fieldName)).";
 
-            throw new InvalidOperationException($notFromDataStoreText);
+            throw new InvalidOperationException($notFromDataMapperText);
         }
 
         $result = [];
@@ -59,6 +59,27 @@ abstract class GenericEntity implements Entity{
         }
 
         return $result;
+    }
+
+    public function setPersistentData(array $data, $mustBeCalledFromDataMapper)
+    {
+        if($mustBeCalledFromDataMapper != "This is called from the data mapper"){
+
+            $notFromDataMapperText = "The set persistent data
+            function can only be called from the data mapper (persistence layer).
+            If you need to modify properties of an entity, use the relevant
+            mutator functions (eg. set(fieldName, value)).";
+
+            throw new InvalidOperationException($notFromDataMapperText);
+        }
+
+        foreach($this->fields as $field)
+        {
+            /** @var $field \FlyFoundation\Models\EntityFields\EntityField */
+            if(isset($data[$field->getName()])){
+                $field->setValue($data[$field->getName()]);
+            }
+        }
     }
 
     public function addField(EntityField $field)

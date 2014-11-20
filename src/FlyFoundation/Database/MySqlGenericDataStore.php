@@ -78,7 +78,8 @@ class MySqlGenericDataStore extends GenericDataStore{
 
         $columns = array_keys($data);
         $prefixedColumns = array_map(function($value){return ":".$value;},$columns);
-        $bindData = array_combine($prefixedColumns,array_values($data));
+        $storageData = $this->convertToStorageFormat($data);
+        $bindData = array_combine($prefixedColumns,array_values($storageData));
 
         $updateConditions = [];
         $fieldNamesWithoutIdentity = array_diff(array_keys($data),array_keys($identity));
@@ -119,5 +120,28 @@ class MySqlGenericDataStore extends GenericDataStore{
         if(!$preparedDeleteStatement->execute($bindData)){
             throw new InvalidArgumentException("No entry with the identity (".implode(",",$identity).") could be found in the DataStore: ".$this->getName());
         }
+    }
+
+    /**
+     * @param array $identity
+     * @return bool
+     */
+    public function containsEntry(array $identity)
+    {
+        $this->validateIdentity($identity);
+        $columns = array_keys($identity);
+        $prefixedColumns = array_map(function($value){return ":".$value;},$columns);
+        $bindData = array_combine($prefixedColumns,array_values($identity));
+
+        $conditions = [];
+        foreach(array_combine($columns, $prefixedColumns) as $column => $prefixedColumn){
+            $conditions[] = '`'.$column.'` = '.$prefixedColumn;
+        }
+
+        $existsQuery = 'SELECT COUNT(*) FROM '.$this->getName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
+        $preparedExistsStatement = $this->getMySqlDatabase()->prepare($existsQuery);
+        $preparedExistsStatement->execute($bindData);
+        $result = $preparedExistsStatement->fetch();
+        return $result[0] === "1";
     }
 }

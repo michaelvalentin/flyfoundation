@@ -14,14 +14,14 @@ interface DataMapper
     public function save(Entity $entity);
 
     /**
-     * @param int $id
+     * @param array $identifier
      * @return Entity
      */
-    public function load($id);
+    public function load(array $identifier);
 
     /**
-     * @param int $id
+     * @param array $identifier
      * @return void
      */
-    public function delete($id);
+    public function delete(array $identifier);
 }

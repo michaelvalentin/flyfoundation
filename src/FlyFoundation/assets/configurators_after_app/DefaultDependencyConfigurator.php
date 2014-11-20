@@ -11,10 +11,10 @@ class DefaultDependencyConfigurator implements \FlyFoundation\Configurator{
     {
 
         // MySqlDatabase
-        $dbHost = $config->get('db_host', 'localhost');
-        $dbUser = $config->get('db_user');
-        $dbPass = $config->get('db_pass');
-        $dbName = $config->get('db_name');
+        $dbHost = $config->get('mysql_database_host', 'localhost');
+        $dbUser = $config->get('mysql_database_user');
+        $dbPass = $config->get('mysql_database_password');
+        $dbName = $config->get('mysql_database_name');
         try{
             $pdo = new PDO('mysql:dbname='.$dbName.';host='.$dbHost,$dbUser,$dbPass,array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
         } catch(PDOException $e){

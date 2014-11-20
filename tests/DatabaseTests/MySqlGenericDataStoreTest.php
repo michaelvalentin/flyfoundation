@@ -1,7 +1,13 @@
 <?php
 
-require_once __DIR__.'/../test-init.php';
+use FlyFoundation\Factory;
 
+require_once __DIR__.'/../use-test-app.php';
+
+/**
+ * @backupGlobals disabled
+ * @backupStaticAttributes disabled
+ */
 class MySqlGenericDataStoreTest extends PHPUnit_Framework_TestCase {
     /**
      * @var \FlyFoundation\Database\MySqlGenericDataStore
@@ -10,15 +16,9 @@ class MySqlGenericDataStoreTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-        $this->dataStore = new \FlyFoundation\Database\MySqlGenericDataStore();
+        $this->dataStore = Factory::load("\\FlyFoundation\\Database\\MySqlGenericDataStore");
 
-        $testDatabase = json_decode(file_get_contents(__DIR__."/../mysql-test-database.json"),true);
-        $testPDO = new PDO(
-            "mysql:host=".$testDatabase["host"].";dbname=".$testDatabase["database"],
-            $testDatabase["user"],
-            $testDatabase["password"]);
-        $this->dataStore->setMySqlDatabase($testPDO);
-        $testPDO->exec(
+        $this->dataStore->getMySqlDatabase()->exec(
             "CREATE TABLE IF NOT EXISTS `generic_datastore_test` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `name` varchar(255) NOT NULL,
@@ -66,9 +66,7 @@ class MySqlGenericDataStoreTest extends PHPUnit_Framework_TestCase {
             ]
         );
 
-        $this->assertEquals(1,$res);
-
-        $stmt = $this->dataStore->getMySqlDatabase()->query("SELECT * FROM generic_datastore_test");
+        $stmt = $this->dataStore->getMySqlDatabase()->query("SELECT * FROM generic_datastore_test WHERE id=".$res." LIMIT 1");
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $this->assertEquals("This is a test",$res["name"]);
@@ -94,5 +92,83 @@ class MySqlGenericDataStoreTest extends PHPUnit_Framework_TestCase {
         $compDate = new DateTime("2014-06-15 13:33:22");
         $this->assertEquals($compDate->getTimestamp(), $res["adate"]->getTimeStamp(), '', 0.5);
     }
+
+    public function testUpdateEntry()
+    {
+        $this->dataStore->getMySqlDatabase()->exec(
+            "INSERT INTO
+                generic_datastore_test
+                (id, `name`, description, adate)
+                VALUES
+                (1, 'TEST', 'More testing', '2014-06-15 13:33:22')"
+        );
+
+        $this->dataStore->updateEntry([
+            "id" => 1,
+            "name" => "My name!",
+            "adate" => new DateTime("2014-08-09 23:59:59")
+        ]);
+
+        $stmt = $this->dataStore->getMySqlDatabase()->query("SELECT * FROM generic_datastore_test");
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->assertEquals(1,$res["id"]);
+        $this->assertEquals("My name!",$res["name"]);
+        $this->assertEquals("More testing",$res["description"]);
+        $this->assertEquals("2014-08-09 23:59:59",$res["adate"]);
+    }
+
+    public function testDeleteEntry()
+    {
+        $this->dataStore->getMySqlDatabase()->exec(
+            "INSERT INTO
+                generic_datastore_test
+                (id, `name`, description, adate)
+                VALUES
+                (4, 'TEST', 'More testing', '2014-06-15 13:33:22')"
+        );
+
+        $stmt = $this->dataStore->getMySqlDatabase()->query("SELECT * FROM generic_datastore_test WHERE id=4");
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->assertNotEmpty($res);
+
+        $this->dataStore->deleteEntry([
+            "id" => 4
+        ]);
+
+        $stmt = $this->dataStore->getMySqlDatabase()->query("SELECT * FROM generic_datastore_test WHERE id=4");
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->assertEmpty($res);
+    }
+
+    public function testContainsEntry()
+    {
+        $this->dataStore->getMySqlDatabase()->exec(
+            "INSERT INTO
+                generic_datastore_test
+                (id, `name`, description, adate)
+                VALUES
+                (4, 'TEST', 'More testing', '2014-06-15 13:33:22')"
+        );
+
+        $stmt = $this->dataStore->getMySqlDatabase()->query("SELECT * FROM generic_datastore_test WHERE id=4");
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->assertNotEmpty($res);
+
+        $res = $this->dataStore->containsEntry([
+            "id" => 4
+        ]);
+        $res2 = $this->dataStore->containsEntry([
+            "id" => 5
+        ]);
+
+        $this->assertTrue($res);
+        $this->assertFalse($res2);
+    }
+
+    //TODO: Testing of variations, edge cases and errors...
 }
  

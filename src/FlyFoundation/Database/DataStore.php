@@ -29,4 +29,28 @@ interface DataStore
      * @return void
      */
     public function deleteEntry(array $id);
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public function validateData(array $data);
+
+    /**
+     * @param array $identity
+     * @return bool
+     */
+    public function validateIdentity(array $identity);
+
+    /**
+     * @param array $data
+     * @return mixed[]
+     */
+    public function extractIdentity(array $data);
+
+    /**
+     * @param array $identity
+     * @return bool
+     */
+    public function containsEntry(array $identity);
 }

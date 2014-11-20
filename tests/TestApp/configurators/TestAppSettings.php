@@ -13,11 +13,10 @@ class TestAppSettings implements \FlyFoundation\Configurator{
 
         $config->set("app_name","TestApp");
         $config->setMany([
-            "database_host" => $testDatabase["host"],
-            "database_user" => $testDatabase["user"],
-            "database_password" => $testDatabase["password"],
-            "database_name" => $testDatabase["database"],
-            "database_data_object_prefix" => "MySql"
+            "mysql_database_host" => $testDatabase["host"],
+            "mysql_database_user" => $testDatabase["user"],
+            "mysql_database_password" => $testDatabase["password"],
+            "mysql_database_name" => $testDatabase["database"],
         ]);
         return $config;
     }
