@@ -1,11 +1,11 @@
 #System Definitions position in the system
-All systems should be able to function independently of the System Defintions, meaning
+All systems should be able to function independently of the System Definitions, meaning
 one should be able to make use of their full feature-set through an API, perhaps even
 with an internal DSL'ish syntax. This makes it possible to test all parts, independent
 of the system definitions.
 
-The System definitions are then used for centrally defining aspects, so they are not repeated
-over several sub-systems (eg. database, validation & model). The centralisation also
+The System definitions are then used for centrally defining aspects, so that they are not repeated
+over several sub-systems (eg. database, validation, model, forms, etc.). The centralisation also
 groups naturally related aspects better, giving a better overview of the system in a
 vertical, rather than horizontal fashion.
 
@@ -16,12 +16,69 @@ can also be used to inform derived models, such as models for language and/or
 version control.
 
 #System Definition Loading
-- All relevant data should be loaded by external means
-- All directives are parsed in an AST
+This section describes how the system definition is derived from the directive
+files and validated in the various stages of the process.
+
+##Overall description
+ - The core tells the directive reader, which files to scan
+ - The directive reader creates a tree of directive objects
+ - The interpreter builds the entity, and applies inheritance and includes in correct order, to build complete entities
+ - The interpreter loads completed entities into the system definition structures, including abstract entities, which are marked accordingly
+ - The system definition structures validates the content, relations and inheritance in the supplied entities
+
+CORE:
+- All files to be included are declared and added to the directive reader
+
+DIRECTIVE READER:
+- The files are read one by one and parsed into an intermediate list of directive
+  statements. No validation of content is done, but an error will be raised if a
+  directive is obviously malformed (eg. unknown type, or no label).
+  The directive statement list entries consists of:
+    * Indent number
+    * Type
+    * Label
+    * Value
+    * Origin file
+    * Line number
+- Based on the indents, the directive statements are turned into a tree structure
+- The directive reader returns the tree structure of directive statements, where
+  each node contains information about:
+    * Type
+    * Label
+    * Value
+    * Origin (File and line number)
+    * Parent node
+    * Child nodes
+- The produced tree of directives is the output
+
+DIRECTIVE INTERPRETER
+- The directive tree array is the input for the interpreter
+- The interpreter builds entities, by recursively converting directives into
+  definition components.
+- It starts by going over all dependencies (inheritance and inclusion), and
+  produces a mapping of dependency sets to their respective entity names
+- It starts with the entities that does not have dependencies, and then moves
+  on to those that have only dependencies that are already processed, including
+  these in the correct order. The interpreter does not concern itself with
+  the compatibility of the relations, but only verifies the existence of such
+  relations, through the dependency mapping.
+- If it is not possible to interpret all entities, due to missing dependencies,
+  it means that an entity is either not defined, or that a circular reference
+  exists.
+
+SYSTEM DEFINITIONS
+- The system definition does a recursive validation of all components, which:
+    * Validates both presence and format of all relevant values
+    * Validates settings and sub-components configuration
+    * Validates relations (existence of related components)
+    * Validates dependencies (inheritance and inclusion), including
+      compatibility of overrides
+- The system definition is locked, and can not be changed
+
 - The model is build, honoring includes and extensions (the relevant content is loaded from the AST AND a note is added on the model)
-    o In terms of inclusion / extension circular dependencies are not allowed but could occur and should result in an error
+    * In terms of inclusion / extension circular dependencies are not allowed but could occur and should result in an error
 - The model is checked after it's build, ensuring that all relations, etc. are sound
-    o In terms of types, Circular dependencies can occur and should not be a problem, as the it is only the existence that is checked at this point
+    * In terms of types, Circular dependencies can occur and should not be a problem, as the it is only the existence that is checked at this point
 
 #Deriving the system model
 - The system definitions are initialized with a textual/array (text-tree) set of data
