@@ -10,7 +10,7 @@ class SystemDefinition extends DefinitionComponent{
     /**
      * @var EntityDefinition
      */
-    private $entityDefinitions = [];
+    protected $entityDefinitions = [];
 
     public function setEntityDefinitions(array $entityDefinitions)
     {
@@ -31,6 +31,11 @@ class SystemDefinition extends DefinitionComponent{
         return $this->entityDefinitions;
     }
 
+    /**
+     * @param $entityName
+     * @return EntityDefinition
+     * @throws \FlyFoundation\Exceptions\InvalidArgumentException
+     */
     public function getEntityDefinition($entityName)
     {
         if(isset($this->entityDefinitions[$entityName])){

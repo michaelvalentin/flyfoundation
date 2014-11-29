@@ -7,20 +7,8 @@ namespace FlyFoundation\SystemDefinitions;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 
 class EntityDefinition extends DefinitionComponent{
-    private $systemDefinition;
-    private $fieldDefinitions = [];
-    private $validationDefinitions = [];
-
-    public function setSystemDefinition(SystemDefinition $systemDefinition)
-    {
-        $this->requireOpen();
-        $this->systemDefinition = $systemDefinition;
-    }
-
-    public function getSystemDefinition()
-    {
-        return $this->systemDefinition;
-    }
+    protected $fieldDefinitions = [];
+    protected $validationDefinitions = [];
 
     public function setFieldDefinitions(array $fieldDefinitions)
     {
@@ -38,7 +26,7 @@ class EntityDefinition extends DefinitionComponent{
 
     public function getFieldDefinitions()
     {
-        return $this->getFieldDefinitions();
+        return $this->fieldDefinitions;
     }
 
     public function getPersistentFieldDefinitions()

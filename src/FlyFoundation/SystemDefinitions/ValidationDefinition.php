@@ -4,17 +4,20 @@
 namespace FlyFoundation\SystemDefinitions;
 
 
+use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Util\Enum;
 
 class ValidationDefinition extends DefinitionComponent{
-    private $validationType;
-    private $fieldNames = [];
+    protected $validationType;
+    protected $fieldNames = [];
 
     public function setType($validationType)
     {
         $this->requireOpen();
         if(!ValidationType::isValidValue($validationType)){
-
+            throw new InvalidArgumentException(
+                $validationType." is not a valid type for a Validation. Use the ValidationType enum, eg. ValidationType::Required, to properly set the type of the validation"
+            );
         }
         $this->validationType = $validationType;
     }
@@ -27,7 +30,14 @@ class ValidationDefinition extends DefinitionComponent{
     public function setFieldNames(array $fieldNames)
     {
         $this->requireOpen();
-        $this->fieldNames = $fieldNames;
+        foreach($fieldNames as $fieldName){
+            if(!is_string($fieldName)){
+                throw new InvalidArgumentException(
+                    "Field names for supplied for a validation must be strings only"
+                );
+            }
+        }
+        $this->fieldNames = array_values($fieldNames);
     }
 
     public function getFieldNames()

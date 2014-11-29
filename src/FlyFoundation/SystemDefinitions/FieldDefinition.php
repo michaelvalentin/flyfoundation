@@ -7,10 +7,9 @@ namespace FlyFoundation\SystemDefinitions;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Util\Enum;
 
-class FieldDefinition extends DefinitionComponent
+abstract class FieldDefinition extends DefinitionComponent
 {
-    private $fieldType;
-    private $entityDefinition;
+    protected $fieldType;
 
     public function setType($fieldType)
     {
@@ -26,17 +25,6 @@ class FieldDefinition extends DefinitionComponent
     public function getType()
     {
         return $this->fieldType;
-    }
-
-    public function setEntityDefinition(EntityDefinition $entityDefinition)
-    {
-        $this->requireOpen();
-        $this->entityDefinition = $entityDefinition;
-    }
-
-    public function getEntityDefinition()
-    {
-        return $this->entityDefinition;
     }
 }
 
