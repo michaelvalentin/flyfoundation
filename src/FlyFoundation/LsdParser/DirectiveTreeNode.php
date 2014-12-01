@@ -123,7 +123,7 @@ class DirectiveTreeNode {
             );
         }
 
-        if(!DirectiveType::isValidValue($properties["type"])){
+        if(!DirectiveType::isValidType($properties["type"])){
             throw new InvalidArgumentException(
                 "The type ".$properties["type"]." is not a valid directive type,
                 please use eg. DirectiveType::Entity to get the correct type"

@@ -25,6 +25,7 @@ files and validated in the various stages of the process.
  - The interpreter builds the entity, and applies inheritance and includes in correct order, to build complete entities
  - The interpreter loads completed entities into the system definition structures, including abstract entities, which are marked accordingly
  - The system definition structures validates the content, relations and inheritance in the supplied entities
+ - When the system uses the system definitions, relevant parts reacts if relevant settings are malconfigured
 
 CORE:
 - All files to be included are declared and added to the directive reader
@@ -74,6 +75,12 @@ SYSTEM DEFINITIONS
     * Validates dependencies (inheritance and inclusion), including
       compatibility of overrides
 - The system definition is locked, and can not be changed
+
+RUNNING SYSTEM
+- When the various components uses the system definition, for their individual
+  purposes, they should give an error, if the system is configured in a non-
+  compatible way. Eg. this could be the AccessControlHandler, which discovers
+  the reference to a non-existing right
 
 - The model is build, honoring includes and extensions (the relevant content is loaded from the AST AND a note is added on the model)
     * In terms of inclusion / extension circular dependencies are not allowed but could occur and should result in an error

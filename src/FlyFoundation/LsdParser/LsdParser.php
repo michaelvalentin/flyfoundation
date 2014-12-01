@@ -17,7 +17,7 @@ class LsdParser {
                 "The supplied file '$filePath' does not seem to exist"
             );
         }
-        $files[] = $filePath;
+        $this->files[] = $filePath;
     }
 
     /**

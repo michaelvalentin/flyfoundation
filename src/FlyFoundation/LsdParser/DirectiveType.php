@@ -14,7 +14,7 @@ abstract class DirectiveType extends Enum{
     const Entity = 2;
     //const AbstractEntity = 3;
     //const Inclusion = 4;
-    const EntityField = 5;
+    const PersistentEntityField = 5;
     //const CalculatedEntityField = 6;
     //const HasARelation = 7;
     //const HasManyRelation = 8;
@@ -44,7 +44,7 @@ abstract class DirectiveType extends Enum{
                 return self::Inclusion;
                 break;
             case "$" :
-                return self::EntityField;
+                return self::PersistentEntityField;
                 break;
             case "*" :
                 return self::CalculatedEntityField;

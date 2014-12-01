@@ -1,0 +1,11 @@
+! Post
+    Setting : Value of setting
+    OtherSetting : Value
+    $ MyField : DateTime
+! User
+    # GreaterThan : 5
+        FieldNames : OtherField
+    Setting : Test
+    $ MyField : String
+        # Required
+    $ OtherField : Integer

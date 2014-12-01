@@ -1,7 +1,7 @@
 ! Comment
     Setting : Value of setting
     $FieldTest : String
-        #AValidation : value
+        #Required
             SettingForValidation : setting
 
 ! AnotherEntity

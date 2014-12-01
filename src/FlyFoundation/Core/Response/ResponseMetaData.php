@@ -36,7 +36,7 @@ class ResponseMetaData {
 	}
 	
 	public function __set($name, $value){
-		return $this->Set($name, $value);
+		$this->Set($name, $value);
 	}
 	
 	public function Set($label,$value){

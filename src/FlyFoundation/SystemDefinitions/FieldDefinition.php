@@ -10,11 +10,29 @@ use FlyFoundation\Util\Enum;
 abstract class FieldDefinition extends DefinitionComponent
 {
     protected $fieldType;
+    /** @var  EntityDefinition */
+    private $entityDefinition;
+
+    /**
+     * @param EntityDefinition $entityDefinition
+     */
+    public function setEntityDefinition(EntityDefinition &$entityDefinition)
+    {
+        $this->entityDefinition = $entityDefinition;
+    }
+
+    /**
+     * @return EntityDefinition
+     */
+    public function getEntityDefinition()
+    {
+        return $this->entityDefinition;
+    }
 
     public function setType($fieldType)
     {
         $this->requireOpen();
-        if(!FieldType::isValidValue($fieldType)){
+        if(!FieldType::isValidType($fieldType)){
             throw new InvalidArgumentException(
                 "The field type supplied is not valid. Use eg: FieldType::Integer"
             );

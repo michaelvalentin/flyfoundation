@@ -12,10 +12,27 @@ abstract class DefinitionComponent {
     private $name;
     protected $nameValidation = "/^[A-Za-z][A-Za-z0-9]*$/";
     private $locked = false;
+    private $origin;
+
+    public function setOrigin($originString)
+    {
+        $this->requireOpen();
+        $this->origin = $originString;
+    }
+
+    public function getOrigin()
+    {
+        return $this->origin;
+    }
 
     public function setSettings(array $settings)
     {
         $this->settings = $settings;
+    }
+
+    public function setSetting($name, $value)
+    {
+        $this->settings[$name] = $value;
     }
 
     public function getSettings()

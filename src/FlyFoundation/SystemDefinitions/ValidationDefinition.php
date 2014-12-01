@@ -10,11 +10,30 @@ use FlyFoundation\Util\Enum;
 class ValidationDefinition extends DefinitionComponent{
     protected $validationType;
     protected $fieldNames = [];
+    /** @var  EntityDefinition */
+    private $entityDefinition;
+
+    /**
+     * @param EntityDefinition $entityDefinition
+     */
+    public function setEntityDefinition(EntityDefinition &$entityDefinition)
+    {
+        $this->entityDefinition = $entityDefinition;
+    }
+
+    /**
+     * @return EntityDefinition
+     */
+    public function getEntityDefinition()
+    {
+        return $this->entityDefinition;
+    }
+
 
     public function setType($validationType)
     {
         $this->requireOpen();
-        if(!ValidationType::isValidValue($validationType)){
+        if(!ValidationType::isValidType($validationType)){
             throw new InvalidArgumentException(
                 $validationType." is not a valid type for a Validation. Use the ValidationType enum, eg. ValidationType::Required, to properly set the type of the validation"
             );
@@ -30,14 +49,21 @@ class ValidationDefinition extends DefinitionComponent{
     public function setFieldNames(array $fieldNames)
     {
         $this->requireOpen();
+        $this->fieldNames = [];
         foreach($fieldNames as $fieldName){
-            if(!is_string($fieldName)){
-                throw new InvalidArgumentException(
-                    "Field names for supplied for a validation must be strings only"
-                );
-            }
+            $this->addFieldName($fieldName);
         }
-        $this->fieldNames = array_values($fieldNames);
+    }
+
+    public function addFieldName($fieldName)
+    {
+        $this->requireOpen();
+        if(!is_string($fieldName)){
+            throw new InvalidArgumentException(
+                "Field names for supplied for a validation must be strings only"
+            );
+        }
+        $this->fieldNames[] = $fieldName;
     }
 
     public function getFieldNames()

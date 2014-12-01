@@ -17,18 +17,19 @@ class SystemDefinition extends DefinitionComponent{
         $this->requireOpen();
         $this->entityDefinitions = [];
         foreach($entityDefinitions as $entityDefinition){
-            if(!$entityDefinition instanceof EntityDefinition){
-                throw new InvalidArgumentException(
-                    "The supplied array contains an entry, which is not an entity definition"
-                );
-            }
-            $this->entityDefinitions[$entityDefinition->getName()] = $entityDefinition;
+            $this->addEntityDefinition($entityDefinition);
         }
+    }
+
+    public function addEntityDefinition(EntityDefinition $entityDefinition)
+    {
+        $this->requireOpen();
+        $this->entityDefinitions[$entityDefinition->getName()] = $entityDefinition;
     }
 
     public function getEntityDefinitions()
     {
-        return $this->entityDefinitions;
+        return array_values($this->entityDefinitions);
     }
 
     /**

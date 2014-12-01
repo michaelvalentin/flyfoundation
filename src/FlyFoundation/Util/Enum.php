@@ -30,19 +30,33 @@ abstract class Enum {
         return array_key_exists($name, $constants);
     }
 
-    public static function isValidValue($value)
+    public static function isValidType($type)
     {
         $values = array_values(self::getConstants());
-        return in_array($value, $values, $strict = true);
+        return in_array($type, $values, $strict = true);
     }
 
-    public static function nameFromValue($value)
+    public static function nameFromType($type)
     {
         $constants = self::getConstants();
-        if(!array_key_exists($value, $constants)){
+        if(!array_key_exists($type, $constants)){
             throw new InvalidArgumentException(
-                "There is no enum with that value in ".get_called_class()
+                "There is no enum with that type in ".get_called_class()
             );
+        }
+        return $constants[$type];
+    }
+
+    public static function typeFromName($name)
+    {
+        if(!self::isValidName($name)){
+            return false;
+        }
+
+        $constants = self::getConstants();
+
+        foreach($constants as $constName => $value){
+            if($constName == $name) return $value;
         }
     }
 } 
