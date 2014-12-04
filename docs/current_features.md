@@ -1,4 +1,4 @@
-*[Go back to the root](../README.md)*
+*[Go back to the root](../)*
 
 #Current features in FlyFoundation
 Text...
