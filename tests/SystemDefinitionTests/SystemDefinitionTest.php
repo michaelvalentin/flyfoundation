@@ -31,8 +31,8 @@ class SystemDefinitionTest extends PHPUnit_Framework_TestCase {
         $entities[0]->setName("Test");
         $entities[1]->setName("Other");
         $resultEntities = [
-            "Test" => $entities[0],
-            "Other" => $entities[1]
+            $entities[0],
+            $entities[1]
         ];
 
         $this->systemDef->setEntityDefinitions($entities);
