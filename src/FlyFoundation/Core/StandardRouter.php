@@ -12,7 +12,6 @@ class StandardRouter implements Router{
     use AppContext, AppConfig;
 
     /**
-     * @param Context $context
      * @return SystemQuery
      */
     public function getSystemQuery()
@@ -21,7 +20,8 @@ class StandardRouter implements Router{
         list($controller, $method, $arguments) = $this->parseQuery($prefixedQuery);
         $arguments = array_merge($this->getAppContext()->getParameters(),$arguments);
 
-        $result = new SystemQuery();
+        /** @var SystemQuery $result */
+        $result = Factory::load("\\FlyFoundation\\Core\\SystemQuery");
         $result->setController($controller);
         $result->setMethod($method);
         $result->setArguments($arguments);

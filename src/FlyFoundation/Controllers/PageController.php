@@ -11,9 +11,7 @@ use FlyFoundation\Factory;
 
 class PageController extends AbstractController{
 
-    use AppConfig;
-
-    public function view(Response $response, array $arguments)
+    public function view(array $arguments)
     {
         if(!$this->viewRespondsTo($arguments)){
             throw new InvalidArgumentException("The Page#view action expects an alias as an argument, which has an
@@ -35,17 +33,15 @@ class PageController extends AbstractController{
         }
 
         if($jsonFilename){
-            $response->setData(json_decode(file_get_contents($jsonFilename), true));
+            $this->getAppResponse()->setData(json_decode(file_get_contents($jsonFilename), true));
         }
 
         $pageContent = file_get_contents($filename);
 
-        $response->setContent($pageContent);
-
-        return $response;
+        $this->getAppResponse()->setContent($pageContent);
     }
 
-    public function viewRespondsTo($arguments){
+    public function viewRespondsTo(array $arguments){
         if(!isset($arguments["alias"]) || $arguments["alias"] == "index"){
             return false;
         }
@@ -65,10 +61,10 @@ class PageController extends AbstractController{
         return true;
     }
 
-    public function pageNotFound(Response $response, array $arguments)
+    public function pageNotFound(array $arguments)
     {
-        $response->getHeaders()->SetHeader("HTTP/1.0 404 Not Found",false);
-        return $this->view($response, ["alias" => "404-not-found"]);
+        $this->getAppResponse()->getHeaders()->SetHeader("HTTP/1.0 404 Not Found",false);
+        $this->view(["alias" => "404-not-found"]);
     }
 
     public function pageNotFoundRespondsTo(array $arguments)

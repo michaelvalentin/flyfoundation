@@ -42,16 +42,15 @@ class App {
 
         /** @var Router $router */
         $router = Factory::load("\\FlyFoundation\\Core\\Router");
+        $systemQuery = $router->getSystemQuery();
 
-        $systemQuery = $router->getSystemQuery($context);
-
-        $baseResponse = $this->getBaseResponse();
-
-        $response = $systemQuery->execute($baseResponse);
+        $this->getBaseController()->beforeController();
+        $systemQuery->execute();
+        $this->getBaseController()->afterController();
 
         //TODO: Here it should be possible to do something dynamic, based on the definition, after all other is done..
 
-        return $this->finalizeResponse($response);
+        return Factory::getConfig()->dependencies->get("FlyFoundation\\Dependencies\\AppResponse")[0];
     }
 
     public function addConfigurators($directory)
@@ -64,6 +63,7 @@ class App {
         $this->prepareConfig();
         $this->prepareContext($context);
         $this->prepareSystemDefinition();
+        $this->prepareResponse();
     }
 
     private function prepareContext(Context $context)
@@ -97,15 +97,14 @@ class App {
         );
     }
 
-    private function getBaseResponse()
+    private function prepareResponse()
     {
         $response = Factory::load("\\FlyFoundation\\Core\\Response");
-        return $this->getBaseController()->beforeController($response);
-    }
-
-    private function finalizeResponse($response)
-    {
-        return $this->getBaseController()->afterController($response);
+        Factory::getConfig()->dependencies->putDependency(
+            "FlyFoundation\\Dependencies\\AppResponse",
+            $response,
+            true
+        );
     }
 
     /**

@@ -21,14 +21,8 @@ interface Controller {
     public function setView(View $view);
 
     /**
-     * @param Response $response
-     */
-    public function setBaseResponse(Response $response);
-
-    /**
      * @param $action
      * @param array $arguments
-     * @return Response
      */
     public function render($action, array $arguments = []);
 
