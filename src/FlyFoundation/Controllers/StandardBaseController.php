@@ -8,6 +8,7 @@ use FlyFoundation\Core\Environment;
 use FlyFoundation\Core\Response;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Dependencies\AppContext;
+use FlyFoundation\Dependencies\AppResponse;
 use FlyFoundation\Factory;
 use FlyFoundation\Util\SeoTools;
 
@@ -15,52 +16,34 @@ class StandardBaseController implements BaseController{
 
     use AppContext;
     use AppConfig;
+    use AppResponse;
 
-    /**
-     * @param Response $response
-     * @return Response
-     */
-    public function beforeApp(Response $response)
+    public function beforeApp()
     {
         // TODO: Implement beforeApp() method.
     }
 
-    /**
-     * @param Response $response
-     * @return Response
-     */
-    public function beforeController(Response $response)
+    public function beforeController()
     {
         /** @var SeoTools $seoTools */
-        $seoTools = Factory::load("\\FlyFoundation\\Util\\SeoTools");
+        $seoTools = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Util\\SeoTools");
         $seoTools->forceLowerCaseUri();
-        $response->setDataValue("baseurl",$this->getAppContext()->getBaseUrl());
+        $this->getAppResponse()->setDataValue("baseurl",$this->getAppContext()->getBaseUrl());
 
         /* Globals */
         $globals_path = $this->getAppConfig()->get('globals_path', '/globals.json');
         if(file_exists($globals_path)){
-            $response->setData(json_decode(file_get_contents($globals_path), true));
+            $this->getAppResponse()->setData(json_decode(file_get_contents($globals_path), true));
         }
-
-        return $response;
     }
 
-    /**
-     * @param Response $response
-     * @return Response
-     */
-    public function afterController(Response $response)
+    public function afterController()
     {
         //TODO: This is silly, lets change it soon ;-)
-        $response->wrapInTemplateFile('base');
-        return $response;
+        $this->getAppResponse()->wrapInTemplateFile('base');
     }
 
-    /**
-     * @param Response $response
-     * @return Response
-     */
-    public function afterApp(Response $response)
+    public function afterApp()
     {
         // TODO: Implement afterApp() method.
     }

@@ -11,17 +11,17 @@ interface DataMapper
      * @param Entity $entity
      * @return int
      */
-    public function save(Entity $entity);
+    public function save(Entity &$entity);
 
     /**
-     * @param int $id
+     * @param array $identifier
      * @return Entity
      */
-    public function load($id);
+    public function load(array $identifier);
 
     /**
-     * @param int $id
+     * @param Entity $entity
      * @return void
      */
-    public function delete($id);
+    public function delete(Entity &$entity);
 }

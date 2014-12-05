@@ -11,57 +11,46 @@ use FlyFoundation\Core\Router;
 use FlyFoundation\Exceptions\InvalidConfigurationException;
 
 class App {
-
+    /** @var \FlyFoundation\Core\Factories\ConfigurationFactory */
     private $configurationFactory;
-    private $systemDefinitionFactory;
-    /** @var  Context */
-    private $context;
     /** @var  BaseController */
     private $baseController;
 
     public function __construct()
     {
-        $this->systemDefinitionFactory = new SystemDefinitionFactory();
-
-        $baseConfig = new Config();
-        $this->configurationFactory = new ConfigurationFactory($baseConfig);
+        $this->configurationFactory = new ConfigurationFactory();
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/assets/configurators_before_app");
     }
 
     /**
-     * @param string $uri
      * @param Context $context
      */
-    public function serve($uri, $context = null)
+    public function serve(Context $context)
     {
-        $this->getResponse($uri, $context)->output();
+        $this->getResponse($context)->output();
     }
 
     /**
-     * @param string $uri
      * @param Context $context
      * @return Response
      */
-    public function getResponse($uri, $context = null)
+    public function getResponse(Context $context)
     {
-        $this->prepareCoreDependencies($uri, $context);
+        $this->prepareCoreDependencies($context);
 
-        //TODO: Here it should be possible to do something dynamic, based on the definition but before the router is used!!
+        //TODO: Here it should be possible to do something dynamic, based on the definition but before the router is used!! EG: Configure the router based on the system definitions?!?! ;-)
 
         /** @var Router $router */
-        $routerClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Core\\Router");
-        $router = Factory::load($routerClass);
+        $router = Factory::load("\\FlyFoundation\\Core\\Router");
+        $systemQuery = $router->getSystemQuery();
 
-        $systemQuery = $router->getSystemQuery($uri);
-
-        $baseResponse = $this->getBaseResponse();
-
-        $response = $systemQuery->execute($baseResponse);
+        $this->getBaseController()->beforeController();
+        $systemQuery->execute();
+        $this->getBaseController()->afterController();
 
         //TODO: Here it should be possible to do something dynamic, based on the definition, after all other is done..
 
-        $response = $this->finalizeResponse($response);
-        return $response;
+        return Factory::getConfig()->dependencies->get("FlyFoundation\\Dependencies\\AppResponse")[0];
     }
 
     public function addConfigurators($directory)
@@ -69,36 +58,53 @@ class App {
         $this->configurationFactory->addConfiguratorDirectory($directory);
     }
 
-    public function prepareCoreDependencies($uri = null)
+    public function prepareCoreDependencies(Context $context)
     {
-        if($this->context === null){
-            $this->context = new Context();
-        }
-        if($uri !== null){
-            $this->context->loadFromEnvironmentBasedOnUri($uri);
-        }
-        Factory::setContext($this->context);
+        $this->prepareConfig();
+        $this->prepareContext($context);
+        $this->prepareSystemDefinition();
+        $this->prepareResponse();
+    }
 
+    private function prepareContext(Context $context)
+    {
+        Factory::getConfig()->dependencies->putDependency(
+            "FlyFoundation\\Dependencies\\AppContext",
+            $context,
+            true
+        );
+    }
+
+    private function prepareConfig()
+    {
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/assets/configurators_after_app");
-        $baseConfig = $this->configurationFactory->getConfiguration();
-        Factory::setConfig($baseConfig);
-
-        $configuratorClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Core\\GenericConfigurator");
-        $configurator = Factory::load($configuratorClass);
-        $config = $configurator->apply($baseConfig);
+        $config = $this->configurationFactory->getConfiguration();
+        $config->lock();
         Factory::setConfig($config);
     }
 
-    private function getBaseResponse()
+    private function prepareSystemDefinition()
     {
-        $responseClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Core\\Response");
-        $response = Factory::load($responseClass);
-        return $this->getBaseController()->beforeController($response);
+        $systemDefinitionFactory = new SystemDefinitionFactory();
+        $systemDefinitionFactory->setDefinitionDirectories(
+            Factory::getConfig()->systemDefinitionDirectories
+        );
+        $systemDefinition = $systemDefinitionFactory->getSystemDefinition();
+        Factory::getConfig()->dependencies->putDependency(
+            "FlyFoundation\\Dependencies\\AppDefinition",
+            $systemDefinition,
+            true
+        );
     }
 
-    private function finalizeResponse($response)
+    private function prepareResponse()
     {
-        return $this->getBaseController()->afterController($response);
+        $response = Factory::load("\\FlyFoundation\\Core\\Response");
+        Factory::getConfig()->dependencies->putDependency(
+            "FlyFoundation\\Dependencies\\AppResponse",
+            $response,
+            true
+        );
     }
 
     /**
@@ -106,8 +112,7 @@ class App {
      */
     private function getBaseController(){
         if(!isset($this->baseController)){
-            $baseControllerClass = Factory::getConfig()->getImplementation("\\FlyFoundation\\Controllers\\BaseController");
-            $this->baseController = Factory::load($baseControllerClass);
+            $this->baseController = Factory::load("\\FlyFoundation\\Controllers\\BaseController");
             if(!$this->baseController instanceof BaseController){
                 throw new InvalidConfigurationException("The base controller must be of class BaseController.");
             }

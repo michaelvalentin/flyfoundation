@@ -1,13 +1,15 @@
 <?php
 
 
-class DefaultClassPaths implements FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class DefaultClassPaths implements FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $config->modelSearchPaths->add("\\FlyFoundation\\Models");
         $config->viewSearchPaths->add("\\FlyFoundation\\Views");

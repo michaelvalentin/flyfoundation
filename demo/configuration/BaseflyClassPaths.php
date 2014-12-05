@@ -1,15 +1,15 @@
 <?php
 
 
-use FlyFoundation\Configurator;
+use FlyFoundation\Core\Configurator;
 
 class BaseflyClassPaths implements Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param \FlyFoundation\Core\Config $config
+     * @return \FlyFoundation\Core\Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(\FlyFoundation\Core\Config $config)
     {
         $config->modelSearchPaths->add("\\Basefly\\Models");
         $config->viewSearchPaths->add("\\Basefly\\Views");

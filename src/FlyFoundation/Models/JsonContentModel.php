@@ -1,7 +1,7 @@
 <?php
 
 namespace FlyFoundation\Models;
-use Exceptions\InvalidArgumentException;
+use FlyFoundation\Exceptions\InvalidArgumentException;
 
 /**
  * Class JsonContentModel
@@ -53,7 +53,7 @@ class JsonContentModel implements Model{
     private function readDataFromJsonModel()
     {
         if(file_exists($this->model_file)){
-            throw new InvalidArgumentException('File: "'.$this->model_file.'" does not exist, and the JSON model '+
+            throw new InvalidArgumentException('File: "'.$this->model_file.'" does not exist, and the JSON model '.
             'can not render as expected.');
         }
         $this->data = json_decode(file_get_contents($this->model_file),true);

@@ -17,7 +17,7 @@
         "znarkus/postmark": "dev-master",
         "mustache/mustache": "v2.7.0",
         "aws/aws-sdk-php": "2.6.0",
-        "phpunit/phpunit": "3.7.37"
+        "phpunit/phpunit": "3.7.38"
     },
     "autoload": {
         "psr-0": {

@@ -4,7 +4,7 @@
 namespace FlyFoundation\Dependencies;
 
 
-use FlyFoundation\Config;
+use FlyFoundation\Core\Config;
 use FlyFoundation\Exceptions\UnsetDependencyException;
 
 trait AppConfig {

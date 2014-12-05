@@ -5,9 +5,14 @@ namespace FlyFoundation\Core;
 
 
 use Aws\Common\Exception\InvalidArgumentException;
+use FlyFoundation\App;
 use FlyFoundation\Controllers\Controller;
+use FlyFoundation\Dependencies\AppResponse;
 
 class SystemQuery {
+
+    use AppResponse;
+
     /** @var Controller */
     private $controller;
     /** @var string */
@@ -15,7 +20,7 @@ class SystemQuery {
     /** @var array */
     private $arguments;
 
-    public function execute(Response $baseResponse = null)
+    public function execute()
     {
         if($baseResponse != null){
             $this->controller->setBaseResponse($baseResponse);

@@ -5,7 +5,6 @@ namespace FlyFoundation\Models;
 
 
 interface Entity {
-    public function __construct(array $data = []);
 
     /**
      * @param string $calledFromDb
@@ -14,9 +13,11 @@ interface Entity {
     public function getPersistentData($calledFromDb);
 
     /**
-     * @return string[]
+     * @param array $data
+     * @param string $calledFromDb
+     * @return void
      */
-    public function getPrimaryKeyNames();
+    public function setPersistentData(array $data, $calledFromDb);
 
     /**
      * @return bool
@@ -27,4 +28,14 @@ interface Entity {
      * @return string[]
      */
     public function getErrors();
+
+    /**
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * @param string $name
+     */
+    public function setName($name);
 }

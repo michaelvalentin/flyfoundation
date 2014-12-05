@@ -4,8 +4,8 @@
 namespace FlyFoundation\Core;
 
 
-use FlyFoundation\Config;
-use FlyFoundation\Configurator;
+use FlyFoundation\Core\Config;
+use FlyFoundation\Core\Configurator;
 
 class GenericConfigurator implements Configurator{
 

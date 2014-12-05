@@ -5,15 +5,17 @@ namespace FlyFoundation;
 
 
 use FlyFoundation\Controllers\Controller;
+use FlyFoundation\Core\Config;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Factories\FactoryTools;
+use FlyFoundation\Core\Generic;
 use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
+use FlyFoundation\Core\Dependant;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Models\Model;
-use FlyFoundation\SystemDefinitions\SystemDefinition;
 use FlyFoundation\Util\ClassInspector;
 use FlyFoundation\Views\View;
 
@@ -21,7 +23,6 @@ class Factory {
 
     /** @var Config */
     private static $config;
-    private static $context;
 
     public static function setConfig(Config $config)
     {
@@ -39,32 +40,18 @@ class Factory {
         return self::$config;
     }
 
-    /**
-     * @param Context $context
-     */
-    public static function setContext(Context $context)
+    public static function load($className, array $arguments = [])
     {
-        self::$context = $context;
+        $className = self::$config->getImplementation($className);
+        return self::loadWithoutImplementationSearch($className, $arguments);
     }
-
-    /**
-     * @return Context
-     */
-    public static function getContext()
-    {
-        if(self::$context == null){
-            throw new InvalidOperationException("The factory must be supplied with a context before it can be used.");
-        }
-        return self::$context;
-    }
-    private static $appDefinition;
 
     /**
      * @param string $actualClassName
      * @param array $arguments
      * @return object
      */
-    public static function load($className, array $arguments = array())
+    public static function loadWithoutImplementationSearch($className, array $arguments = [])
     {
         $specializedFactory = self::findSpecializedFactory($className);
 
@@ -72,6 +59,10 @@ class Factory {
             $result =  $specializedFactory->load($className, $arguments);
         }else{
             $result = self::loadAndDecorateWithoutSpecialization($className, $arguments);
+        }
+
+        if($result instanceof Generic){
+            $result->afterConfiguration();
         }
 
         return $result;
@@ -106,7 +97,7 @@ class Factory {
             $partialClassName = FactoryTools::findPartialClassNameInPaths($className,$paths);
 
             if($partialClassName){
-                return self::load("\\FlyFoundation\\Core\\Factories\\".$factory);
+                return self::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\Factories\\".$factory);
             }
         }
 
@@ -137,10 +128,6 @@ class Factory {
             $instance->setAppConfig(self::getConfig());
             $instanceTraits = array_diff($instanceTraits,["\\FlyFoundation\\Dependencies\\AppConfig"]);
         }
-        if(in_array("FlyFoundation\\Dependencies\\AppContext",$instanceTraits)){
-            $instance->setAppContext(self::getContext());
-            $instanceTraits = array_diff($instanceTraits,["\\FlyFoundation\\Dependencies\\AppContext"]);
-        }
 
         //Other dependencies
         foreach($instanceTraits as $traitName)
@@ -148,11 +135,15 @@ class Factory {
             if(isset($dependencies[$traitName])){
                 $traitNameParts = explode("\\",$traitName);
                 $traitLastName = array_pop($traitNameParts);
-                $dependency = self::getInstance($dependencies[$traitName][0], $$dependencies[$traitName][1]);
+                $dependency = self::getInstance($dependencies[$traitName][0], $dependencies[$traitName][1]);
                 $dependency = self::addDependencies($dependency);
                 $setterMethodName = "set".$traitLastName;
                 $instance->$setterMethodName($dependency);
             }
+        }
+
+        if($instance instanceof Dependant){
+            $instance->onDependenciesLoaded();
         }
 
         return $instance;
@@ -184,7 +175,7 @@ class Factory {
     public static function loadView($viewName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Views\\".$viewName."View";
-        return self::load($fullClassName, $arguments);
+        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
     }
 
     public static function viewExists($viewName)
@@ -201,7 +192,7 @@ class Factory {
     public static function loadController($controllerName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Controllers\\".$controllerName."Controller";
-        return self::load($fullClassName, $arguments);
+        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
     }
 
     public static function controllerExists($controllerName)
@@ -218,7 +209,7 @@ class Factory {
     public static function loadModel($modelName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Models\\".$modelName;
-        return self::load($fullClassName, $arguments);
+        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
     }
 
     public static function modelExists($modelName)
@@ -235,7 +226,7 @@ class Factory {
     public static function loadDataMapper($entityName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
-        return self::load($fullClassName, $arguments);
+        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
     }
 
     public static function dataMapperExists($entityName)
@@ -252,7 +243,7 @@ class Factory {
     public static function loadDataFinder($entityName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataFinder";
-        return self::load($fullClassName, $arguments);
+        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
     }
 
     public static function dataFinderExists($entityName)
@@ -269,7 +260,7 @@ class Factory {
     public static function loadDataMethods($dataMethodsName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
-        return self::load($fullClassName, $arguments);
+        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
     }
 
     public static function dataMethodsExists($dataMethodsName)

@@ -1,13 +1,15 @@
 <?php
 
 
-class TestAppIncludePaths implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class TestAppIncludePaths implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $config->modelSearchPaths->add("\\TestApp\\Models");
         $config->modelSearchPaths->add("\\TestApp\\ExtraModelPath");

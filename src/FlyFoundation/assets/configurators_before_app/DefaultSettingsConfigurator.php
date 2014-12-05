@@ -1,13 +1,15 @@
 <?php
 
 
-class DefaultSettingsConfigurator implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class DefaultSettingsConfigurator implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $config->set("app_name","Set the app_name in the configuration! :-)");
         return $config;

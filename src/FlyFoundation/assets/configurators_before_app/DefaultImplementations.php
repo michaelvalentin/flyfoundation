@@ -1,15 +1,16 @@
 <?php
 
 
-use FlyFoundation\Configurator;
+use FlyFoundation\Core\Config;
+use FlyFoundation\Core\Configurator;
 
 class DefaultImplementations implements Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $config->implementations->putAll([
             "\\FlyFoundation\\Core\\FileLoader" => "\\FlyFoundation\\Core\\StandardFileLoader",

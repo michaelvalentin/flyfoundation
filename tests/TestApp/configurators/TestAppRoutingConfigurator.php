@@ -1,13 +1,15 @@
 <?php
 
 
-class TestAppRoutingConfigurator implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class TestAppRoutingConfigurator implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $config->routing->addRouting("GET:", "TestAppSpecial#showFrontPage");
         $config->routing->addRouting("GET:mytest/{alias}", "TestAppSpecial#show");

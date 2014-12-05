@@ -12,16 +12,16 @@ class StandardRouter implements Router{
     use AppContext, AppConfig;
 
     /**
-     * @param $query
      * @return SystemQuery
      */
-    public function getSystemQuery($query)
+    public function getSystemQuery()
     {
-        $prefixedQuery = $this->getAppContext()->getHttpVerb().":".$query;
+        $prefixedQuery = $this->getAppContext()->getHttpVerb().":".$this->getAppContext()->getUri();
         list($controller, $method, $arguments) = $this->parseQuery($prefixedQuery);
         $arguments = array_merge($this->getAppContext()->getParameters(),$arguments);
 
-        $result = new SystemQuery();
+        /** @var SystemQuery $result */
+        $result = Factory::load("\\FlyFoundation\\Core\\SystemQuery");
         $result->setController($controller);
         $result->setMethod($method);
         $result->setArguments($arguments);
@@ -31,12 +31,12 @@ class StandardRouter implements Router{
 
     public function parseQuery($query)
     {
-        $routings = $this->getAppConfig()->routing->asArray();
+        $routing = $this->getAppConfig()->routing->asArray();
 
-        foreach($routings as $routing)
+        foreach($routing as $route)
         {
-            $uriPattern = $routing["uri"];
-            $action = $routing["action"];
+            $uriPattern = $route["uri"];
+            $action = $route["action"];
             list($match, $arguments) = $this->matchUri($uriPattern, $query);
 
             if($match){
@@ -44,7 +44,7 @@ class StandardRouter implements Router{
                 list($controllerName, $method) = explode("#",$action);
 
                 $controller = Factory::loadController($controllerName);
-                $arguments = array_merge($arguments, $routing["arguments"]);
+                $arguments = array_merge($arguments, $route["arguments"]);
 
                 if($controller->respondsTo($method, $arguments)){
                     return [$controller, $method, $arguments];

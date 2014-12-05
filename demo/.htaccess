@@ -2,7 +2,7 @@ Options All -Indexes
 Options +FollowSymlinks
 
 RewriteEngine On
-DirectorySlash Off
+DirectorySlash On
 RewriteBase /
 
 ### Rewrite vendor folder request to 404-not-found
