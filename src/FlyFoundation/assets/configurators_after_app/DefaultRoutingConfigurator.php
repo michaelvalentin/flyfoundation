@@ -1,13 +1,15 @@
 <?php
 
 
-class DefaultRoutingConfigurator implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class DefaultRoutingConfigurator implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $config->routing->addRouting("GET:", "Page#view",["alias"=>""]);
         $config->routing->addRouting("GET:{alias}", "Page#view");

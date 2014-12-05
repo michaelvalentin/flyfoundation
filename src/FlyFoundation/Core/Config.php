@@ -1,6 +1,6 @@
 <?php
 
-namespace FlyFoundation;
+namespace FlyFoundation\Core;
 use FlyFoundation\Core\DependencyMap;
 use FlyFoundation\Core\RoutingList;
 use FlyFoundation\Exceptions\InvalidOperationException;
@@ -36,6 +36,9 @@ class Config {
     /** @var \FlyFoundation\Util\ValueList  */
     public $databaseSearchPaths;
 
+    /** @var  \FlyFoundation\Util\DirectoryList */
+    public $systemDefinitionDirectories;
+
     /** @var \FlyFoundation\Util\DirectoryList */
     public $pageDirectories;
 
@@ -58,6 +61,7 @@ class Config {
         $this->viewSearchPaths = new ValueList();
         $this->controllerSearchPaths = new ValueList();
         $this->databaseSearchPaths = new ValueList();
+        $this->systemDefinitionDirectories = new DirectoryList();
         $this->pageDirectories = new DirectoryList();
         $this->templateDirectories = new DirectoryList();
         $this->routing = new RoutingList();

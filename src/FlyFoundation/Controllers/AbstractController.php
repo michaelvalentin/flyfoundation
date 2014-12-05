@@ -57,7 +57,7 @@ abstract class AbstractController implements Controller{
     {
         if($this->response == null){
             $responseClass = $this->getAppConfig()->getImplementation("\\FlyFoundation\\Core\\Response");
-            $this->response = Factory::load($responseClass);
+            $this->response = Factory::loadWithoutImplementationSearch($responseClass);
         }
         return $this->response;
     }

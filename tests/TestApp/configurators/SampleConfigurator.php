@@ -1,13 +1,15 @@
 <?php
 
 
-class SampleConfigurator implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class SampleConfigurator implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $config->set("test","ABCDabcd");
         return $config;

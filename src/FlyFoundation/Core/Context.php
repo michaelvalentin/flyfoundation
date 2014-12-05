@@ -6,34 +6,36 @@ use FlyFoundation\Exceptions\InvalidArgumentException;
 class Context {
 
     private $uri;                      // The request, after the base URL
-    private $domain;                   // The host / domain
-    private $hostName;                  // The base host name for the request (before identifier), might be subdirectory
-    private $protocol;                 // The protocol of the request
-    private $httpVerb;                 // The request method (GET, POST, ETC.)
 	private $parameters;               // The get parameters of the request
     private $postData;                 // The post data of the request
+    private $fileData;                 // The data about files in the request
+    private $serverData;               // The data from the $_SERVER super global
+    private $cookieData;               // The cookies supplied with the request
 
-    public function __construct(array $initData = array())
+    public function __construct($uri, array $requestData = [])
     {
-        $this->applyDefaults();
+        $this->parameters = [];
+        $this->postData = [];
+        $this->fileData = [];
+        $this->serverData = [];
+        $this->cookieData = [];
 
-        $potentialArguments = [
-            "uri",
-            "baseUrl",
-            "protocol",
-            "httpVerb",
-            "parameters",
-            "postData",
-            "domain"
+        $potentialDataArrays = [
+            "server" => "serverData",
+            "get" => "parameters",
+            "post" => "postData",
+            "files" => "fileData",
+            "cookie" => "cookieData"
         ];
 
-        foreach($potentialArguments as $argumentName)
+        foreach($potentialDataArrays as $indexName => $fieldName)
         {
-            if(array_key_exists($argumentName,$initData)){
-                $methodName = "set".ucfirst($argumentName);
-                $this->$methodName($initData[$argumentName]);
+            if(array_key_exists($indexName,$requestData) && is_array($requestData[$indexName])){
+                $this->$fieldName = $requestData[$indexName];
             }
         }
+
+        $this->uri = $uri;
     }
 
     public function getUri()
@@ -41,24 +43,35 @@ class Context {
         return $this->uri;
     }
 
-    public function getHostName()
+    public function getHostPath()
     {
-        return $this->hostName;
+        $hostPath = str_replace($this->uri,"",$this->getServerData("HTTP_HOST").$this->getServerData("REQUEST_URI"));
+        $hostPath = explode("?",$hostPath)[0];
+        $hostPath = preg_replace("/\\/+/","/",$hostPath); //Make all slashes single slash
+        return preg_replace("/^(.*)\\/$/","$1",$hostPath); //Remove trailing slash
     }
 
     public function getBaseUrl()
     {
-        return $this->protocol."://".$this->hostName;
+        return $this->getProtocol()."://".$this->getHostPath();
     }
 
     public function getProtocol()
     {
-        return $this->protocol;
+        if(preg_match("/HTTPS/",$this->getServerData("SERVER_PROTOCOL"))){
+            return "HTTPS";
+        }else{
+            return "HTTP";
+        }
     }
 
     public function getHttpVerb()
     {
-        return $this->httpVerb;
+        if($this->getServerData("REQUEST_METHOD") == "POST"){
+            return "POST";
+        }else{
+            return "GET";
+        }
     }
 
     public function getParameters()
@@ -66,12 +79,12 @@ class Context {
         return $this->parameters;
     }
 
-    public function getParameter($key)
+    public function getParameter($key, $default = null)
     {
         if(array_key_exists($key, $this->parameters)){
             return $this->parameters[$key];
         }else{
-            return null;
+            return $default;
         }
     }
 
@@ -80,114 +93,41 @@ class Context {
         return $this->postData;
     }
 
-    public function getPostDataValue($key)
+    public function getPostDataValue($key, $default = null)
     {
         if(array_key_exists($key, $this->postData)){
             return $this->postData[$key];
         }else{
-            return null;
+            return $default;
+        }
+    }
+
+
+    public function getCookies()
+    {
+        return $this->cookieData;
+    }
+
+    public function getCookie($name, $default = null)
+    {
+        if(array_key_exists($name, $this->cookieData)){
+            return $this->cookieData[$name];
+        }else{
+            return $default;
         }
     }
 
     public function getDomain()
     {
-        return $this->domain;
+        return $this->getServerData("HTTP_HOST");
     }
 
-    public function loadFromEnvironmentBasedOnUri($uri)
+    private function getServerData($key)
     {
-        $this->setUri($uri);
-
-        $baseUrl = str_replace($this->uri,"",$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
-        $baseUrl = explode("?",$baseUrl)[0];
-        $baseUrl = preg_replace("/\\/+/","/",$baseUrl); //Make all slashes single slash
-        $baseUrl = preg_replace("/^(.*)\\/$/","$1",$baseUrl); //Remove trailing slash
-        $this->setHostName($baseUrl);
-
-        if(preg_match("/HTTPS/",$_SERVER["SERVER_PROTOCOL"])){
-            $this->setProtocol("HTTPS");
+        if(array_key_exists($key, $this->serverData)){
+            return $this->serverData[$key];
         }else{
-            $this->setProtocol("HTTP");
+            return null;
         }
-
-        if($_SERVER["REQUEST_METHOD"] == "POST"){
-            $this->setHttpVerb("POST");
-        }else{
-            $this->setHttpVerb("GET");
-        }
-
-        $this->setParameters($_GET);
-        foreach(array_keys($_GET) as $g)
-        {
-            unset($_GET[$g]);
-        }
-
-        $this->setPostData($_POST);
-        foreach(array_keys($_POST) as $p)
-        {
-            unset($_POST[$p]);
-        }
-
-        $this->setDomain($_SERVER["HTTP_HOST"]);
-
-    }
-
-    private function setUri($uri)
-    {
-        $this->uri = $uri;
-    }
-
-    private function setHostName($baseUrl)
-    {
-        if(preg_match("/http(s)?:\\/\\//",$baseUrl)){
-            throw new InvalidArgumentException("Base url should not include protocol specification (http://)");
-        }
-        $this->hostName = $baseUrl;
-    }
-
-    private function setProtocol($protocol)
-    {
-        $protocol = strtolower($protocol);
-        $allowedProtocols = ["http","https"];
-        if(!in_array($protocol,$allowedProtocols)){
-            throw new InvalidArgumentException("Only protocol type http and https are allowed");
-        }
-        $this->protocol = $protocol;
-    }
-
-    private function setHttpVerb($httpVerb)
-    {
-        $httpVerb = strtoupper($httpVerb);
-        $allowedVerbs = ["GET","POST"];
-        if(!in_array($httpVerb,$allowedVerbs)){
-            throw new InvalidArgumentException("Only http verbs: GET & POST are allowed");
-        }
-        $this->httpVerb = $httpVerb;
-    }
-
-    private function setParameters(array $parameters)
-    {
-        $this->parameters = $parameters;
-    }
-
-    private function setPostData(array $postData)
-    {
-        $this->postData = $postData;
-    }
-
-    private function setDomain($domain)
-    {
-        $this->domain = $domain;
-    }
-
-    private function applyDefaults()
-    {
-        $this->hostName = "";
-        $this->httpVerb = "GET";
-        $this->parameters = [];
-        $this->postData = [];
-        $this->protocol = "HTTP";
-        $this->uri = "";
-        $this->domain = "";
     }
 }

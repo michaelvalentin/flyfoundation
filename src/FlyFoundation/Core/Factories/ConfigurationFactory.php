@@ -4,20 +4,24 @@
 namespace FlyFoundation\Core\Factories;
 
 
-use FlyFoundation\Config;
-use FlyFoundation\Configurator;
+use FlyFoundation\Core\Config;
+use FlyFoundation\Core\Configurator;
 use FlyFoundation\Util\DirectoryList;
 
 class ConfigurationFactory {
 
-    /** @var \FlyFoundation\Config  */
+    /** @var \FlyFoundation\Core\Config  */
     private $baseConfig;
 
     /** @var \FlyFoundation\Util\DirectoryList  */
     private $configuratorDirectories;
 
-    public function __construct(Config $config){
-        $this->baseConfig = $config;
+    public function __construct(Config $config = null){
+        if($config === null){
+            $this->baseConfig = new Config();
+        }else{
+            $this->baseConfig = $config;
+        }
         $this->configuratorDirectories = new DirectoryList();
     }
 

@@ -1,13 +1,13 @@
 <?php
 
 
-class BaseflyDirectories implements \FlyFoundation\Configurator{
+class BaseflyDirectories implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param \FlyFoundation\Core\Config $config
+     * @return \FlyFoundation\Core\Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(\FlyFoundation\Core\Config $config)
     {
         $config->pageDirectories->add(__DIR__."/../pages");
         $config->templateDirectories->add(__DIR__."/../templates");

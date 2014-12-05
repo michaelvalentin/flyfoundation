@@ -12,16 +12,16 @@ class GenericDataMapperTest extends PHPUnit_Framework_TestCase {
     private $dataMapper;
 
     protected function setUp(){
-        $this->dataMapper = Factory::load("\\FlyFoundation\\Database\\GenericDataMapper");
+        $this->dataMapper = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Database\\GenericDataMapper");
         $this->dataMapper->setEntityName("\\TestApp\\Models\\GenericTestModel");
-        $dataStore = Factory::load("\\TestApp\\Database\\MySqlGenericTestModelDataStore");
+        $dataStore = Factory::loadWithoutImplementationSearch("\\TestApp\\Database\\MySqlGenericTestModelDataStore");
         $this->dataMapper->setDataStore($dataStore);
     }
 
     public function testSaveAndLoad()
     {
         /** @var GenericTestModel $model */
-        $model = Factory::load("\\TestApp\\Models\\GenericTestModel");
+        $model = Factory::loadWithoutImplementationSearch("\\TestApp\\Models\\GenericTestModel");
         $model->set("test","MyTest");
         $model->set("demo","SomeText");
         $this->dataMapper->save($model);
@@ -37,7 +37,7 @@ class GenericDataMapperTest extends PHPUnit_Framework_TestCase {
     public function testDelete()
     {
         /** @var GenericTestModel $model */
-        $model = Factory::load("\\TestApp\\Models\\GenericTestModel");
+        $model = Factory::loadWithoutImplementationSearch("\\TestApp\\Models\\GenericTestModel");
         $model->set("test","MyTest");
         $model->set("demo","SomeText");
         $this->dataMapper->save($model);

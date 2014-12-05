@@ -40,7 +40,7 @@ class ViewFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadViewThatDoesNotExistWithoutViewNaming()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = Factory::load("\\FlyFoundation\\Views\\NotExistingClass");
+        $result = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Views\\NotExistingClass");
     }
 
     /**

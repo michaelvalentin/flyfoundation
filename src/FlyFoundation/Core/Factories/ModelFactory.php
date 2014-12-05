@@ -29,7 +29,7 @@ class ModelFactory {
         }else{
             $entityName = $this->getEntityName($className);
             $arguments = $this->prepareArguments($this->defaultModel, $arguments, $entityName);
-            $model = Factory::load($this->defaultModel,$arguments);
+            $model = Factory::loadWithoutImplementationSearch($this->defaultModel,$arguments);
         }
 
         return $model;

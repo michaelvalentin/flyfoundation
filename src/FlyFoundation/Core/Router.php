@@ -10,8 +10,8 @@ interface Router {
 
 
     /**
-     * @param $query
+     * @param Context $context
      * @return SystemQuery
      */
-    public function getSystemQuery($query);
+    public function getSystemQuery();
 } 

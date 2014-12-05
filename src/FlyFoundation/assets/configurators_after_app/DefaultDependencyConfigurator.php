@@ -1,13 +1,17 @@
 <?php
 
 
-class DefaultDependencyConfigurator implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class DefaultDependencyConfigurator implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
+     * @throws Exception
+     * @throws PDOException
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
 
         // MySqlDatabase

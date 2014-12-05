@@ -1,9 +1,10 @@
 <?php
 
+use FlyFoundation\Core\Context;
 use FlyFoundation\Core\StandardRouter;
 use FlyFoundation\Factory;
 
-require_once __DIR__ . '/../test-init.php';
+require_once __DIR__ . '/../use-test-app.php';
 
 
 class StandardRouterTest extends PHPUnit_Framework_TestCase {
@@ -12,9 +13,6 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-        $app = new \FlyFoundation\App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
         $this->router = Factory::load("\\FlyFoundation\\Core\\StandardRouter");
         parent::setUp();
     }
@@ -65,10 +63,12 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     public function testGetSystemQuery1(){
         $router = $this->router;
-        $router->setAppContext(new \FlyFoundation\Core\Context([
-            "httpVerb" => "GET"
+        $router->setAppContext(new Context("mytest/some-alias-here",[
+            "server" => [
+                "REQUEST_METHOD" => "GET"
+            ]
         ]));
-        $systemQuery = $router->getSystemQuery("mytest/some-alias-here");
+        $systemQuery = $router->getSystemQuery();
 
         $this->assertInstanceOf("\\TestApp\\Controllers\\TestAppSpecialController",$systemQuery->getController());
         $this->assertSame("show",$systemQuery->getMethod());
@@ -77,10 +77,12 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     public function testGetSystemQuery2(){
         $router = $this->router;
-        $router->setAppContext(new \FlyFoundation\Core\Context([
-            "httpVerb" => "POST"
+        $router->setAppContext(new Context("mytest/delete/41",[
+            "server" => [
+                "REQUEST_METHOD" => "POST"
+            ]
         ]));
-        $systemQuery = $router->getSystemQuery("mytest/delete/41");
+        $systemQuery = $router->getSystemQuery();
 
         $this->assertInstanceOf("\\TestApp\\Controllers\\TestAppSpecialController",$systemQuery->getController());
         $this->assertSame("delete",$systemQuery->getMethod());
@@ -89,10 +91,12 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     public function testGetSystemQuery3(){
         $router = $this->router;
-        $router->setAppContext(new \FlyFoundation\Core\Context([
-            "httpVerb" => "GET"
+        $router->setAppContext(new Context("something-else-here",[
+            "server" => [
+                "REQUEST_METHOD" => "GET"
+            ]
         ]));
-        $systemQuery = $router->getSystemQuery("something-else-here");
+        $systemQuery = $router->getSystemQuery();
 
         $this->assertInstanceOf("\\TestApp\\Controllers\\TestAppSpecialController",$systemQuery->getController());
         $this->assertSame("showAll",$systemQuery->getMethod());
@@ -101,10 +105,12 @@ class StandardRouterTest extends PHPUnit_Framework_TestCase {
 
     public function testGetSystemQuery4(){
         $router = $this->router;
-        $router->setAppContext(new \FlyFoundation\Core\Context([
-            "httpVerb" => "GET"
+        $router->setAppContext(new Context("",[
+            "server" => [
+                "REQUEST_METHOD" => "GET"
+            ]
         ]));
-        $systemQuery = $router->getSystemQuery("");
+        $systemQuery = $router->getSystemQuery();
 
         $this->assertInstanceOf("\\TestApp\\Controllers\\TestAppSpecialController",$systemQuery->getController());
         $this->assertSame("showFrontPage",$systemQuery->getMethod());

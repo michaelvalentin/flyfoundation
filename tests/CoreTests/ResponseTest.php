@@ -10,8 +10,8 @@ require_once __DIR__ . '/../test-init.php';
 class StandardResponseTest extends PHPUnit_Framework_TestCase {
     public function testComposeHtml(){
         /** @var \FlyFoundation\Core\StandardResponse $response */
-        Factory::setConfig(new \FlyFoundation\Config());
-        $response = Factory::load("\\FlyFoundation\\Core\\StandardResponse");
+        Factory::setConfig(new \FlyFoundation\Core\Config());
+        $response = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\StandardResponse");
         $response->setDataValue("demo","demo");
         $response->setDataValue("test","test-data");
         $response->setContent("This is a <b>demo</b>");

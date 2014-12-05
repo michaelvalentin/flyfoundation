@@ -21,7 +21,7 @@ class FormController extends AbstractController
     public function view(Response $response, array $arguments)
     {
 
-        $this->form = Factory::load('\\FlyFoundation\\Models\\Forms\\GenericForm');
+        $this->form = Factory::loadWithoutImplementationSearch('\\FlyFoundation\\Models\\Forms\\GenericForm');
 
         $this->form->addTextField()
             ->setName('field_a')

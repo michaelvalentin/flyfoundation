@@ -7,7 +7,7 @@ by the factory.
 ##Implementations in configuration
 By querying the configuration with a class name we can get the relevant
 implementation. This allows our code to load classes while the ability
-to swap the files lies in the configuration. This should be use for class
+to swap the files lies in the configuration. This should be used for class
 instantiation, where no pre-configured options are required and the
 ability to change the dependency is only required system-wide, eg. changing
 a presentation-related class to serve RTL language.
@@ -23,8 +23,7 @@ $config->implementations->put(
 ```
 When using
 ```php
-$routerClass = $this->getAppConfig->getImplementation("\\FlyFoundation\\Core\\Router");
-$router = Factory::load($routerClass);
+$router = Factory::load("\\FlyFoundation\\Core\\Router");
 ```
 
 ##Dependency traits

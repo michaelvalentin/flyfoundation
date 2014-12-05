@@ -1,7 +1,7 @@
 <?php
 
 
-namespace FlyFoundation;
+namespace FlyFoundation\Core;
 
 
 interface Configurator {

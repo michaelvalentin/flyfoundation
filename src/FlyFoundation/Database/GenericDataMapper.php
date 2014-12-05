@@ -79,7 +79,7 @@ class GenericDataMapper implements DataMapper, Generic
     {
         $storageData = $this->dataStore->readEntry($identifier);
         $entityData = $this->getDataForEntity($storageData);
-        $result = Factory::load($this->entityName);
+        $result = Factory::loadWithoutImplementationSearch($this->entityName);
         $result->setPersistentData($entityData, "This is called from the data mapper");
         return $result;
     }

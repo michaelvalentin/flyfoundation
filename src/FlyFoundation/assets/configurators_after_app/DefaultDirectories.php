@@ -1,13 +1,15 @@
 <?php
 
 
-class DefaultDirectories implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class DefaultDirectories implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $config->pageDirectories->add(__DIR__."/../pages");
         $config->templateDirectories->add(__DIR__."/../templates");

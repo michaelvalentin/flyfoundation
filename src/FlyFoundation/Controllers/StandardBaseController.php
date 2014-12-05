@@ -32,7 +32,7 @@ class StandardBaseController implements BaseController{
     public function beforeController(Response $response)
     {
         /** @var SeoTools $seoTools */
-        $seoTools = Factory::load("\\FlyFoundation\\Util\\SeoTools");
+        $seoTools = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Util\\SeoTools");
         $seoTools->forceLowerCaseUri();
         $response->setDataValue("baseurl",$this->getAppContext()->getBaseUrl());
 

@@ -1,13 +1,15 @@
 <?php
 
 
-class TestAppSettings implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
+
+class TestAppSettings implements \FlyFoundation\Core\Configurator{
 
     /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
+     * @param Config $config
+     * @return Config
      */
-    public function apply(\FlyFoundation\Config $config)
+    public function apply(Config $config)
     {
         $testDatabase = json_decode(file_get_contents(__DIR__."/../../mysql-test-database.json"),true);
 

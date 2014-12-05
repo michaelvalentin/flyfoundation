@@ -1,13 +1,11 @@
 <?php
 
 
-class DefaultDatabaseConfigurator implements \FlyFoundation\Configurator{
+use FlyFoundation\Core\Config;
 
-    /**
-     * @param \FlyFoundation\Config $config
-     * @return \FlyFoundation\Config
-     */
-    public function apply(\FlyFoundation\Config $config)
+class DefaultDatabaseConfigurator implements \FlyFoundation\Core\Configurator{
+
+    public function apply(Config $config)
     {
         $config->setMany([
             "mysql_database_host" => "127.0.0.1",

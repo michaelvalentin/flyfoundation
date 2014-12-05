@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../test-init.php';
 
 use FlyFoundation\App;
+use FlyFoundation\Core\Context;
 
 class AppTest extends \PHPUnit_Framework_TestCase {
 
@@ -17,7 +18,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
     {
         $app = new App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
+        $app->prepareCoreDependencies(new Context(""));
 
         $config = \FlyFoundation\Factory::getConfig();
 
@@ -26,15 +27,5 @@ class AppTest extends \PHPUnit_Framework_TestCase {
 
         $test2 = $config->get("test2");
         $this->assertSame("This is a demo",$test2);
-    }
-
-    public function testContext()
-    {
-        $app = new App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
-
-        $context = \FlyFoundation\Factory::getContext();
-        $this->assertInstanceOf("\\FlyFoundation\\Core\\Context",$context);
     }
 }
