@@ -38,17 +38,19 @@ class App {
     {
         $this->prepareCoreDependencies($context);
 
-        //TODO: Here it should be possible to do something dynamic, based on the definition but before the router is used!! EG: Configure the router based on the system definitions?!?! ;-)
+        $this->getBaseController()->beforeApp();
+
+        Factory::getConfig()->lock();
 
         /** @var Router $router */
         $router = Factory::load("\\FlyFoundation\\Core\\Router");
         $systemQuery = $router->getSystemQuery();
 
-        $this->getBaseController()->beforeController();
+        $this->getBaseController()->beforeController($systemQuery);
         $systemQuery->execute();
-        $this->getBaseController()->afterController();
+        $this->getBaseController()->afterController($systemQuery);
 
-        //TODO: Here it should be possible to do something dynamic, based on the definition, after all other is done..
+        $this->getBaseController()->afterApp();
 
         return Factory::getConfig()->dependencies->get("FlyFoundation\\Dependencies\\AppResponse")[0];
     }
@@ -62,8 +64,8 @@ class App {
     {
         $this->prepareConfig();
         $this->prepareContext($context);
-        $this->prepareSystemDefinition();
         $this->prepareResponse();
+        $this->prepareSystemDefinition();
     }
 
     private function prepareContext(Context $context)
@@ -79,7 +81,6 @@ class App {
     {
         $this->configurationFactory->addConfiguratorDirectory(__DIR__."/assets/configurators_after_app");
         $config = $this->configurationFactory->getConfiguration();
-        $config->lock();
         Factory::setConfig($config);
     }
 
@@ -108,6 +109,7 @@ class App {
     }
 
     /**
+     * @throws Exceptions\InvalidConfigurationException
      * @return BaseController
      */
     private function getBaseController(){

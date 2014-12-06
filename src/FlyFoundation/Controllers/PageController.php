@@ -33,12 +33,12 @@ class PageController extends AbstractController{
         }
 
         if($jsonFilename){
-            $this->getAppResponse()->setData(json_decode(file_get_contents($jsonFilename), true));
+            $this->getAppResponse()->data->putAll(json_decode(file_get_contents($jsonFilename), true));
         }
 
         $pageContent = file_get_contents($filename);
 
-        $this->getAppResponse()->setContent($pageContent);
+        $this->getAppResponse()->content = $pageContent;
     }
 
     public function viewRespondsTo(array $arguments){

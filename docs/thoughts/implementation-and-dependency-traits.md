@@ -1,28 +1,26 @@
 #Dependencies
 We want our system to be as independent as possible, which is why we use
-dependency injection. The dependency injection comes in two forms, namely
-implementations handled by the configuration and dependency traits handled
-by the factory.
+dependency injection. The dependency injection comes in two forms, both
+defined in the configuration and handled by the factory.
 
-##Implementations in configuration
-By querying the configuration with a class name we can get the relevant
-implementation. This allows our code to load classes while the ability
-to swap the files lies in the configuration. This should be used for class
-instantiation, where no pre-configured options are required and the
-ability to change the dependency is only required system-wide, eg. changing
-a presentation-related class to serve RTL language.
+##Implementations
+When loading a class through the factory, the factory checks with the
+configuration, if the demanded class has any overriding implementations. Any
+implementation must extend originally demanded class and comply with its
+interface. This should be used for class instantiation, where no pre-configured
+options are required and the ability to change the dependency is only required
+system-wide.
 
-The configuration is used like so:
-
-In the configurator:
+Implementations are set in the configuration like so:
 ```php
 $config->implementations->put(
     "\\FlyFoundation\\Core\\Router",
     "\\MyApp\\Core\\Router"
 );
 ```
-When using
+Classes are loaded like so
 ```php
+/** @var Router $router */
 $router = Factory::load("\\FlyFoundation\\Core\\Router");
 ```
 
@@ -49,4 +47,7 @@ $config->dependencies->putDependency(
 );
 ```
 
-The trait must be implemented following naming conventions.
+The trait must be implemented following the naming conventions, where
+[TraitName] is trait class without namespace directives:
+ - getter must be named get[TraitName]
+ - setter msut be named set[TraitName]

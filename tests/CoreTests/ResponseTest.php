@@ -7,14 +7,14 @@ use FlyFoundation\Factory;
 require_once __DIR__ . '/../test-init.php';
 
 
-class StandardResponseTest extends PHPUnit_Framework_TestCase {
+class ResponseTest extends PHPUnit_Framework_TestCase {
     public function testComposeHtml(){
-        /** @var \FlyFoundation\Core\StandardResponse $response */
+        /** @var \FlyFoundation\Core\Response $response */
         Factory::setConfig(new \FlyFoundation\Core\Config());
-        $response = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\StandardResponse");
-        $response->setDataValue("demo","demo");
-        $response->setDataValue("test","test-data");
-        $response->setContent("This is a <b>demo</b>");
+        $response = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\Response");
+        $response->data->put("demo","demo");
+        $response->data->put("test","test-data");
+        $response->content = "This is a <b>demo</b>";
         $response->wrapInTemplate("<div>{{{content}}}</div>");
         $response->wrapInTemplate("<p>{{demo}}</p><p>{{test}}</p>{{{content}}}");
         $result = $response->composeHtml();

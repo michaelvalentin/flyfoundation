@@ -22,11 +22,8 @@ class SystemQuery {
 
     public function execute()
     {
-        if($baseResponse != null){
-            $this->controller->setBaseResponse($baseResponse);
-        }
         $controller = $this->controller;
-        return $controller->render($this->method, $this->arguments);
+        $controller->render($this->method, $this->arguments);
     }
 
     /**

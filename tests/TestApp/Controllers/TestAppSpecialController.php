@@ -8,23 +8,23 @@ use FlyFoundation\Controllers\AbstractController;
 use FlyFoundation\Core\Response;
 
 class TestAppSpecialController extends AbstractController{
-    public function show(Response $response, array $arguments)
+    public function show(array $arguments)
     {
-        return $response;
+        return true;
     }
 
-    public function delete(Response $response, array $arguments)
+    public function delete(array $arguments)
     {
-        return $response;
+        return true;
     }
 
-    public function showAll(Response $response, array $arguments)
+    public function showAll(array $arguments)
     {
-        return $response;
+        return true;
     }
 
-    public function showFrontPage(Response $response, array $arguments)
+    public function showFrontPage(array $arguments)
     {
-        return $response;
+        return true;
     }
 } 
