@@ -52,30 +52,30 @@ abstract class AbstractController implements Controller{
      */
     public function render($action, array $arguments = [])
     {
-        $this->doAction($action, $arguments);
+        if(!method_exists($this,$action)){
+            throw new InvalidArgumentException(
+                "The given action '".$action."' could not be found in the controller '".get_called_class()."'."
+            );
+        }
+
+        return $this->$action($arguments);
     }
 
     /**
      * @param $action
      * @param array $arguments
+     * @throws \FlyFoundation\Exceptions\InvalidArgumentException
      * @return bool
      */
     public function respondsTo($action, array $arguments = [])
     {
         $respondsToMethod = $action."RespondsTo";
-        if(method_exists($this, $respondsToMethod)){
-            return $this->$respondsToMethod($arguments);
-        }else{
-            return $this->doAction($action, $arguments) != false;
-        }
-    }
-
-    private function doAction($action, $arguments)
-    {
-        if(!method_exists($this,$action)){
-            throw new InvalidArgumentException("The given action '".$action."' could not be found in the controller.");
+        if(!method_exists($this, $respondsToMethod)){
+            throw new InvalidArgumentException(
+                "The given action '".$action."' did not have a 'respondsTo' method declared in the controller '".get_called_class()."'."
+            );
         }
 
-        return $this->$action($arguments);
+        return $this->$respondsToMethod($arguments);
     }
 }
