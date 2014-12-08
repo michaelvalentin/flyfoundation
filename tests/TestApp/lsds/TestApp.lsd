@@ -1,0 +1,7 @@
+! DemoEntity
+    $ MyField : String
+    $ OtherField : Integer
+
+! NotImplemented
+    $ MyField : String
+    $ OtherField : Integer

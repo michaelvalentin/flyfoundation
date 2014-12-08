@@ -6,39 +6,22 @@ namespace FlyFoundation\Core\Factories;
 
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Factory;
+use FlyFoundation\Views\GenericView;
 
-class ViewFactory{
+class ViewFactory extends AbstractFactory
+{
 
-    use AppConfig;
-
-    /**
-     * @param string $className
-     * @param array $arguments
-     * @return object
-     */
-    public function load($className, array $arguments = array())
+    public function __construct()
     {
-        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->viewSearchPaths);
-        $hasViewNaming = $this->hasViewNaming($className);
-
-        if($hasViewNaming && !$implementation){
-            return Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Views\\GenericView");
-        }
-
-        return Factory::loadAndDecorateWithoutSpecialization($implementation, $arguments);
+        $this->genericNamingRegExp = "/^(.*)View$/";
+        $this->genericClassName = "\\FlyFoundation\\Views\\GenericView";
+        $this->genericInterface = "\\FlyFoundation\\Views\\GenericView";
     }
 
-    public function exists($className)
+    protected function prepareGeneric($result, $entityName)
     {
-        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->viewSearchPaths);
-        $hasViewNaming = $this->hasViewNaming($className);
-
-        return $implementation || $hasViewNaming || class_exists($className);
-    }
-
-    private function hasViewNaming($className)
-    {
-        $viewNaming = "/^(.*)View$/";
-        return preg_match($viewNaming, $className);
+        /** @var GenericView $result */
+        $result->setEntityName($entityName);
+        return $result;
     }
 }

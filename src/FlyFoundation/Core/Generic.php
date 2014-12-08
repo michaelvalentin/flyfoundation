@@ -5,6 +5,12 @@ namespace FlyFoundation\Core;
 
 
 interface Generic {
+
+    /**
+     * @return string
+     */
+    public function getEntityName();
+
     /**
      * @return void
      */

@@ -27,7 +27,7 @@ class MySqlGenericDataStore extends GenericDataStore implements Dependant{
         $storageData = $this->convertToStorageFormat($data);
         $bindData = array_combine($prefixedColumns,array_values($storageData));
 
-        $insertQuery = 'INSERT INTO '.$this->getName().' ('.implode(",",$columns).') VALUES ('.implode(",",$prefixedColumns).')';
+        $insertQuery = 'INSERT INTO '.$this->getEntityName().' ('.implode(",",$columns).') VALUES ('.implode(",",$prefixedColumns).')';
 
         $preapredInsertStatement = $this->getMySqlDatabase()->prepare($insertQuery);
 
@@ -57,13 +57,13 @@ class MySqlGenericDataStore extends GenericDataStore implements Dependant{
             $conditions[] = '`'.$column.'` = '.$prefixedColumn;
         }
 
-        $selectQuery = 'SELECT * FROM '.$this->getName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
+        $selectQuery = 'SELECT * FROM '.$this->getEntityName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
         $preparedSelectStatement = $this->getMySqlDatabase()->prepare($selectQuery);
         $preparedSelectStatement->execute($bindData);
         $resultData = $preparedSelectStatement->fetch(PDO::FETCH_ASSOC);
 
         if(!is_array($resultData)){
-            throw new InvalidArgumentException("No entry with the identity (".implode(",",$identity).") could be found in the DataStore: ".$this->getName());
+            throw new InvalidArgumentException("No entry with the identity (".implode(",",$identity).") could be found in the DataStore: ".$this->getEntityName());
         }
 
         return $this->convertFromStorageFormat($resultData);
@@ -100,7 +100,7 @@ class MySqlGenericDataStore extends GenericDataStore implements Dependant{
             $identityConditions[] = "`".$fieldName."` = :".$fieldName;
         }
 
-        $updateQuery = 'UPDATE '.$this->getName().' SET '.implode(",",$updateConditions).' WHERE '.implode(" AND ",$identityConditions)." LIMIT 1;";
+        $updateQuery = 'UPDATE '.$this->getEntityName().' SET '.implode(",",$updateConditions).' WHERE '.implode(" AND ",$identityConditions)." LIMIT 1;";
         $preparedUpdateStatement = $this->getMySqlDatabase()->prepare($updateQuery);
         $preparedUpdateStatement->execute($bindData);
     }
@@ -126,7 +126,7 @@ class MySqlGenericDataStore extends GenericDataStore implements Dependant{
             $conditions[] = '`'.$column.'` = '.$prefixedColumn;
         }
 
-        $deleteQuery = 'DELETE FROM '.$this->getName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
+        $deleteQuery = 'DELETE FROM '.$this->getEntityName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
         $preparedDeleteStatement = $this->getMySqlDatabase()->prepare($deleteQuery);
         $preparedDeleteStatement->execute($bindData);
     }
@@ -147,7 +147,7 @@ class MySqlGenericDataStore extends GenericDataStore implements Dependant{
             $conditions[] = '`'.$column.'` = '.$prefixedColumn;
         }
 
-        $existsQuery = 'SELECT COUNT(*) FROM '.$this->getName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
+        $existsQuery = 'SELECT COUNT(*) FROM '.$this->getEntityName().' WHERE '.implode(" AND ",$conditions)." LIMIT 1";
         $preparedExistsStatement = $this->getMySqlDatabase()->prepare($existsQuery);
         $preparedExistsStatement->execute($bindData);
         $result = $preparedExistsStatement->fetch();

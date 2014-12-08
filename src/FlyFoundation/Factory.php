@@ -7,17 +7,21 @@ namespace FlyFoundation;
 use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Core\Config;
 use FlyFoundation\Core\Context;
+use FlyFoundation\Core\Factories\AbstractFactory;
 use FlyFoundation\Core\Factories\FactoryTools;
 use FlyFoundation\Core\Generic;
 use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
 use FlyFoundation\Core\Dependant;
+use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Exceptions\UnknownClassException;
+use FlyFoundation\Models\Entity;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Util\ClassInspector;
 use FlyFoundation\Views\View;
+use Guzzle\Common\Exception\InvalidArgumentException;
 
 class Factory {
 
@@ -30,6 +34,7 @@ class Factory {
     }
 
     /**
+     * @throws Exceptions\InvalidOperationException
      * @return Config
      */
     public static function getConfig()
@@ -40,22 +45,18 @@ class Factory {
         return self::$config;
     }
 
-    public static function load($className, array $arguments = [])
-    {
-        $className = self::$config->getImplementation($className);
-        return self::loadWithoutImplementationSearch($className, $arguments);
-    }
-
     /**
-     * @param string $actualClassName
+     * @param $className
      * @param array $arguments
      * @return object
      */
-    public static function loadWithoutImplementationSearch($className, array $arguments = [])
+    public static function load($className, array $arguments = [])
     {
+        $className = self::$config->getImplementation($className);
+
         $specializedFactory = self::findSpecializedFactory($className);
 
-        if($specializedFactory){
+        if($specializedFactory instanceof AbstractFactory){
             $result =  $specializedFactory->load($className, $arguments);
         }else{
             $result = self::loadAndDecorateWithoutSpecialization($className, $arguments);
@@ -70,9 +71,11 @@ class Factory {
 
     public static function exists($className)
     {
+        $className = self::$config->getImplementation($className);
+
         $specializedFactory = self::findSpecializedFactory($className);
 
-        if($specializedFactory){
+        if($specializedFactory instanceof AbstractFactory){
             return $specializedFactory->exists($className);
         }
 
@@ -92,16 +95,20 @@ class Factory {
             "ViewFactory" => self::getConfig()->viewSearchPaths
         ];
 
+        $result = false;
+
         foreach($factorySearchPathsMap as $factory=>$paths)
         {
             $partialClassName = FactoryTools::findPartialClassNameInPaths($className,$paths);
 
             if($partialClassName){
-                return self::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\Factories\\".$factory);
+                /** @var AbstractFactory $result */
+                $result = self::load("\\FlyFoundation\\Core\\Factories\\".$factory);
+                $result->setSearchPaths($paths);
             }
         }
 
-        return false;
+        return $result;
     }
 
     public static function loadAndDecorateWithoutSpecialization($className, $arguments)
@@ -125,6 +132,7 @@ class Factory {
 
         //Core dependencies
         if(in_array("FlyFoundation\\Dependencies\\AppConfig",$instanceTraits)){
+            /** @var AppConfig $instance */
             $instance->setAppConfig(self::getConfig());
             $instanceTraits = array_diff($instanceTraits,["\\FlyFoundation\\Dependencies\\AppConfig"]);
         }
@@ -143,6 +151,7 @@ class Factory {
         }
 
         if($instance instanceof Dependant){
+            /** @var Dependant $instance */
             $instance->onDependenciesLoaded();
         }
 
@@ -175,7 +184,7 @@ class Factory {
     public static function loadView($viewName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Views\\".$viewName."View";
-        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
     public static function viewExists($viewName)
@@ -192,7 +201,7 @@ class Factory {
     public static function loadController($controllerName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Controllers\\".$controllerName."Controller";
-        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
     public static function controllerExists($controllerName)
@@ -209,7 +218,7 @@ class Factory {
     public static function loadModel($modelName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Models\\".$modelName;
-        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
     public static function modelExists($modelName)
@@ -226,7 +235,7 @@ class Factory {
     public static function loadDataMapper($entityName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
-        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
     public static function dataMapperExists($entityName)
@@ -243,7 +252,7 @@ class Factory {
     public static function loadDataFinder($entityName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataFinder";
-        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
     public static function dataFinderExists($entityName)
@@ -260,7 +269,7 @@ class Factory {
     public static function loadDataMethods($dataMethodsName, $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
-        return self::loadWithoutImplementationSearch($fullClassName, $arguments);
+        return self::load($fullClassName, $arguments);
     }
 
     public static function dataMethodsExists($dataMethodsName)

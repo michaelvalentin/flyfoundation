@@ -56,4 +56,12 @@ class OpenGenericEntity extends GenericEntity{
     {
         // TODO: Implement afterConfiguration() method.
     }
+
+    /**
+     * @return string
+     */
+    public function getEntityName()
+    {
+        return $this->getName();
+    }
 }

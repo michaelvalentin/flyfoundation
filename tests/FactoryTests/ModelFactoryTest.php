@@ -2,21 +2,15 @@
 
 use FlyFoundation\Core\Context;
 use FlyFoundation\Factory;
+use FlyFoundation\Models\OpenGenericEntity;
 use FlyFoundation\Models\OpenPersistentEntity;
 use TestApp\Models\MyModel;
 
-require_once __DIR__.'/../test-init.php';
+require_once __DIR__ . '/../use-test-app.php';
 
 
 class ModelFactoryTest extends PHPUnit_Framework_TestCase {
 
-    protected function setUp()
-    {
-        $app = new \FlyFoundation\App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
-        parent::setUp();
-    }
 
 
     /**
@@ -32,38 +26,14 @@ class ModelFactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf("\\TestApp\\Models\\PlainModel",$result);
     }
 
-    //Load implemented model that takes existing Entity Definition
-    public function testLoadingImplementedModelWithEntityDefinition()
-    {
-        /** @var MyModel $result */
-        $result = Factory::loadModel("MyModel");
-        $this->assertInstanceOf("\\TestApp\\Models\\MyModel",$result);
-
-        $result2 = $result->getDefinition();
-        $this->assertInstanceOf("\\FlyFoundation\\SystemDefinitions\\EntityDefinition",$result2);
-    }
-
-    //Load implemented model that takes not existing Entity Definition
-    public function testLoadingImplementedModelWithNotExistingEntityDefinition()
-    {
-        $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidClassException");
-        Factory::loadModel("NoEntityDefinitionModel");
-    }
-
-    //Load not-implemented model that does not have an Entity Definition
-    public function testLoadingNotImplementedModelThatDoesNotHaveEntityDefinition()
-    {
-        $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidClassException");
-        Factory::loadModel("ModelWithoutImplementationOrEntityDefinition");
-    }
 
     //Load not-implemented model that takes existing Entity Definition
     public function testLoadingNotImplementedModelThatHasAnEntityDefinition()
     {
-        /** @var OpenPersistentEntity $result */
+        /** @var OpenGenericEntity $result */
         $result = Factory::loadModel("DemoEntity");
-        $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenPersistentEntity",$result);
-        $result2 = $result->getDefinition()->getName();
+        $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenGenericEntity",$result);
+        $result2 = $result->getEntityName();
         $this->assertSame("DemoEntity",$result2);
     }
 

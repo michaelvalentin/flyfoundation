@@ -3,18 +3,10 @@
 use FlyFoundation\Core\Context;
 use FlyFoundation\Factory;
 
-require_once __DIR__.'/../test-init.php';
+require_once __DIR__ . '/../use-test-app.php';
 
 
 class ViewFactoryTest extends PHPUnit_Framework_TestCase {
-
-    protected function setUp()
-    {
-        $app = new \FlyFoundation\App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
-        parent::setUp();
-    }
 
     /**
      * load
@@ -33,14 +25,15 @@ class ViewFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadViewThatDoesNotExistButHasViewNaming()
     {
         $result = Factory::loadView("NotImplemented");
-        $this->assertInstanceOf("\\FlyFoundation\\Views\\DefaultView",$result);
+        $this->assertInstanceOf("\\FlyFoundation\\Views\\GenericView",$result);
+        $this->assertEquals("NotImplemented",$result->getEntityName());
     }
 
     //Load not existing view without view naming
     public function testLoadViewThatDoesNotExistWithoutViewNaming()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Views\\NotExistingClass");
+        $result = Factory::load("\\FlyFoundation\\Views\\NotExistingClass");
     }
 
     /**

@@ -157,7 +157,7 @@ class Response {
 
     public function wrapInTemplateFile($templateName)
     {
-        $fileLoader = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\StandardFileLoader");
+        $fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
         $template_file = $fileLoader->findTemplate($templateName);
         if(!file_exists($template_file)){
             throw new InvalidOperationException('The template "'.$template_file.'" does not exist!');

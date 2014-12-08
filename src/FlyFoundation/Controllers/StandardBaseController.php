@@ -27,7 +27,7 @@ class StandardBaseController implements BaseController{
     public function beforeController(SystemQuery $query)
     {
         /** @var SeoTools $seoTools */
-        $seoTools = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Util\\SeoTools");
+        $seoTools = Factory::load("\\FlyFoundation\\Util\\SeoTools");
         $seoTools->forceLowerCaseUri();
         $this->getAppResponse()->data->put("baseurl",$this->getAppContext()->getBaseUrl());
 

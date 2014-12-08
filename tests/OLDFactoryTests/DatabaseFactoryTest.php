@@ -15,7 +15,7 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
         $app = new \FlyFoundation\App();
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
         $app->prepareCoreDependencies();
-        $this->dbFactory = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\Factories\\DatabaseFactory");
+        $this->dbFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\DatabaseFactory");
         parent::setUp();
     }
 
@@ -84,7 +84,7 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     //Load existing Database class (not DataMapper, DataFinder or DataMethods)
     public function testLoadExistingDatabaseClassNotSpecial()
     {
-        $result = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Database\\SomeClass");
+        $result = Factory::load("\\FlyFoundation\\Database\\SomeClass");
         $this->assertInstanceOf("\\TestApp\\Database\\SomeClass",$result);
     }
 
@@ -92,7 +92,7 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadNotExistingDatabaseClassNotSpecial()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Database\\SomeNotExistingClass");
+        $result = Factory::load("\\FlyFoundation\\Database\\SomeNotExistingClass");
     }
 
     /**

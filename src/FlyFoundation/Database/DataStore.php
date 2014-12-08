@@ -59,7 +59,7 @@ interface DataStore
     /**
      * @return string
      */
-    public function getName();
+    public function getEntityName();
 
     /**
      * @param string $name

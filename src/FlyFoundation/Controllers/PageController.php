@@ -24,7 +24,7 @@ class PageController extends AbstractController{
 
         /** @var FileLoader $fileLoader */
         $fileLoaderClass = $this->getAppConfig()->getImplementation("\\FlyFoundation\\Core\\FileLoader");
-        $fileLoader = Factory::loadWithoutImplementationSearch($fileLoaderClass);
+        $fileLoader = Factory::load($fileLoaderClass);
         $filename = $fileLoader->findPage($arguments["alias"]);
         $jsonFilename = $fileLoader->findFile('pages/'.$arguments["alias"].'.json');
 
@@ -51,7 +51,7 @@ class PageController extends AbstractController{
 
         /** @var FileLoader $fileLoader */
         $fileLoaderClass = $this->getAppConfig()->getImplementation("\\FlyFoundation\\Core\\FileLoader");
-        $fileLoader = Factory::loadWithoutImplementationSearch($fileLoaderClass);
+        $fileLoader = Factory::load($fileLoaderClass);
         $filename = $fileLoader->findPage($arguments["alias"]);
 
         if(!$filename){

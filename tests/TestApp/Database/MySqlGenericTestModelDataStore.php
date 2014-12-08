@@ -22,7 +22,7 @@ class MySqlGenericTestModelDataStore extends MySqlGenericDataStore{
              ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;"
         );
 
-        $this->setName("generic_test_model");
+        $this->setEntityName("generic_test_model");
         $field1 = new \FlyFoundation\Database\Fields\IntegerField();
         $field1->setInIdentifier();
         $field1->setAutoIncrement();

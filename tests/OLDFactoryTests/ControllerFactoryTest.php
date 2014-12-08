@@ -17,7 +17,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
         $app->prepareCoreDependencies();
 
-        $this->controllerFactory = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\Factories\\ControllerFactory");
+        $this->controllerFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\ControllerFactory");
 
         parent::setUp();
     }
@@ -60,7 +60,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadingControllerThatDoesNotExistAndDoesNotHaveControllerNaming()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Controllers\\SomeClassNotExists");
+        Factory::load("\\FlyFoundation\\Controllers\\SomeClassNotExists");
     }
 
     /**

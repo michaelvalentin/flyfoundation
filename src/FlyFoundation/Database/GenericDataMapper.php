@@ -10,6 +10,7 @@ use FlyFoundation\Factory;
 use FlyFoundation\Models\Entity;
 use FlyFoundation\Models\EntityFields\EntityField;
 use FlyFoundation\Database\DataStore;
+use FlyFoundation\Models\GenericEntity;
 use FlyFoundation\Util\Map;
 
 class GenericDataMapper implements DataMapper, Generic
@@ -80,7 +81,8 @@ class GenericDataMapper implements DataMapper, Generic
         $identifier = $this->getDataForStorage($identifier);
         $storageData = $this->dataStore->readEntry($identifier);
         $entityData = $this->getDataForEntity($storageData);
-        $result = Factory::load($this->entityName);
+        /** @var Entity $result */
+        $result = Factory::loadModel($this->entityName);
         $result->setPersistentData($entityData, "This is called from the data mapper");
         return $result;
     }
@@ -161,5 +163,13 @@ class GenericDataMapper implements DataMapper, Generic
     public function afterConfiguration()
     {
         // TODO: Implement afterConfiguration() method.
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityName()
+    {
+        return $this->entityName;
     }
 }

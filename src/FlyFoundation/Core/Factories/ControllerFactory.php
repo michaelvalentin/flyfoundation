@@ -6,7 +6,7 @@ use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Factory;
 
-class ControllerFactory
+class ControllerFactory extends AbstractFactory
 {
     use AppConfig;
 

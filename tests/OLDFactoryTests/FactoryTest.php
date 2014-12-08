@@ -30,14 +30,14 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
     //Load class in FlyFoundation
     public function testLoadClassThatExistsInFlyFoundation()
     {
-        $result = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Util\\Set");
+        $result = Factory::load("\\FlyFoundation\\Util\\Set");
         $this->assertInstanceOf("\\FlyFoundation\\Util\\Set",$result);
     }
 
     //Load class in TestApp and FlyFoundation
     public function testLoadClassInTestAppAndInFlyFoundation()
     {
-        $result = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Util\\ClassMap");
+        $result = Factory::load("\\FlyFoundation\\Util\\ClassMap");
         $this->assertInstanceOf("\\FlyFoundation\\Util\\ClassMap",$result);
     }
 
@@ -45,14 +45,14 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadClassThatDoesNotExist()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = Factory::loadWithoutImplementationSearch("\\TestApp\\NotExistingClass");
+        $result = Factory::load("\\TestApp\\NotExistingClass");
     }
 
     //Load existing class that uses environment
     public function testLoadClassThatUsesAllCoreDependencyTraits()
     {
         /** @var SomeClass $result */
-        $result = Factory::loadWithoutImplementationSearch("\\TestApp\\SomeClass");
+        $result = Factory::load("\\TestApp\\SomeClass");
         $config = $result->getAppConfig();
         $context = $result->getAppContext();
 
@@ -63,7 +63,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadClassTheUsesOneCoreDependencyTrait()
     {
         /** @var SomeOtherClass $result */
-        $result = Factory::loadWithoutImplementationSearch("\\TestApp\\SomeOtherClass");
+        $result = Factory::load("\\TestApp\\SomeOtherClass");
         $config = $result->getAppConfig();
 
         $this->assertInstanceOf("\\FlyFoundation\\Config",$config);
@@ -73,7 +73,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
     //Load existing class that does not use environment
     public function testLoadClassNotUsingEnvironment()
     {
-        $result = Factory::loadWithoutImplementationSearch("\\TestApp\\DemoClass");
+        $result = Factory::load("\\TestApp\\DemoClass");
         $this->assertFalse(method_exists($result,"getAppContext"));
     }
 

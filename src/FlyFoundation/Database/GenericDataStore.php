@@ -5,32 +5,41 @@ namespace FlyFoundation\Database;
 use FlyFoundation\Core\Generic;
 use FlyFoundation\Database\Fields\DataField;
 use FlyFoundation\Dependencies\AppConfig;
+use FlyFoundation\Util\NameManipulator;
 use PDO;
 use PDOException;
 use FlyFoundation\Exceptions\InvalidArgumentException;
 
 abstract class GenericDataStore implements DataStore, Generic
 {
-    /**
-     * @var string
-     */
+    /** @var string */
+    private $entityName;
+
+    /** @var string */
     private $name;
 
-    /**
-     * @var DataField[]
-     */
+    /** @var DataField[] */
     private $fields = array();
+
 
     private $validationError;
 
+    /**
+     * @param string $name
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function setEntityName($name)
     {
-        return $this->name;
+        $this->entityName = $name;
+    }
+
+    public function getEntityName()
+    {
+        return $this->entityName;
     }
 
     public function addField(DataField $field)
@@ -62,14 +71,14 @@ abstract class GenericDataStore implements DataStore, Generic
             $value = $dataExists ? $data[$fieldName] : null;
 
             if(!$field->validateValue($value)){
-                $this->validationError = "The value for the field: '".$field->getName()."' in the ".get_called_class().": '".$this->getName()."' could not be validated for writing to persistent storage, and gave the following message: ".$field->getErrorText();
+                $this->validationError = "The value for the field: '".$field->getName()."' in the ".get_called_class().": '".$this->getEntityName()."' could not be validated for writing to persistent storage, and gave the following message: ".$field->getErrorText();
                 return false;
             }
         }
 
         foreach(array_keys($data) as $fieldName){
             if(!$this->getField($fieldName)){
-                $this->validationError = "The data supplied for the ".get_called_class().": ".$this->getName()." contained a value labeled: ".$fieldName.", which does not correspond to any known fields in this DataStore.";
+                $this->validationError = "The data supplied for the ".get_called_class().": ".$this->getEntityName()." contained a value labeled: ".$fieldName.", which does not correspond to any known fields in this DataStore.";
                 return false;
             }
         }
@@ -81,14 +90,14 @@ abstract class GenericDataStore implements DataStore, Generic
         $identifyFields = $this->getIdentityFields();
 
         if(count(array_diff_key($identifyFields,$identity))){
-            $this->validationError = "The identity of the ".get_called_class().": ".$this->getName()." expected the fields (".implode(",",array_keys($identifyFields)).") but insted got (".implode(",",array_keys($identity)).")";
+            $this->validationError = "The identity of the ".get_called_class().": ".$this->getEntityName()." expected the fields (".implode(",",array_keys($identifyFields)).") but insted got (".implode(",",array_keys($identity)).")";
             return false;
         }
 
         foreach($identifyFields as $fieldName => $field){
             /** @var $field DataField */
             if(!$field->validateValue($identity[$fieldName],true)){
-                $this->validationError = "The value for the field: '".$field->getName()."' in the ".get_called_class().": '".$this->getName()."' could not be validated for writing to persistent storage, and gave the following message: ".$field->getErrorText();
+                $this->validationError = "The value for the field: '".$field->getName()."' in the ".get_called_class().": '".$this->getEntityName()."' could not be validated for writing to persistent storage, and gave the following message: ".$field->getErrorText();
                 return false;
             }
         }

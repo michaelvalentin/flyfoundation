@@ -17,7 +17,7 @@ class StandardFileLoaderTest extends PHPUnit_Framework_TestCase {
         $app->addConfigurators(TEST_BASE."/TestApp/configurators");
         $app->prepareCoreDependencies(new Context(""));
 
-        $this->fileLoader = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Core\\StandardFileLoader");
+        $this->fileLoader = Factory::load("\\FlyFoundation\\Core\\StandardFileLoader");
     }
 
     public function testFindSomeFile()

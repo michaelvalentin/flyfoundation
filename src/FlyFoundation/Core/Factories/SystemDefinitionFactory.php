@@ -42,8 +42,9 @@ class SystemDefinitionFactory {
      */
     public function getSystemDefinition(){
         $lsdParser = new LsdParser();
-        foreach($this->definitionDirectories as $directory){
-            foreach(scandir($directory) as $file){
+        foreach($this->definitionDirectories->asArray() as $directory){
+            $files = scandir($directory);
+            foreach($files as $file){
                 if(preg_match("/^.+\.lsd$/i",$file)){
                     $filePath = $directory."/".$file;
                     $lsdParser->addFile($filePath);

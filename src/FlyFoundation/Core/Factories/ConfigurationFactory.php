@@ -8,7 +8,7 @@ use FlyFoundation\Core\Config;
 use FlyFoundation\Core\Configurator;
 use FlyFoundation\Util\DirectoryList;
 
-class ConfigurationFactory {
+class ConfigurationFactory{
 
     /** @var \FlyFoundation\Core\Config  */
     private $baseConfig;

@@ -12,7 +12,7 @@ class MySqlGenericDataStoreTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-        $this->dataStore = Factory::loadWithoutImplementationSearch("\\FlyFoundation\\Database\\MySqlGenericDataStore");
+        $this->dataStore = Factory::load("\\FlyFoundation\\Database\\MySqlGenericDataStore");
 
         $this->dataStore->getMySqlDatabase()->exec(
             "DROP TABLE IF EXISTS generic_datastore_test;
