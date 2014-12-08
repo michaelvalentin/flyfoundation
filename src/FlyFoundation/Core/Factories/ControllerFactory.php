@@ -3,83 +3,32 @@
 namespace FlyFoundation\Core\Factories;
 
 use FlyFoundation\Controllers\Controller;
+use FlyFoundation\Controllers\GenericEntityController;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Factory;
 
 class ControllerFactory extends AbstractFactory
 {
-    use AppConfig;
 
-    private $defaultController = "\\FlyFoundation\\Controllers\\GenericEntityController";
-
-    /**
-     * @param string $className
-     * @param array $arguments
-     * @return object
-     */
-    public function load($className, array $arguments = array())
+    public function __construct()
     {
-        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->controllerSearchPaths);
-        $controllerName = $this->getControllerName($className);
-
-        if(!$controllerName){
-            if($implementation){
-                $className = $implementation;
-            }
-            return Factory::loadAndDecorateWithoutSpecialization($className, $arguments);
-        }
-
-        if($implementation){
-            $controller = Factory::loadAndDecorateWithoutSpecialization($implementation, $arguments);
-        }else{
-            $controller = Factory::loadAndDecorateWithoutSpecialization($this->defaultController,$arguments);
-        }
-
-        if($controller instanceof Controller){
-            $controller = $this->decorateController($controller, $controllerName);
-        }
-
-        return $controller;
+        $this->genericClassName = "\\FlyFoundation\\Controllers\\GenericEntityController";
+        $this->genericInterface = "\\FlyFoundation\\Controllers\\GenericEntityController";
+        $this->genericNamingRegExp = "/^(.*)Controller/";
     }
 
-    public function exists($className)
+    protected function prepareGeneric($result, $entityName)
     {
-        $controllerName = $this->getControllerName($className);
-        if($controllerName){
-            return true;
+        /** @var GenericEntityController $result */
+
+        if(Factory::viewExists($entityName)){
+            $result->setView(Factory::loadView($entityName));
         }
 
-        $implementation = FactoryTools::findImplementation($className,$this->getAppConfig()->controllerSearchPaths);
-        if($implementation){
-            return true;
+        if(Factory::modelExists($entityName)){
+            $result->setModel(Factory::loadModel($entityName));
         }
 
-        return class_exists($className);
-    }
-
-    private function decorateController(Controller $controller, $controllerName)
-    {
-
-        if(Factory::viewExists($controllerName)){
-            $controller->setView(Factory::loadView($controllerName));
-        }
-
-        if(Factory::modelExists($controllerName)){
-            $controller->setModel(Factory::loadModel($controllerName));
-        }
-
-        return $controller;
-    }
-
-    public function getControllerName($className)
-    {
-        $partialClassName = FactoryTools::findPartialClassNameInPaths($className, $this->getAppConfig()->controllerSearchPaths);
-        $controllerNaming = "/^(.*)Controller$/";
-        $matches = [];
-        if(preg_match($controllerNaming, $partialClassName, $matches)){
-            return $matches[1];
-        }else{
-            return false;
-        }
+        return $result;
     }
 }
