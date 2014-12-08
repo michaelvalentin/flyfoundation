@@ -30,6 +30,12 @@ How to install the framework and produce a basic application.
 
 [Read the guide to getting started](docs/getting_started.md)
 
+###LSD Documentation
+Learn the syntax and the concepts of the LSD-language, that is used to rapidly
+build data-centric applications with the LSD framework.
+
+[Read the LSD docs](docs/lsd.md)
+
 ###Current features
 A walk through of the features currently implemented in the framework, including
 code samples with thorough explanations.
