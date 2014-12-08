@@ -90,20 +90,11 @@ abstract class GenericEntity implements Entity, Generic{
         $this->fields->put($field->getName(), $field);
     }
 
-    public function removeField($fieldName)
-    {
-        $this->fields->remove($fieldName);
-    }
-
     public function addValidation(EntityValidation $validation)
     {
         $this->validations->put($validation->getName(),$validation);
     }
 
-    public function removeValidation($validationName)
-    {
-        $this->validations->remove($validationName);
-    }
 
     /**
      * @return bool

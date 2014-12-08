@@ -77,9 +77,10 @@ class GenericDataMapper implements DataMapper, Generic
      */
     public function load(array $identifier)
     {
+        $identifier = $this->getDataForStorage($identifier);
         $storageData = $this->dataStore->readEntry($identifier);
         $entityData = $this->getDataForEntity($storageData);
-        $result = Factory::loadWithoutImplementationSearch($this->entityName);
+        $result = Factory::load($this->entityName);
         $result->setPersistentData($entityData, "This is called from the data mapper");
         return $result;
     }
@@ -91,8 +92,9 @@ class GenericDataMapper implements DataMapper, Generic
      */
     public function delete(Entity &$entity)
     {
-        $data = $entity->getPersistentData("This is called from the data mapper");
-        $identity = $this->dataStore->extractIdentity($data);
+        $entityData = $entity->getPersistentData("This is called from the data mapper");
+        $storageData = $this->getDataForStorage($entityData);
+        $identity = $this->dataStore->extractIdentity($storageData);
         $this->dataStore->deleteEntry($identity);
         $entity->setPersistentData([],"This is called from the data mapper");
     }

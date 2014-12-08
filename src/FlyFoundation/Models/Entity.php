@@ -7,6 +7,11 @@ namespace FlyFoundation\Models;
 interface Entity {
 
     /**
+     * @return string
+     */
+    public function getName();
+
+    /**
      * @param string $calledFromDb
      * @return string[]
      */
@@ -28,14 +33,4 @@ interface Entity {
      * @return string[]
      */
     public function getErrors();
-
-    /**
-     * @return string
-     */
-    public function getName();
-
-    /**
-     * @param string $name
-     */
-    public function setName($name);
 }
