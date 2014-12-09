@@ -13,7 +13,7 @@ class ModelFactoryTest extends PHPUnit_Framework_TestCase {
 
 
     //Load implemented model that does not take Entity Definition
-    public function testLoadingImplementedModelWihtoutEntityDefinition()
+    public function testLoadingImplementedModelWithoutEntityDefinition()
     {
         $result = Factory::loadModel("PlainModel");
         $this->assertInstanceOf("\\TestApp\\Models\\PlainModel",$result);

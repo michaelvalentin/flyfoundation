@@ -21,17 +21,17 @@ class GenericDataMapper implements DataMapper, Generic
     /**
      * @var DataStore
      */
-    private $dataStore;
+    protected $dataStore;
 
     /**
      * @var Map
      */
-    private $entityToStorageNameMapping;
+    protected $entityToStorageNameMapping;
 
     /**
      * @var Map
      */
-    private $storageToEntityNameMapping;
+    protected $storageToEntityNameMapping;
 
     public function __construct(){
         $this->entityToStorageNameMapping = new Map();

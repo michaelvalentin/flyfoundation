@@ -1,5 +1,7 @@
 ! DemoEntity
     $ MyField : String
+        StorageFieldName : myfield
+        # Required
     $ OtherField : Integer
 
 ! NotImplemented

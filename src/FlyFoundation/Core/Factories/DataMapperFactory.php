@@ -5,7 +5,9 @@ namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Database\GenericDataMapper;
+use FlyFoundation\Factory;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
+use FlyFoundation\Util\NameManipulator;
 
 class DataMapperFactory extends AbstractFactory{
 
@@ -20,11 +22,23 @@ class DataMapperFactory extends AbstractFactory{
     {
         /** @var GenericDataMapper $result */
         $result->setEntityName($entityName);
+        if(Factory::dataStoreExists($entityName)){
+            $result->setDataStore(Factory::loadDataStore($entityName));
+        }
         return $result;
     }
 
-    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    protected function prepareGenericEntityWithDefinition($entity, EntityDefinition $entityDefinition)
     {
-        return $result;
+        /** @var GenericDataMapper $entity */
+        $nameManipulator = new NameManipulator();
+
+        foreach($entityDefinition->getFieldDefinitions() as $field){
+            $entityFieldName = $field->getName();
+            $defaultStorageFieldName = $nameManipulator->toUnderscored($entityFieldName);
+            $storageFieldName = $field->getSetting("StorageFieldName",$defaultStorageFieldName);
+            $entity->addNameMapping($entityFieldName,$storageFieldName);
+        }
+        return $entity;
     }
 }

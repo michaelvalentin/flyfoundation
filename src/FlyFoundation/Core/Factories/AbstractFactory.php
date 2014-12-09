@@ -83,7 +83,7 @@ abstract class AbstractFactory {
 
     abstract protected function prepareGenericEntity($result, $entityName);
 
-    abstract protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition);
+    abstract protected function prepareGenericEntityWithDefinition($entity, EntityDefinition $entityDefinition);
 
     /**
      * @param $className

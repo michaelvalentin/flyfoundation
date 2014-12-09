@@ -18,7 +18,7 @@ class GenericTestModel extends OpenGenericEntity{
         $field1->setName("test");
         $validation1 = new Required();
         $validation1->setName("require-demo");
-        $validation1->setFields([$field1]);
+        $validation1->setFieldNames(["test"]);
 
         $field2 = new TextField();
         $field2->setName("demo");

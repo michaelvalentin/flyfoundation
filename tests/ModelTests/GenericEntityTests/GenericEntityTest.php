@@ -25,7 +25,7 @@ class GenericEntityTest extends \PHPUnit_Framework_TestCase {
         $this->entity->addField($field);
         $validation = new Required();
         $validation->setName("require-demo");
-        $validation->setFields([$field]);
+        $validation->setFieldNames(["demo"]);
         $this->entity->addValidation($validation);
     }
 

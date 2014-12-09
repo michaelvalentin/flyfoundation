@@ -7,7 +7,7 @@ namespace FlyFoundation\Core\Factories;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Factory;
 
-//TODO: Consider if this can be merged better into AbstractFactory, there is a great deal of duplication...
+//TODO: Consider if this can be merged better into AbstractFactory, there is a great deal of duplication among these classes...
 
 abstract class StorageAwareFactory extends AbstractFactory{
 

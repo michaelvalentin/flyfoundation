@@ -53,7 +53,7 @@ class DatabaseFactory extends AbstractFactory
         return $result;
     }
 
-    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    protected function prepareGenericEntityWithDefinition($entity, EntityDefinition $entityDefinition)
     {
         // Not relevant here...
     }

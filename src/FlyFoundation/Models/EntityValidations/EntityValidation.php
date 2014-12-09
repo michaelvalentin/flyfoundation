@@ -4,6 +4,7 @@
 namespace FlyFoundation\Models\EntityValidations;
 
 
+use FlyFoundation\Exceptions\InvalidArgumentException;
 use FlyFoundation\Models\Entity;
 use FlyFoundation\Util\Set;
 
@@ -27,23 +28,34 @@ abstract class EntityValidation {
         return $this->name;
     }
 
-    public function setFields(array $fields)
+    public function addFieldName($fieldName)
     {
-        foreach($fields as $field){
-            $this->fields->add($field);
+        if(!is_string($fieldName)){
+            throw new InvalidArgumentException(
+                "Validation fields should be given as strings"
+            );
+        }
+        $this->fields->add($fieldName);
+    }
+
+    public function setFieldNames(array $fieldNames)
+    {
+        $this->fields = new Set();
+        foreach($fieldNames as $field){
+            $this->addFieldName($field);
         }
     }
 
-    public function getFields()
+    public function getFieldNames()
     {
         return $this->fields->asArray();
     }
 
     /**
-     * @param Entity $entity
+     * @param array $entityData
      * @return bool
      */
-    abstract public function validate(Entity $entity);
+    abstract public function validate(array $entityData);
 
     /**
      * @return string

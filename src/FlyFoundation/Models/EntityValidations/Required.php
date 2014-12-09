@@ -9,15 +9,15 @@ use FlyFoundation\Models\Entity;
 class Required extends EntityValidation{
 
     /**
-     * @param Entity $entity
+     * @param array $entityData
      * @return bool
      */
-    public function validate(Entity $entity)
+    public function validate(Array $entityData)
     {
         /** @var $fields */
-        $fields = $this->getFields();
-        foreach($fields as $field){
-            $value = $field->getValue();
+        $fieldNames = $this->getFieldNames();
+        foreach($fieldNames as $fieldName){
+            $value = isset($entityData[$fieldName]) ? $entityData[$fieldName] : null;
             if(empty($value)){
                 return false;
             }
@@ -25,7 +25,6 @@ class Required extends EntityValidation{
                 return false;
             }
         }
-
         return true;
     }
 
@@ -34,11 +33,7 @@ class Required extends EntityValidation{
      */
     public function getErrorText()
     {
-        $fields = $this->getFields();
-        $fieldNames = [];
-        foreach($fields as $field){
-            $fieldNames[] = $field->getName();
-        }
+        $fieldNames = $this->getFieldNames();
         return "The fields '".implode(", ",$fieldNames)."' are required, but appeared to be empty.";
     }
 }

@@ -26,8 +26,8 @@ class ViewFactory extends AbstractFactory
         return $result;
     }
 
-    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    protected function prepareGenericEntityWithDefinition($entity, EntityDefinition $entityDefinition)
     {
-        return $result;
+        return $entity;
     }
 }

@@ -26,10 +26,10 @@ class DataStoreFactory extends StorageAwareFactory{
         return $result;
     }
 
-    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    protected function prepareGenericEntityWithDefinition($entity, EntityDefinition $entityDefinition)
     {
         $storageName = $entityDefinition->getSetting("StorageName");
-        $result->setStorageName($storageName);
-        return $result;
+        $entity->setStorageName($storageName);
+        return $entity;
     }
 }

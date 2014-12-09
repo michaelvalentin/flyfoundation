@@ -112,7 +112,7 @@ abstract class GenericEntity implements Entity, Model, Generic{
         $success = true;
         foreach($this->validations->asArray() as $validation){
             /** @var EntityValidation $validation */
-            if(!$validation->validate($this)){
+            if(!$validation->validate($this->getPersistentData("This is called from the data mapper"))){
                 $success = false;
                 $this->validationErrors[] = $validation->getErrorText();
             }

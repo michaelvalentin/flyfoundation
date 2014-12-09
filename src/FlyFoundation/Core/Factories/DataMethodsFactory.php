@@ -18,8 +18,8 @@ class DataMethodsFactory extends StorageAwareFactory{
     {
     }
 
-    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    protected function prepareGenericEntityWithDefinition($entity, EntityDefinition $entityDefinition)
     {
-        return $result;
+        return $entity;
     }
 }
