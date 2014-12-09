@@ -39,12 +39,14 @@ abstract class Enum {
     public static function nameFromType($type)
     {
         $constants = self::getConstants();
-        if(!array_key_exists($type, $constants)){
-            throw new InvalidArgumentException(
-                "There is no enum with that type in ".get_called_class()
-            );
+        foreach($constants as $name => $typeNumber){
+            if($typeNumber == $type){
+                return $name;
+            }
         }
-        return $constants[$type];
+        throw new InvalidArgumentException(
+            "There is no enum with that type in ".get_called_class()
+        );
     }
 
     public static function typeFromName($name)
