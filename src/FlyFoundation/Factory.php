@@ -14,6 +14,7 @@ use FlyFoundation\Database\DataFinder;
 use FlyFoundation\Database\DataMapper;
 use FlyFoundation\Database\DataMethods;
 use FlyFoundation\Core\Dependant;
+use FlyFoundation\Database\DataStore;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Exceptions\UnknownClassException;
@@ -111,7 +112,7 @@ class Factory {
         return $result;
     }
 
-    public static function loadAndDecorateWithoutSpecialization($className, $arguments)
+    public static function loadAndDecorateWithoutSpecialization($className, array $arguments = [])
     {
         if(!class_exists($className)){
             throw new UnknownClassException('Class "'.$className.'" was not found by the auto-loading mechanism');
@@ -181,7 +182,7 @@ class Factory {
      * @param array $arguments
      * @return View
      */
-    public static function loadView($viewName, $arguments = array())
+    public static function loadView($viewName, array $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Views\\".$viewName."View";
         return self::load($fullClassName, $arguments);
@@ -198,7 +199,7 @@ class Factory {
      * @param array $arguments
      * @return Controller
      */
-    public static function loadController($controllerName, $arguments = array())
+    public static function loadController($controllerName, array $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Controllers\\".$controllerName."Controller";
         return self::load($fullClassName, $arguments);
@@ -215,7 +216,7 @@ class Factory {
      * @param array $arguments
      * @return Model
      */
-    public static function loadModel($modelName, $arguments = array())
+    public static function loadModel($modelName, array $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Models\\".$modelName;
         return self::load($fullClassName, $arguments);
@@ -232,7 +233,7 @@ class Factory {
      * @param array $arguments
      * @return DataMapper
      */
-    public static function loadDataMapper($entityName, $arguments = array())
+    public static function loadDataMapper($entityName, array $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataMapper";
         return self::load($fullClassName, $arguments);
@@ -249,7 +250,7 @@ class Factory {
      * @param array $arguments
      * @return DataFinder
      */
-    public static function loadDataFinder($entityName, $arguments = array())
+    public static function loadDataFinder($entityName, array $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataFinder";
         return self::load($fullClassName, $arguments);
@@ -262,11 +263,28 @@ class Factory {
     }
 
     /**
+     * @param $entityName
+     * @param array $arguments
+     * @return DataStore
+     */
+    public static function loadDataStore($entityName, $arguments = [])
+    {
+        $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataStore";
+        return self::load($fullClassName, $arguments);
+    }
+
+    public static function dataStoreExists($entityName)
+    {
+        $fullClassName = "\\FlyFoundation\\Database\\".$entityName."DataStore";
+        return self::exists($fullClassName);
+    }
+
+    /**
      * @param string $dataMethodsName
      * @param array $arguments
      * @return DataMethods
      */
-    public static function loadDataMethods($dataMethodsName, $arguments = array())
+    public static function loadDataMethods($dataMethodsName, array $arguments = array())
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName."DataMethods";
         return self::load($fullClassName, $arguments);

@@ -5,3 +5,9 @@
 ! NotImplemented
     $ MyField : String
     $ OtherField : Integer
+
+! JsonBasedModel
+    $ MyField : String
+    $ OtherField : Integer
+    StorageName : my-json-file
+    StorageType : Json

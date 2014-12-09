@@ -7,6 +7,7 @@ namespace FlyFoundation\Core\Factories;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Dependencies\AppDefinition;
 use FlyFoundation\Factory;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 use FlyFoundation\Util\ValueList;
 
 abstract class AbstractFactory {
@@ -36,20 +37,19 @@ abstract class AbstractFactory {
         $hasGenericNaming = preg_match($this->genericNamingRegExp, $className, $matches);
         $entityName = $this->getEntityName($className);
         $entityDefinitionExists = $this->getAppDefinition()->containsEntityDefinition($entityName);
-        $isGeneric = $className == $this->genericClassName;
 
         if($hasGenericNaming && !$implementation && $entityDefinitionExists){
-            $result = Factory::load($this->genericClassName, $arguments);
+            $result = Factory::loadAndDecorateWithoutSpecialization($this->genericClassName, $arguments);
         }elseif($implementation){
             $result = Factory::loadAndDecorateWithoutSpecialization($implementation, $arguments);
         }else{
             $result = Factory::loadAndDecorateWithoutSpecialization($className, $arguments);
         }
 
-        if($result instanceof $this->genericInterface && !$isGeneric)
+        if($result instanceof $this->genericInterface)
         {
             $entityName = $this->getEntityName($className);
-            $result = $this->prepareGeneric($result, $entityName);
+            $result = $this->prepareGenericResult($result, $entityName);
         }
 
         return $result;
@@ -71,7 +71,19 @@ abstract class AbstractFactory {
         }
     }
 
-    abstract protected function prepareGeneric($result, $entityName);
+    private function prepareGenericResult($result, $entityName)
+    {
+        $result = $this->prepareGenericEntity($result, $entityName);
+        if($this->getAppDefinition()->containsEntityDefinition($entityName)){
+            $entityDefinition = $this->getAppDefinition()->getEntityDefinition($entityName);
+            $result = $this->prepareGenericEntityWithDefinition($result, $entityDefinition);
+        }
+        return $result;
+    }
+
+    abstract protected function prepareGenericEntity($result, $entityName);
+
+    abstract protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition);
 
     /**
      * @param $className

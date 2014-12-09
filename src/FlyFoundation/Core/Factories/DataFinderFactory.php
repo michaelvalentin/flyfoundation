@@ -5,6 +5,7 @@ namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Database\GenericDataFinder;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class DataFinderFactory extends AbstractFactory{
 
@@ -15,10 +16,15 @@ class DataFinderFactory extends AbstractFactory{
         $this->genericNamingRegExp = "/^(.*)DataFinder$/";
     }
 
-    protected function prepareGeneric($result, $entityName)
+    protected function prepareGenericEntity($result, $entityName)
     {
         /** @var GenericDataFinder $result */
         $result->setEntityName($entityName);
         return $result;
     }
-} 
+
+    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    {
+        return $result;
+    }
+}

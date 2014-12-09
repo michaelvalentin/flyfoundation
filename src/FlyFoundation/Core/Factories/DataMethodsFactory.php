@@ -3,6 +3,8 @@
 
 namespace FlyFoundation\Core\Factories;
 
+use FlyFoundation\SystemDefinitions\EntityDefinition;
+
 class DataMethodsFactory extends StorageAwareFactory{
 
     public function __construct()
@@ -12,7 +14,12 @@ class DataMethodsFactory extends StorageAwareFactory{
         $this->genericNamingRegExp = "/^(.*)DataMethods$/";
     }
 
-    protected function prepareGeneric($result, $entityName)
+    protected function prepareGenericEntity($result, $entityName)
     {
     }
-} 
+
+    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    {
+        return $result;
+    }
+}

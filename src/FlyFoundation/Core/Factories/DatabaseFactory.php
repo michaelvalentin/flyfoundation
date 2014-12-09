@@ -8,6 +8,7 @@ use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\InvalidClassException;
 use FlyFoundation\Exceptions\UnknownClassException;
 use FlyFoundation\Factory;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class DatabaseFactory extends AbstractFactory
 {
@@ -24,7 +25,7 @@ class DatabaseFactory extends AbstractFactory
         return $factory->exists($className);
     }
 
-    protected function prepareGeneric($result, $entityName)
+    protected function prepareGenericEntity($result, $entityName)
     {
         // Not relevant here...
     }
@@ -50,5 +51,10 @@ class DatabaseFactory extends AbstractFactory
         /** @var AbstractFactory $result */
         $result->setSearchPaths($this->searchPaths);
         return $result;
+    }
+
+    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    {
+        // Not relevant here...
     }
 }

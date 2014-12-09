@@ -6,6 +6,7 @@ use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Controllers\GenericEntityController;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Factory;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class ControllerFactory extends AbstractFactory
 {
@@ -17,7 +18,7 @@ class ControllerFactory extends AbstractFactory
         $this->genericNamingRegExp = "/^(.*)Controller/";
     }
 
-    protected function prepareGeneric($result, $entityName)
+    protected function prepareGenericEntity($result, $entityName)
     {
         /** @var GenericEntityController $result */
 
@@ -29,6 +30,11 @@ class ControllerFactory extends AbstractFactory
             $result->setModel(Factory::loadModel($entityName));
         }
 
+        return $result;
+    }
+
+    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    {
         return $result;
     }
 }

@@ -6,6 +6,7 @@ namespace FlyFoundation\Core\Factories;
 
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Factory;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 use FlyFoundation\Views\GenericView;
 
 class ViewFactory extends AbstractFactory
@@ -18,10 +19,15 @@ class ViewFactory extends AbstractFactory
         $this->genericInterface = "\\FlyFoundation\\Views\\GenericView";
     }
 
-    protected function prepareGeneric($result, $entityName)
+    protected function prepareGenericEntity($result, $entityName)
     {
         /** @var GenericView $result */
         $result->setEntityName($entityName);
+        return $result;
+    }
+
+    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    {
         return $result;
     }
 }

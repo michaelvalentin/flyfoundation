@@ -8,6 +8,7 @@ use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\InvalidClassException;
 use FlyFoundation\Factory;
 use FlyFoundation\Models\GenericEntity;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class ModelFactory extends AbstractFactory
 {
@@ -19,7 +20,7 @@ class ModelFactory extends AbstractFactory
         $this->genericInterface = "\\FlyFoundation\\Models\\GenericEntity";
     }
 
-    protected function prepareGeneric($result, $entityName)
+    protected function prepareGenericEntity($result, $entityName)
     {
         /** @var GenericEntity $result */
         //TODO: Prepare properly!
@@ -27,4 +28,8 @@ class ModelFactory extends AbstractFactory
         return $result;
     }
 
+    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    {
+        return $result;
+    }
 }

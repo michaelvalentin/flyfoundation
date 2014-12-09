@@ -5,6 +5,7 @@ namespace FlyFoundation\Core\Factories;
 
 
 use FlyFoundation\Database\GenericDataMapper;
+use FlyFoundation\SystemDefinitions\EntityDefinition;
 
 class DataMapperFactory extends AbstractFactory{
 
@@ -15,10 +16,15 @@ class DataMapperFactory extends AbstractFactory{
         $this->genericNamingRegExp = "/^(.*)DataMapper$/";
     }
 
-    protected function prepareGeneric($result, $entityName)
+    protected function prepareGenericEntity($result, $entityName)
     {
         /** @var GenericDataMapper $result */
         $result->setEntityName($entityName);
+        return $result;
+    }
+
+    protected function prepareGenericEntityWithDefinition($result, EntityDefinition $entityDefinition)
+    {
         return $result;
     }
 }
