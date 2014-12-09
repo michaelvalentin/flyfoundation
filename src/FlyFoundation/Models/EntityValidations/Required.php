@@ -4,8 +4,6 @@
 namespace FlyFoundation\Models\EntityValidations;
 
 
-use FlyFoundation\Models\Entity;
-
 class Required extends EntityValidation{
 
     /**
