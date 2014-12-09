@@ -7,9 +7,9 @@ namespace TestApp\Database;
 use FlyFoundation\Database\MySqlGenericDataStore;
 
 class MySqlGenericTestModelDataStore extends MySqlGenericDataStore{
-    public function onDependenciesLoaded()
+    public function afterConfiguration()
     {
-        parent::onDependenciesLoaded();
+        parent::afterConfiguration();
 
         $this->getMySqlDatabase()->exec(
             "DROP TABLE IF EXISTS generic_test_model;

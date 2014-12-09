@@ -12,7 +12,7 @@ class DataFinderFactory extends AbstractFactory{
     {
         $this->genericClassName = "\\FlyFoundation\\Database\\GenericDataFinder";
         $this->genericInterface = "\\FlyFoundation\\Database\\GenericDataFinder";
-        $this->genericNamingRegExp = "^(.*)DataFinder";
+        $this->genericNamingRegExp = "/^(.*)DataFinder$/";
     }
 
     protected function prepareGeneric($result, $entityName)

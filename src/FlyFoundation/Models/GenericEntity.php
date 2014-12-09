@@ -10,7 +10,7 @@ use FlyFoundation\Models\EntityFields\EntityField;
 use FlyFoundation\Models\EntityValidations\EntityValidation;
 use FlyFoundation\Util\Map;
 
-abstract class GenericEntity implements Entity, Generic{
+abstract class GenericEntity implements Entity, Model, Generic{
     private $name;
 
     /** @var \FlyFoundation\Util\Map */
@@ -37,6 +37,13 @@ abstract class GenericEntity implements Entity, Generic{
     public function getName()
     {
         return $this->name;
+    }
+
+    public function asArray()
+    {
+        throw new InvalidOperationException(
+            "Feature asArray is not yet implemented"
+        );
     }
 
     public function getPersistentData($mustBeCalledFromDataMapper)

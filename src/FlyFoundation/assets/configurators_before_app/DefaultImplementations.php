@@ -15,7 +15,7 @@ class DefaultImplementations implements Configurator{
         $config->implementations->putAll([
             "\\FlyFoundation\\Core\\FileLoader" => "\\FlyFoundation\\Core\\StandardFileLoader",
             "\\FlyFoundation\\Core\\Router" => "\\FlyFoundation\\Core\\StandardRouter",
-            "\\FlyFoundation\\Controllers\\BaseController" => "\\FlyFoundation\\Controllers\\StandardBaseController"
+            "\\FlyFoundation\\Controllers\\BaseController" => "\\FlyFoundation\\Controllers\\StandardBaseController",
         ]);
         return $config;
     }

@@ -5,27 +5,10 @@ use FlyFoundation\Factory;
 use TestApp\SomeClass;
 use TestApp\SomeOtherClass;
 
-require_once __DIR__ . '/../test-init.php';
+require_once __DIR__ . '/../use-test-app.php';
 
 class FactoryTest extends PHPUnit_Framework_TestCase {
 
-    protected function setUp()
-    {
-        $app = new \FlyFoundation\App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
-        parent::setUp();
-    }
-
-    /**
-     * load
-     *  - Finds the relevant implementation
-     *      o Overwrites
-     *      o Implementation in base paths
-     *  - Calls the specialized factory if that is relevant
-     *      o (TESTED IN SPECIALIZED FACTORY TESTS)
-     *  - Ensures that the output is an instance of the called class
-     */
 
     //Load class in FlyFoundation
     public function testLoadClassThatExistsInFlyFoundation()
@@ -56,7 +39,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $config = $result->getAppConfig();
         $context = $result->getAppContext();
 
-        $this->assertInstanceOf("\\FlyFoundation\\Config",$config);
+        $this->assertInstanceOf("\\FlyFoundation\\Core\\Config",$config);
         $this->assertInstanceOf("\\FlyFoundation\\Core\\Context",$context);
     }
 
@@ -66,7 +49,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $result = Factory::load("\\TestApp\\SomeOtherClass");
         $config = $result->getAppConfig();
 
-        $this->assertInstanceOf("\\FlyFoundation\\Config",$config);
+        $this->assertInstanceOf("\\FlyFoundation\\Core\\Config",$config);
         $this->assertFalse(method_exists($result,"getAppContext"));
     }
 
@@ -76,14 +59,6 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $result = Factory::load("\\TestApp\\DemoClass");
         $this->assertFalse(method_exists($result,"getAppContext"));
     }
-
-    /**
-     * exists
-     *  - Finds the relevant implementation
-     *  - Finds specialized factory if relevant
-     *      o (TESTED IN SPECIALIZED FACTORY TESTS)
-     *  - Checks if class exists
-     */
 
     //Test with a class that exists as it is
     public function testExistsWithExcistingClass()
@@ -99,12 +74,6 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($result);
     }
 
-    /**
-     * loadWithoutOverridesAndDecoration
-     *  - Loads the class
-     *  - Adds relevant environment variables
-     */
-
     //Load class that uses environment
     public function testLoadAndDecorateWithoutSpecialization()
     {
@@ -112,8 +81,9 @@ class FactoryTest extends PHPUnit_Framework_TestCase {
         $result = Factory::loadAndDecorateWithoutSpecialization("\\TestApp\\SomeClass",[]);
         $config = $result->getAppConfig();
         $context = $result->getAppContext();
+        $appDefinition = $result->getAppDefinition();
 
-        $this->assertInstanceOf("\\FlyFoundation\\Config",$config);
+        $this->assertInstanceOf("\\FlyFoundation\\Core\\Config",$config);
         $this->assertInstanceOf("\\FlyFoundation\\Core\\Context",$context);
         $this->assertInstanceOf("\\FlyFoundation\\SystemDefinitions\\SystemDefinition",$appDefinition);
     }

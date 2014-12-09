@@ -13,8 +13,8 @@ class GenericDataMapperTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp(){
         $this->dataMapper = Factory::load("\\FlyFoundation\\Database\\GenericDataMapper");
-        $this->dataMapper->setEntityName("\\TestApp\\Models\\GenericTestModel");
-        $dataStore = Factory::load("\\TestApp\\Database\\MySqlGenericTestModelDataStore");
+        $this->dataMapper->setEntityName("GenericTestModel");
+        $dataStore = Factory::load("\\TestApp\\Database\\GenericTestModelDataStore");
         $this->dataMapper->setDataStore($dataStore);
     }
 

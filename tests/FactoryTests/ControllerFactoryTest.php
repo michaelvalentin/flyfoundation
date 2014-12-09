@@ -1,10 +1,12 @@
 <?php
 
+use FlyFoundation\Controllers\AbstractController;
+use FlyFoundation\Controllers\Controller;
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Factories\ControllerFactory;
 use FlyFoundation\Factory;
 
-require_once __DIR__.'/../test-init.php';
+require_once __DIR__ . '/../use-test-app.php';
 
 
 class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
@@ -13,12 +15,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-        $app = new \FlyFoundation\App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
-
         $this->controllerFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\ControllerFactory");
-
         parent::setUp();
     }
 
@@ -31,6 +28,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
     //Load existing controller
     public function testLoadControllerThatExists()
     {
+        /** @var AbstractController $result */
         $result = Factory::loadController("MyModel");
         $this->assertInstanceOf("\\TestApp\\Controllers\\MyModelController",$result);
 
@@ -39,7 +37,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
         $view = $result->getView();
 
         $this->assertInstanceOf("\\TestApp\\Models\\MyModel", $model);
-        $this->assertInstanceOf("\\FlyFoundation\\Views\\DefaultView",$view);
+        $this->assertInstanceOf("\\TestApp\\Views\\MyModelView",$view);
     }
 
     //Load non-existing controller
@@ -52,7 +50,7 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
 
         $view = $result->getView();
 
-        $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenPersistentEntity", $model);
+        $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenGenericEntity", $model);
         $this->assertInstanceOf("\\TestApp\\Views\\DemoEntityView",$view);
     }
 
@@ -88,39 +86,6 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
     public function testExistsControllerWhichDoesNotExistAndHasWrongNaming()
     {
         $result = Factory::exists("\\TestApp\\Controllers\\SomeControllerDoesNotExist");
-        $this->assertFalse($result);
-    }
-
-    /**
-     * getControllerName
-     *  - Gets the controller/entity name from a class name and returns false if the name doesn't match the controller standard
-     */
-
-    //Name under FlyFoundation
-    public function testGetControllerNameWithControllerUnderFlyFoundation()
-    {
-        $result = $this->controllerFactory->getControllerName("\\FlyFoundation\\Controllers\\MyCrazyClassController");
-        $this->assertSame("MyCrazyClass",$result);
-    }
-
-    //Name under TestApp
-    public function testGetControllerNameWithControllerUnderTestApp()
-    {
-        $result = $this->controllerFactory->getControllerName("\\TestApp\\Controllers\\SomeDirectory\\AnotherCrazyClassController");
-        $this->assertSame("SomeDirectory\\AnotherCrazyClass",$result);
-    }
-
-    //Name under undefined controller path
-    public function testGetControllerNameWithControllerInNonControllerPath()
-    {
-        $result = $this->controllerFactory->getControllerName("\\TestApp\\Views\\MyController");
-        $this->assertFalse($result);
-    }
-
-    //Name that is not a controller name
-    public function testGetControllerNameWithNonControllerName()
-    {
-        $result = $this->controllerFactory->getControllerName("\\FlyFoundation\\SomeRandomClass");
         $this->assertFalse($result);
     }
 }

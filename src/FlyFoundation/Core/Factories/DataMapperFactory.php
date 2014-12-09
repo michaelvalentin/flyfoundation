@@ -12,7 +12,7 @@ class DataMapperFactory extends AbstractFactory{
     {
         $this->genericClassName = "\\FlyFoundation\\Database\\GenericDataMapper";
         $this->genericInterface = "\\FlyFoundation\\Database\\GenericDataMapper";
-        $this->genericNamingRegExp = "^(.*)DataMapper";
+        $this->genericNamingRegExp = "/^(.*)DataMapper$/";
     }
 
     protected function prepareGeneric($result, $entityName)

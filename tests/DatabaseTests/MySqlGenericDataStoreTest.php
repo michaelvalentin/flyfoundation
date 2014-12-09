@@ -12,7 +12,7 @@ class MySqlGenericDataStoreTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-        $this->dataStore = Factory::load("\\FlyFoundation\\Database\\MySqlGenericDataStore");
+        $this->dataStore = Factory::loadAndDecorateWithoutSpecialization("\\FlyFoundation\\Database\\MySqlGenericDataStore",[]);
 
         $this->dataStore->getMySqlDatabase()->exec(
             "DROP TABLE IF EXISTS generic_datastore_test;
@@ -26,7 +26,7 @@ class MySqlGenericDataStoreTest extends PHPUnit_Framework_TestCase {
              ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;"
         );
 
-        $this->dataStore->setName("generic_datastore_test");
+        $this->dataStore->setStorageName("generic_datastore_test");
         $field1 = new \FlyFoundation\Database\Fields\IntegerField();
         $field1->setInIdentifier();
         $field1->setAutoIncrement();

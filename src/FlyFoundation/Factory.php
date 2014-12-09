@@ -268,13 +268,13 @@ class Factory {
      */
     public static function loadDataMethods($dataMethodsName, $arguments = array())
     {
-        $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
+        $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName."DataMethods";
         return self::load($fullClassName, $arguments);
     }
 
     public static function dataMethodsExists($dataMethodsName)
     {
-        $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName;
+        $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName."DataMethods";
         return self::exists($fullClassName);
     }
 }

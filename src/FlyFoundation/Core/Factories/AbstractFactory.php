@@ -16,7 +16,7 @@ abstract class AbstractFactory {
     /** @var string */
     protected $genericNamingRegExp = "/.+/";
     /** @var ValueList */
-    private $searchPaths;
+    protected $searchPaths;
     protected $genericClassName = "";
     protected $genericInterface = "";
 
@@ -36,6 +36,7 @@ abstract class AbstractFactory {
         $hasGenericNaming = preg_match($this->genericNamingRegExp, $className, $matches);
         $entityName = $this->getEntityName($className);
         $entityDefinitionExists = $this->getAppDefinition()->containsEntityDefinition($entityName);
+        $isGeneric = $className == $this->genericClassName;
 
         if($hasGenericNaming && !$implementation && $entityDefinitionExists){
             $result = Factory::load($this->genericClassName, $arguments);
@@ -45,7 +46,7 @@ abstract class AbstractFactory {
             $result = Factory::loadAndDecorateWithoutSpecialization($className, $arguments);
         }
 
-        if($result instanceof $this->genericInterface && $entityDefinitionExists)
+        if($result instanceof $this->genericInterface && !$isGeneric)
         {
             $entityName = $this->getEntityName($className);
             $result = $this->prepareGeneric($result, $entityName);
@@ -68,8 +69,6 @@ abstract class AbstractFactory {
         }else{
             return class_exists($className);
         }
-
-        return $implementation || $hasGenericNaming || class_exists($className);
     }
 
     abstract protected function prepareGeneric($result, $entityName);
@@ -78,7 +77,7 @@ abstract class AbstractFactory {
      * @param $className
      * @return bool
      */
-    private function getEntityName($className)
+    protected function getEntityName($className)
     {
         $partialClassName = FactoryTools::findPartialClassNameInPaths(
             $className,

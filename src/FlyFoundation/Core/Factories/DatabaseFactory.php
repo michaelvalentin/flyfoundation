@@ -12,7 +12,7 @@ use FlyFoundation\Factory;
 class DatabaseFactory extends AbstractFactory
 {
 
-    public function load($className, $arguments = [])
+    public function load($className, array $arguments = [])
     {
         $factory = $this->getFactory($className);
         return $factory->load($className, $arguments);
@@ -32,16 +32,23 @@ class DatabaseFactory extends AbstractFactory
     private function getFactory($className)
     {
         $factories = [
-            "/(*+)DataMapper/" => "DataMapperFactory",
-            "/(*+)DataFinder/" => "DataMapperFinder",
-            "/(*+)DataStore/" => "DataMapperStore",
+            "/(.+)DataMapper$/" => "DataMapperFactory",
+            "/(.+)DataFinder$/" => "DataFinderFactory",
+            "/(.+)DataStore$/" => "DataStoreFactory",
+            "/(.+)DataMethods$/" => "DataMethodsFactory",
+            "/(.+)$/" => "DataMapperFactory",
         ];
 
+        $result = false;
+
         foreach($factories as $regexp => $factoryName){
-            if(preg_match($regexp,$className)){
-                return Factory::load("\\FlyFoundation\\Core\\Factories\\".$factoryName);
+            if(!$result && preg_match($regexp,$className)){
+                $result = Factory::load("\\FlyFoundation\\Core\\Factories\\".$factoryName);
             }
         }
-        return Factory::load("\\FlyFoundation\\Core\\Factories\\".$factories[0]);
+
+        /** @var AbstractFactory $result */
+        $result->setSearchPaths($this->searchPaths);
+        return $result;
     }
 }

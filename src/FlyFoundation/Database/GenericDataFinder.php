@@ -140,4 +140,12 @@ class GenericDataFinder implements DataFinder, Generic
     {
         // TODO: Implement afterConfiguration() method.
     }
+
+    /**
+     * @return string
+     */
+    public function getEntityName()
+    {
+        return $this->entityName;
+    }
 }

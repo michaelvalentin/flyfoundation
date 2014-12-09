@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../test-init.php';
+require_once __DIR__ . '/../use-test-app.php';
 
 use FlyFoundation\Core\Context;
 use FlyFoundation\Core\Factories\DatabaseFactory;
@@ -12,9 +12,6 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-        $app = new \FlyFoundation\App();
-        $app->addConfigurators(TEST_BASE."/TestApp/configurators");
-        $app->prepareCoreDependencies();
         $this->dbFactory = Factory::load("\\FlyFoundation\\Core\\Factories\\DatabaseFactory");
         parent::setUp();
     }
@@ -29,14 +26,14 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadExistingDataMapper()
     {
         $result = Factory::loadDataMapper("MyTest");
-        $this->assertInstanceOf("\\TestApp\\Database\\MySqlMyTestDataMapper",$result);
+        $this->assertInstanceOf("\\TestApp\\Database\\MyTestDataMapper",$result);
     }
 
     //Load GenericDataMapper with entity definition
     public function testLoadGenericDataMapperByNameWithEntityDefinition()
     {
         $result = Factory::loadDataMapper("DemoEntity");
-        $this->assertInstanceOf("\\FlyFoundation\\Database\\MySqlGenericDataMapper",$result);
+        $this->assertInstanceOf("\\FlyFoundation\\Database\\GenericDataMapper",$result);
     }
 
     //Load GenericDataMapper without entity definition
@@ -50,14 +47,14 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadExistingDataFinder()
     {
         $result = Factory::loadDataFinder("MyOtherTest");
-        $this->assertInstanceOf("\\TestApp\\Database\\MySqlMyOtherTestDataFinder",$result);
+        $this->assertInstanceOf("\\TestApp\\Database\\MyOtherTestDataFinder",$result);
     }
 
     //Load GenericDataFinder with entity definition
     public function testLoadGenericDataFinderByNameWithEntityDefinition()
     {
         $result = Factory::loadDataFinder("DemoEntity");
-        $this->assertInstanceOf("\\FlyFoundation\\Database\\MySqlGenericDataFinder",$result);
+        $this->assertInstanceOf("\\FlyFoundation\\Database\\GenericDataFinder",$result);
     }
 
     //Load GenericDataFinder without entity definition
@@ -70,7 +67,7 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     //Load existing DataMethods
     public function testLoadExistingDataMethods()
     {
-        $result = Factory::loadDataMethods("SomeDataMethods");
+        $result = Factory::loadDataMethods("Some");
         $this->assertInstanceOf("\\TestApp\\Database\\MySqlSomeDataMethods",$result);
     }
 
@@ -147,14 +144,14 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     //Existence of existing DataMethods
     public function testExistsExistingDataMethods()
     {
-        $result = Factory::dataMethodsExists("SomeDataMethods");
+        $result = Factory::dataMethodsExists("Some");
         $this->assertTrue($result);
     }
 
     //Existence of not existing DataMethods
     public function testExistsNotExistingDataMethods()
     {
-        $result = Factory::dataMethodsExists("SomeOtherDataMethodsDoNotExist");
+        $result = Factory::dataMethodsExists("SomeOtherDoNotExist");
         $this->assertFalse($result);
     }
 
@@ -170,35 +167,6 @@ class DatabaseFactoryTest extends PHPUnit_Framework_TestCase {
     {
         $result = Factory::exists("\\FlyFoundation\\Database\\SomeNotExistingClass");
         $this->assertFalse($result);
-    }
-
-    /**
-     * getGenericDatabaseClassName
-     *  - Loads GenericDataFinder or GenericDataMapper
-     *  - Error on other stuff
-     */
-
-    //Test good cases
-    public function testGetGenericDatabaseClassName()
-    {
-        $res1 = $this->dbFactory->getGenericDatabaseClassName("\\MyApp\\MyScope\\SomeNotExistingDataMapper","DataMapper");
-        $res2 = $this->dbFactory->getGenericDatabaseClassName("\\OtherApp\\VirtualDataFinder","DataFinder");
-        $this->assertSame("\\FlyFoundation\\Database\\MySqlGenericDataMapper",$res1);
-        $this->assertSame("\\FlyFoundation\\Database\\MySqlGenericDataFinder",$res2);
-    }
-
-    //Test failing with DataMethods
-    public function testGetGenericDatabaseClassNameFail()
-    {
-        $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = $this->dbFactory->getGenericDatabaseClassName("\\TestApp\\Database\\SomeDataMethods","DataMethods");
-    }
-
-    //Test failing with other class
-    public function testGetGenericDatabaseClassNameFail2()
-    {
-        $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = $this->dbFactory->getGenericDatabaseClassName("\\Test\\Scope\\ClassDoesNotExist","WhatMethod");
     }
 }
  

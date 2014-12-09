@@ -13,7 +13,7 @@ class ControllerFactory extends AbstractFactory
     public function __construct()
     {
         $this->genericClassName = "\\FlyFoundation\\Controllers\\GenericEntityController";
-        $this->genericInterface = "\\FlyFoundation\\Controllers\\GenericEntityController";
+        $this->genericInterface = "\\FlyFoundation\\Controllers\\Controller";
         $this->genericNamingRegExp = "/^(.*)Controller/";
     }
 

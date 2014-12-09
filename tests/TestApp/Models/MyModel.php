@@ -4,9 +4,9 @@
 namespace TestApp\Models;
 
 
-use FlyFoundation\Models\OpenPersistentEntity;
+use FlyFoundation\Models\OpenGenericEntity;
 
-class MyModel extends OpenPersistentEntity{
+class MyModel extends OpenGenericEntity{
 
     /**
      * @return integer

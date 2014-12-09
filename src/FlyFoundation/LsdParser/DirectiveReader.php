@@ -74,7 +74,7 @@ class DirectiveReader {
 
         $matches = [];
         $success = preg_match(
-            "/^\s*(?<type>[\\!\\?\\&\\*\\<\\>\\#\\$\\~\\%\\@\\+]*)\s*(?<label>[A-Za-z][A-Za-z0-9]*)\s*(:\s*(?<value>.+))?$/",
+            "/^\\s*(?<type>[\\!\\?\\&\\*\\<\\>\\#\\$\\~\\%\\@\\+]*)\\s*(?<label>[A-Za-z][A-Za-z0-9]*)\\s*(:\\s*(?<value>.+))?$/",
             $line,
             $matches
         );

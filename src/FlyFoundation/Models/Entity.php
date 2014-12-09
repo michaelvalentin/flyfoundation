@@ -4,7 +4,8 @@
 namespace FlyFoundation\Models;
 
 
-interface Entity {
+interface Entity
+{
 
     /**
      * @return string

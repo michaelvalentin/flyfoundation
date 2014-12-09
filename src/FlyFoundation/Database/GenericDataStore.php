@@ -16,7 +16,7 @@ abstract class GenericDataStore implements DataStore, Generic
     private $entityName;
 
     /** @var string */
-    private $name;
+    private $storageName;
 
     /** @var DataField[] */
     private $fields = array();
@@ -27,9 +27,19 @@ abstract class GenericDataStore implements DataStore, Generic
     /**
      * @param string $name
      */
-    public function setName($name)
+    public function setStorageName($name)
     {
-        $this->name = $name;
+        $this->storageName = $name;
+    }
+
+    public function getStorageName()
+    {
+        if($this->storageName){
+            return $this->storageName;
+        }else{
+            $nameManipulator = new NameManipulator();
+            return $nameManipulator->toUnderscored($this->entityName);
+        }
     }
 
     public function setEntityName($name)

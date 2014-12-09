@@ -6,13 +6,13 @@ namespace FlyFoundation\Core\Factories;
 
 use FlyFoundation\Database\GenericDataStore;
 
-class DataStoreFactory extends AbstractFactory{
+class DataStoreFactory extends StorageAwareFactory{
 
     public function __construct()
     {
         $this->genericClassName = "\\FlyFoundation\\Database\\GenericDataStore";
         $this->genericInterface = "\\FlyFoundation\\Database\\GenericDataStore";
-        $this->genericNamingRegExp = "^(.*)DataStore";
+        $this->genericNamingRegExp = "/^(.*)DataStore$/";
     }
 
     protected function prepareGeneric($result, $entityName)
