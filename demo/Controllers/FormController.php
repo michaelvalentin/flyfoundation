@@ -18,7 +18,7 @@ class FormController extends AbstractController
      */
     private $form;
 
-    public function view(Response $response, array $arguments)
+    public function view(array $arguments)
     {
 
         $this->form = Factory::load('\\FlyFoundation\\Models\\Forms\\GenericForm');
@@ -47,14 +47,17 @@ class FormController extends AbstractController
 
         if($data = $this->form->getData()){
 
-            $response->setDataValue('data', $data);
+            $this->getAppResponse()->data->put('data', $data);
 
         }
 
-        $response->setDataValue('form', $this->form->asArray());
+        $this->getAppResponse()->data->put('form', $this->form->asArray());
 
-        $response->wrapInTemplateFile('form');
+        $this->getAppResponse()->wrapInTemplateFile('form');
+    }
 
-        return $response;
+    public function viewRespondsTo(array $arguments)
+    {
+        return true;
     }
 } 

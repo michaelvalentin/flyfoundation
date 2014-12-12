@@ -11,6 +11,7 @@ class BaseflyDirectories implements \FlyFoundation\Core\Configurator{
     {
         $config->pageDirectories->add(__DIR__."/../pages");
         $config->templateDirectories->add(__DIR__."/../templates");
+        $config->systemDefinitionDirectories->add(__DIR__."/../lsds");
         return $config;
     }
 }

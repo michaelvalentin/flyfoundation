@@ -12,6 +12,8 @@ require_once __DIR__ . '/../use-test-app.php';
 class ModelFactoryTest extends PHPUnit_Framework_TestCase {
 
 
+    //TODO: Add a "get specification" method to entities, to properly investigate weather the right features have been added
+
     //Load implemented model that does not take Entity Definition
     public function testLoadingImplementedModelWithoutEntityDefinition()
     {
@@ -28,6 +30,42 @@ class ModelFactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenGenericEntity",$result);
         $result2 = $result->getEntityName();
         $this->assertSame("DemoEntity",$result2);
+        $result->set("MyField","test");
+        $result3 = $result->get("MyField");
+        $this->assertEquals("test",$result3);
+        $result->set("OtherField",42);
+        $result4 = $result->getPersistentData("This is called from the data mapper");
+        $this->assertEquals([
+            "MyField" => "test",
+            "OtherField" => 42
+        ],$result4);
+
+        $this->setExpectedException("\\FlyFoundation\\Exceptions\\InvalidArgumentException");
+        $result->set("NotExistingField",45);
+    }
+
+    public function testDemoEntityValidation()
+    {
+        /** @var OpenGenericEntity $result */
+        $result = Factory::loadModel("DemoEntity");
+        $firstRun = $result->validate();
+        $result->set("MyField","testing");
+        $secondRun = $result->validate();
+
+        $this->assertFalse($firstRun);
+        $this->assertTrue($secondRun);
+    }
+
+    public function testDemoEntityValidationFail()
+    {
+        /** @var OpenGenericEntity $result */
+        $result = Factory::loadModel("DemoEntity");
+        $firstRun = $result->validate();
+        $result->set("MyField","test");
+        $secondRun = $result->validate();
+
+        $this->assertFalse($firstRun);
+        $this->assertFalse($secondRun);
     }
 
     //Check existence of implemented model

@@ -59,9 +59,9 @@ class Context {
     public function getProtocol()
     {
         if(preg_match("/HTTPS/",$this->getServerData("SERVER_PROTOCOL"))){
-            return "HTTPS";
+            return "https";
         }else{
-            return "HTTP";
+            return "http";
         }
     }
 

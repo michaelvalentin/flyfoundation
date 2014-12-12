@@ -9,6 +9,8 @@ use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Util\Map;
 use FlyFoundation\Util\ValueList;
 
+//!!TODO: The dependency instance should not be an instance, but a closure (anonymous function) producing the instance...
+
 class DependencyMap extends Map{
     public function putDependency($traitName, $dependencyInstance, $singleton = false)
     {

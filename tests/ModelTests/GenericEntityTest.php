@@ -6,7 +6,7 @@ use FlyFoundation\Models\EntityFields\TextField;
 use FlyFoundation\Models\EntityValidations\Required;
 use FlyFoundation\Models\OpenGenericEntity;
 
-require_once __DIR__.'/../../test-init.php';
+require_once __DIR__ . '/../test-init.php';
 
 class GenericEntityTest extends \PHPUnit_Framework_TestCase {
 

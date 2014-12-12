@@ -79,4 +79,6 @@ abstract class ValidationType extends Enum{
     const Equals = 4;
     const GreaterThanOrEqual = 5;
     const LessThanOrEqual = 6;
+    const MinimumLength = 7;
+    const MaximumLength = 8;
 }

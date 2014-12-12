@@ -2,6 +2,8 @@
     $ MyField : String
         StorageFieldName : myfield
         # Required
+        # MaximumLength : 255
+        # MinimumLength : 5
     $ OtherField : Integer
 
 ! NotImplemented

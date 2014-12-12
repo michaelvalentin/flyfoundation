@@ -1,0 +1,5 @@
+! BlogPost
+    $ Title : String
+        # Required
+        # MaximumLength : 255
+    $ Description : String

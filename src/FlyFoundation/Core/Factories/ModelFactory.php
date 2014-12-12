@@ -14,6 +14,8 @@ use FlyFoundation\Models\EntityFields\EntityField;
 use FlyFoundation\Models\EntityFields\FloatField;
 use FlyFoundation\Models\EntityFields\IntegerField;
 use FlyFoundation\Models\EntityFields\TextField;
+use FlyFoundation\Models\EntityValidations\MaximumLength;
+use FlyFoundation\Models\EntityValidations\MinimumLength;
 use FlyFoundation\Models\EntityValidations\Required;
 use FlyFoundation\Models\GenericEntity;
 use FlyFoundation\SystemDefinitions\EntityDefinition;
@@ -68,7 +70,7 @@ class ModelFactory extends AbstractFactory
 
     private function buildValidationFromDefinition(ValidationDefinition $validationDef)
     {
-        $validation = $this->createValidationFromType($validationDef->getType());
+        $validation = $this->createValidationFromType($validationDef->getType(), $validationDef);
         $validationName = ValidationType::nameFromType($validationDef->getType())."_".implode("_",$validationDef->getFieldNames());
         $validation->setName($validationName);
         $validation->setFieldNames($validationDef->getFieldNames());
@@ -101,11 +103,19 @@ class ModelFactory extends AbstractFactory
         }
     }
 
-    private function createValidationFromType($type)
+    private function createValidationFromType($type, ValidationDefinition $validationDefinition)
     {
         switch($type){
             case ValidationType::Required :
                 return new Required();
+            case ValidationType::MinimumLength :
+                $result = new MinimumLength();
+                $result->setLimit($validationDefinition->getSetting("Value"));
+                return $result;
+            case ValidationType::MaximumLength :
+                $result = new MaximumLength();
+                $result->setLimit($validationDefinition->getSetting("Value"));
+                return $result;
             default :
                 throw new InvalidArgumentException(
                     "The model factory does not recognise the ValidationType ".$type." (".(ValidationType::isValidType($type) ? ValidationType::nameFromType($type) : "Unknown validation type").")"

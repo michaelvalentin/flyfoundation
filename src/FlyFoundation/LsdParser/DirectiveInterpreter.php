@@ -149,7 +149,7 @@ class DirectiveInterpreter {
                 }
                 $validation->setType($validationType);
                 if($node->getValue()){
-                    $validation->setSetting("value",$node->getValue());
+                    $validation->setSetting("Value",$node->getValue());
                 }
                 $validation->addFieldName($fieldDefinition->getName());
                 $this->addDirectives($node->getChildNodes(), $validation);

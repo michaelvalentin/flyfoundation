@@ -12,7 +12,6 @@ class Required extends EntityValidation{
      */
     public function validate(Array $entityData)
     {
-        /** @var $fields */
         $fieldNames = $this->getFieldNames();
         foreach($fieldNames as $fieldName){
             $value = isset($entityData[$fieldName]) ? $entityData[$fieldName] : null;
