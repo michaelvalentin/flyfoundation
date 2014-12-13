@@ -3,3 +3,5 @@
         # Required
         # MaximumLength : 255
     $ Description : String
+    $ Author : String
+    $ VersionNumber : Integer

@@ -20,6 +20,7 @@ abstract class AbstractFactory {
     protected $searchPaths;
     protected $genericClassName = "";
     protected $genericInterface = "";
+    protected $genericNamingMatches = [];
 
     public function setSearchPaths(ValueList $searchPaths)
     {
@@ -35,6 +36,7 @@ abstract class AbstractFactory {
     {
         $implementation =  FactoryTools::findImplementation($className,$this->searchPaths);
         $hasGenericNaming = preg_match($this->genericNamingRegExp, $className, $matches);
+        $this->genericNamingMatches = $matches;
         $entityName = $this->getEntityName($className);
         $entityDefinitionExists = $this->getAppDefinition()->containsEntityDefinition($entityName);
 
@@ -97,6 +99,9 @@ abstract class AbstractFactory {
         );
 
         if(preg_match($this->genericNamingRegExp, $partialClassName, $matches)){
+            if(isset($matches["entityname"])){
+                return $matches["entityname"];
+            }
             return array_pop($matches);
         }else{
             return $partialClassName;

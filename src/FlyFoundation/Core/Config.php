@@ -36,6 +36,9 @@ class Config {
     /** @var \FlyFoundation\Util\ValueList  */
     public $databaseSearchPaths;
 
+    /** @var  \FlyFoundation\Util\ValueList */
+    public $formSearchpaths;
+
     /** @var  \FlyFoundation\Util\DirectoryList */
     public $systemDefinitionDirectories;
 
@@ -61,6 +64,7 @@ class Config {
         $this->viewSearchPaths = new ValueList();
         $this->controllerSearchPaths = new ValueList();
         $this->databaseSearchPaths = new ValueList();
+        $this->formSearchpaths = new ValueList();
         $this->systemDefinitionDirectories = new DirectoryList();
         $this->pageDirectories = new DirectoryList();
         $this->templateDirectories = new DirectoryList();

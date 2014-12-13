@@ -18,6 +18,7 @@ use FlyFoundation\Database\DataStore;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\InvalidOperationException;
 use FlyFoundation\Exceptions\UnknownClassException;
+use FlyFoundation\Forms\Form;
 use FlyFoundation\Models\Entity;
 use FlyFoundation\Models\Model;
 use FlyFoundation\Util\ClassInspector;
@@ -93,7 +94,8 @@ class Factory {
             "ControllerFactory" => self::getConfig()->controllerSearchPaths,
             "DatabaseFactory" => self::getConfig()->databaseSearchPaths,
             "ModelFactory" => self::getConfig()->modelSearchPaths,
-            "ViewFactory" => self::getConfig()->viewSearchPaths
+            "ViewFactory" => self::getConfig()->viewSearchPaths,
+            "FormFactory" => self::getConfig()->formSearchpaths,
         ];
 
         $result = false;
@@ -182,15 +184,15 @@ class Factory {
      * @param array $arguments
      * @return View
      */
-    public static function loadView($viewName, array $arguments = array())
+    public static function loadView($viewName, $actionName, array $arguments = array())
     {
-        $fullClassName = "\\FlyFoundation\\Views\\".$viewName."View";
+        $fullClassName = "\\FlyFoundation\\Views\\".$viewName.$actionName."View";
         return self::load($fullClassName, $arguments);
     }
 
-    public static function viewExists($viewName)
+    public static function viewExists($viewName, $actionName)
     {
-        $fullClassName = "\\FlyFoundation\\Views\\".$viewName."View";
+        $fullClassName = "\\FlyFoundation\\Views\\".$viewName.$actionName."View";
         return self::exists($fullClassName);
     }
 
@@ -293,6 +295,24 @@ class Factory {
     public static function dataMethodsExists($dataMethodsName)
     {
         $fullClassName = "\\FlyFoundation\\Database\\".$dataMethodsName."DataMethods";
+        return self::exists($fullClassName);
+    }
+
+    /**
+     * @param $entityName
+     * @param $actionName
+     * @param array $arguments
+     * @return Form
+     */
+    public static function loadForm($entityName, $actionName, array $arguments = [])
+    {
+        $fullClassName = "\\FlyFoundation\\Forms\\".$entityName.$actionName."Form";
+        return self::load($fullClassName, $arguments);
+    }
+
+    public static function formExists($entityName, $actionName)
+    {
+        $fullClassName = "\\FlyFoundation\\Forms\\".$entityName.$actionName."Form";
         return self::exists($fullClassName);
     }
 }

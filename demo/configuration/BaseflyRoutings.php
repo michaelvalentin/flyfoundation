@@ -12,6 +12,7 @@ class BaseflyRoutings implements Configurator{
     public function apply(\FlyFoundation\Core\Config $config)
     {
         $config->routing->addRouting("GET:demo","Page#view",["alias"=>"basefly-demo"]);
+        $config->routing->addRouting("GET:demoform","Demo#create");
         $config->routing->addRouting("GET:form","Form#view");
         $config->routing->addRouting("POST:form","Form#view");
 

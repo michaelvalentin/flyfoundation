@@ -34,21 +34,24 @@ class ControllerFactoryTest extends PHPUnit_Framework_TestCase {
 
         $model = $result->getModel();
 
-        $view = $result->getView();
+        $view = $result->getView("List");
 
         $this->assertInstanceOf("\\TestApp\\Models\\MyModel", $model);
-        $this->assertInstanceOf("\\TestApp\\Views\\MyModelView",$view);
+        $this->assertInstanceOf("\\TestApp\\Views\\MyModelListView",$view);
     }
 
     //Load non-existing controller
     public function testLoadControllerThatDoesNotExist()
     {
+        /** @var AbstractController $result */
         $result = Factory::loadController("DemoEntity");
         $this->assertInstanceOf("\\FlyFoundation\\Controllers\\GenericEntityController",$result);
 
+        $this->assertEquals("DemoEntity",$result->getEntityName());
+
         $model = $result->getModel();
 
-        $view = $result->getView();
+        $view = $result->getView("");
 
         $this->assertInstanceOf("\\FlyFoundation\\Models\\OpenGenericEntity", $model);
         $this->assertInstanceOf("\\TestApp\\Views\\DemoEntityView",$view);

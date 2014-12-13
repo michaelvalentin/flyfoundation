@@ -11,14 +11,14 @@ class ViewFactoryTest extends PHPUnit_Framework_TestCase {
     //Load existing view
     public function testLoadViewThatExists()
     {
-        $result = Factory::loadView("Demo");
+        $result = Factory::loadView("Demo","");
         $this->assertInstanceOf("\\TestApp\\Views\\DemoView",$result);
     }
 
     //Load not existing view with LSD-definition and view naming
     public function testLoadViewThatDoesNotExistButHasLsdAndViewNaming()
     {
-        $result = Factory::loadView("NotImplemented");
+        $result = Factory::loadView("NotImplemented","");
         $this->assertInstanceOf("\\FlyFoundation\\Views\\GenericView",$result);
         $this->assertEquals("NotImplemented",$result->getEntityName());
     }
@@ -27,7 +27,7 @@ class ViewFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLoadViewThatDoesNotExistButHasViewNaming()
     {
         $this->setExpectedException("\\FlyFoundation\\Exceptions\\UnknownClassException");
-        $result = Factory::loadView("SomeClassNotInLsd");
+        $result = Factory::loadView("SomeClassNotInLsd","");
     }
 
     //Load not existing view without view naming
@@ -40,21 +40,21 @@ class ViewFactoryTest extends PHPUnit_Framework_TestCase {
     //Check existence of existing view
     public function testExistsViewThatExists()
     {
-        $result = Factory::viewExists("Demo");
+        $result = Factory::viewExists("Demo","");
         $this->assertTrue($result);
     }
 
     //Check existence of not existing view with view naming and LSD-definition
     public function testExistsViewThatDoesNotExistButHasViewNamingAndLsd()
     {
-        $result = Factory::ViewExists("NotImplemented");
+        $result = Factory::ViewExists("Not","Implemented");
         $this->assertTrue($result);
     }
 
     //Check existence of view with view naming but no LSD-definition
     public function testExistsViewThatDoesNotExistButHasViewNaming()
     {
-        $result = Factory::viewExists("SomeClassNotInLsd");
+        $result = Factory::viewExists("SomeClassNotInLsd","");
         $this->assertFalse($result);
     }
 

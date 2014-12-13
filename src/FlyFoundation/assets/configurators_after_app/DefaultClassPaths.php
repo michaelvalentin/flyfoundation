@@ -15,6 +15,7 @@ class DefaultClassPaths implements FlyFoundation\Core\Configurator{
         $config->viewSearchPaths->add("\\FlyFoundation\\Views");
         $config->controllerSearchPaths->add("\\FlyFoundation\\Controllers");
         $config->databaseSearchPaths->add("\\FlyFoundation\\Database");
+        $config->formSearchpaths->add("\\FlyFoundation\\Forms");
 
         return $config;
     }
