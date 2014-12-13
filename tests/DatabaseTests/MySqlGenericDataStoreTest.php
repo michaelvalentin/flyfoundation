@@ -406,5 +406,40 @@ class MySqlGenericDataStoreTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($res);
         $this->assertFalse($res2);
     }
+
+    public function testFetchEntries()
+    {
+        $this->dataStore->getMySqlDatabase()->exec(
+            "INSERT INTO
+                generic_datastore_test
+                (id, `name`, description, adate)
+                VALUES
+                (4, 'TEST', 'A test', '2014-06-15 16:27:12'),
+                (5, 'demo', 'More testing', '2014-07-05 11:33:25'),
+                (8, 'something', 'Longer value with special chars æøå !€%', '2014-08-09 19:32:58')"
+        );
+
+        $res = $this->dataStore->fetchEntries();
+        $this->assertEquals([
+            [
+                "id" => "4",
+                "name" => "TEST",
+                "description" => "A test",
+                "adate" => "2014-06-15 16:27:12"
+            ],
+            [
+                "id" => "5",
+                "name" => "demo",
+                "description" => "More testing",
+                "adate" => "2014-07-05 11:33:25"
+            ],
+            [
+                "id" => "8",
+                "name" => "something",
+                "description" => "Longer value with special chars æøå !€%",
+                "adate" => "2014-08-09 19:32:58"
+            ],
+        ],$res);
+    }
 }
  

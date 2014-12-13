@@ -3,10 +3,12 @@
 
 namespace FlyFoundation\Database;
 
+use FlyFoundation\Database\Conditions\DataCondition;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Core\Dependant;
 use FlyFoundation\Dependencies\MySqlDatabase;
 use FlyFoundation\Exceptions\InvalidArgumentException;
+use FlyFoundation\Exceptions\NotImplementedException;
 use PDO;
 use PDOException;
 
@@ -152,6 +154,23 @@ class MySqlGenericDataStore extends GenericDataStore implements Dependant{
         $preparedExistsStatement->execute($bindData);
         $result = $preparedExistsStatement->fetch();
         return $result[0] === "1";
+    }
+
+    /**
+     * @param DataCondition[] $conditions
+     */
+    public function fetchEntries(array $conditions = [])
+    {
+        if(count($conditions)){
+            throw new NotImplementedException(
+                "The MySql data store does not yet support conditions in fetch statements"
+            );
+        }
+
+        $fetchQuery = 'SELECT * FROM '.$this->getStorageName();
+        $preparedFetchStatement = $this->getMySqlDatabase()->prepare($fetchQuery);
+        $preparedFetchStatement->execute();
+        return $preparedFetchStatement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

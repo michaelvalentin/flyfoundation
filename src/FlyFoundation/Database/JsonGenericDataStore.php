@@ -73,4 +73,9 @@ class JsonGenericDataStore extends GenericDataStore implements Dependant{
     {
         // TODO: Implement afterConfiguration() method.
     }
+
+    public function fetchEntries(array $conditions)
+    {
+        // TODO: Implement fetchEntries() method.
+    }
 }

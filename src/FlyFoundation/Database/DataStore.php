@@ -32,6 +32,8 @@ interface DataStore
      */
     public function deleteEntry(array $id);
 
+    public function fetchEntries(array $conditions);
+
     /**
      * @param array $data
      * @return bool
