@@ -12,7 +12,7 @@ class IntegerField extends PersistentField{
      */
     public function acceptsValue($data)
     {
-        if(is_int($data)){
+        if(ctype_digit($data) || is_int($data)){
             return true;
         }
         return false;

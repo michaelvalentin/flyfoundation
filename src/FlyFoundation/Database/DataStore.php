@@ -2,6 +2,7 @@
 
 namespace FlyFoundation\Database;
 
+use FlyFoundation\Database\Conditions\DataCondition;
 use FlyFoundation\Database\Field;
 use FlyFoundation\Database\Fields\DataField;
 
@@ -32,7 +33,11 @@ interface DataStore
      */
     public function deleteEntry(array $id);
 
-    public function fetchEntries(array $conditions);
+    /**
+     * @param DataCondition[] $conditions
+     * @return array
+     */
+    public function fetchEntries(array $conditions = []);
 
     /**
      * @param array $data

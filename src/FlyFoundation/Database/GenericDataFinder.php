@@ -7,7 +7,9 @@ use FlyFoundation\Core\Generic;
 use FlyFoundation\Database\Conditions\DataCondition;
 use FlyFoundation\Dependencies\AppConfig;
 use FlyFoundation\Exceptions\NotImplementedException;
+use FlyFoundation\Factory;
 use FlyFoundation\Models\Entity;
+use FlyFoundation\Models\GenericEntity;
 
 class GenericDataFinder extends GenericDataHandler implements DataFinder, Generic
 {
@@ -16,16 +18,25 @@ class GenericDataFinder extends GenericDataHandler implements DataFinder, Generi
      * @param DataCondition[] $conditions
      * @return Entity[]
      */
-    public function fetch(array $conditions)
+    public function fetch(array $conditions = [])
     {
-        // TODO: Implement fetch() method.
+        $databaseEntries = $this->dataStore->fetchEntries([]);
+        $result = [];
+        foreach($databaseEntries as $entry){
+            $entityData = $this->getDataForEntity($entry);
+            /** @var GenericEntity $entity */
+            $entity = Factory::loadModel($this->entityName);
+            $entity->setPersistentData($entityData,"This is called from the data mapper");
+            $result[] = $entity;
+        }
+        return $result;
     }
 
     /**
      * @param DataCondition[] $conditions
      * @return Entity[]
      */
-    public function fetchRaw(array $conditions)
+    public function fetchRaw(array $conditions = [])
     {
         return $this->fetch($conditions);
     }

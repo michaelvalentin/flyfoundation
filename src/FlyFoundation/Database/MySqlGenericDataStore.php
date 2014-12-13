@@ -158,6 +158,8 @@ class MySqlGenericDataStore extends GenericDataStore implements Dependant{
 
     /**
      * @param DataCondition[] $conditions
+     * @throws \FlyFoundation\Exceptions\NotImplementedException
+     * @return array
      */
     public function fetchEntries(array $conditions = [])
     {

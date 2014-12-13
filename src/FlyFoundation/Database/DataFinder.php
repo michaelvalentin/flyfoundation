@@ -10,11 +10,11 @@ interface DataFinder
      * @param DataCondition[] $conditions
      * @return Entity[]
      */
-    public function fetch(array $conditions);
+    public function fetch(array $conditions = []);
 
     /**
      * @param DataCondition[] $conditions
      * @return Entity[]
      */
-    public function fetchRaw(array $conditions);
+    public function fetchRaw(array $conditions = []);
 }

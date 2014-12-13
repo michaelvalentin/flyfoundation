@@ -27,6 +27,8 @@ class IntegerFieldTest extends \PHPUnit_Framework_TestCase {
     {
         $result = $this->field->acceptsValue(48);
         $this->assertTrue($result);
+        $result2 = $this->field->acceptsValue(1);
+        $this->assertTrue($result2);
     }
 
     public function testAcceptsValueFloat()

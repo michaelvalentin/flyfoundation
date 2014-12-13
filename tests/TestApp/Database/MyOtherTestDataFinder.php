@@ -18,7 +18,7 @@ class MyOtherTestDataFinder implements DataFinder{
      * @param DataCondition[] $conditions
      * @return \FlyFoundation\Models\Entity[]
      */
-    public function fetch($conditions)
+    public function fetch(array $conditions = [])
     {
         // TODO: Implement fetch() method.
     }
@@ -27,7 +27,7 @@ class MyOtherTestDataFinder implements DataFinder{
      * @param DataCondition[] $conditions
      * @return \FlyFoundation\Models\Entity[]
      */
-    public function fetchRaw($conditions)
+    public function fetchRaw(array $conditions = [])
     {
         // TODO: Implement fetchRaw() method.
     }

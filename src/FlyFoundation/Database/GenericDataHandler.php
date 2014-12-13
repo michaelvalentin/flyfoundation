@@ -80,6 +80,11 @@ abstract class GenericDataHandler {
         $result = [];
         foreach($storageData as $storageFieldName => $value){
             $entityFieldName = $this->getEntityFieldName($storageFieldName);
+            if(ctype_digit($value)){
+                $value = intval($value);
+            }elseif(!is_int($value) && is_numeric($value)){
+                $value = floatval($value);
+            }
             $result[$entityFieldName] = $value;
         }
         return $result;
