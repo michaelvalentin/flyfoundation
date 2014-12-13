@@ -1,10 +1,10 @@
 <?php
 
-namespace FlyFoundation\Models\Forms\FormValidations;
+namespace FlyFoundation\Forms\FormValidations;
 
 
 use FlyFoundation\Models\Model;
-use FlyFoundation\Models\Forms\FormFields\FormField;
+use FlyFoundation\Forms\FormFields\FormField;
 
 abstract class FormValidation implements Model
 {

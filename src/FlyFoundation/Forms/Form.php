@@ -1,8 +1,9 @@
 <?php
 
-namespace FlyFoundation\Models\Forms;
+namespace FlyFoundation\Forms;
 
 
+use FlyFoundation\Forms\FormFields\FormField;
 use FlyFoundation\Models\Model;
 
 interface Form extends Model

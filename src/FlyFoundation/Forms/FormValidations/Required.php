@@ -1,6 +1,6 @@
 <?php
 
-namespace FlyFoundation\Models\Forms\FormValidations;
+namespace FlyFoundation\Forms\FormValidations;
 
 class Required extends FormValidation{
 

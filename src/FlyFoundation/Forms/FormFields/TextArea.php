@@ -1,6 +1,6 @@
 <?php
 
-namespace FlyFoundation\Models\Forms\FormFields;
+namespace FlyFoundation\Forms\FormFields;
 
 
 class TextArea extends FormField {

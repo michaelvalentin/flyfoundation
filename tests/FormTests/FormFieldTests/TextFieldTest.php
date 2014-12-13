@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../../test-init.php';
 
-use FlyFoundation\Models\Forms\FormFields\TextField;
+use FlyFoundation\Forms\FormFields\TextField;
 
 class TextFieldTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +19,7 @@ class TextFieldTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiation()
     {
-        $this->assertInstanceOf("\\FlyFoundation\\Models\\Forms\\FormFields\\FormField", $this->textField);
+        $this->assertInstanceOf("\\FlyFoundation\\Forms\\FormFields\\FormField", $this->textField);
     }
 
     public function testSetGetName()

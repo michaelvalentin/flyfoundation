@@ -1,10 +1,10 @@
 <?php
 
-namespace FlyFoundation\Models\Forms\Builders;
+namespace FlyFoundation\Forms\Builders;
 
 
-use FlyFoundation\Models\Forms\FormFields\SelectList;
-use FlyFoundation\Models\Forms\GenericForm;
+use FlyFoundation\Forms\FormFields\SelectList;
+use FlyFoundation\Forms\GenericForm;
 
 class SelectListBuilder extends FormFieldBuilder
 {

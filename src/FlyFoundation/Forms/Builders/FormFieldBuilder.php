@@ -1,12 +1,12 @@
 <?php
 
-namespace FlyFoundation\Models\Forms\Builders;
+namespace FlyFoundation\Forms\Builders;
 
-use FlyFoundation\Models\Forms\FormValidations\MaximumLength;
-use FlyFoundation\Models\Forms\FormValidations\MinimumLength;
-use FlyFoundation\Models\Forms\FormValidations\Required;
-use FlyFoundation\Models\Forms\GenericForm;
-use FlyFoundation\Models\Forms\FormFields\FormField;
+use FlyFoundation\Forms\FormValidations\MaximumLength;
+use FlyFoundation\Forms\FormValidations\MinimumLength;
+use FlyFoundation\Forms\FormValidations\Required;
+use FlyFoundation\Forms\GenericForm;
+use FlyFoundation\Forms\FormFields\FormField;
 
 abstract class FormFieldBuilder
 {

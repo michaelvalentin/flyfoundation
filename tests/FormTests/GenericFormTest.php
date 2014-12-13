@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '/../test-init.php';
 
-use FlyFoundation\Models\Forms\GenericForm;
-use FlyFoundation\Models\Forms\FormFields\TextField;
-use FlyFoundation\Models\Forms\FormValidations\Required;
+use FlyFoundation\Forms\GenericForm;
+use FlyFoundation\Forms\FormFields\TextField;
+use FlyFoundation\Forms\FormValidations\Required;
 
 class GenericFormTest extends \PHPUnit_Framework_TestCase
 {
@@ -102,12 +102,12 @@ class GenericFormTest extends \PHPUnit_Framework_TestCase
     public function testAddTextField()
     {
         $textFieldBuilder = $this->form->addTextField();
-        $this->assertInstanceOf('\\FlyFoundation\\Models\\Forms\\Builders\\TextFieldBuilder', $textFieldBuilder);
+        $this->assertInstanceOf('\\FlyFoundation\\Forms\\Builders\\TextFieldBuilder', $textFieldBuilder);
     }
 
     public function testAddSelectList()
     {
         $selectListBuilder = $this->form->addSelectList();
-        $this->assertInstanceOf('\\FlyFoundation\\Models\\Forms\\Builders\\SelectListBuilder', $selectListBuilder);
+        $this->assertInstanceOf('\\FlyFoundation\\Forms\\Builders\\SelectListBuilder', $selectListBuilder);
     }
 }

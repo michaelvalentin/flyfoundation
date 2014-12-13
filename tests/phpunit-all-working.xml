@@ -15,11 +15,12 @@
         <testsuite name="FlyFoundation Test Suite">
             <directory>CoreTests</directory>
             <directory>DatabaseTests</directory>
-            <directory>ModelTests</directory>
-            <directory>UtilTests</directory>
-            <directory>SystemDefinitionTests</directory>
-            <directory>LsdParserTests</directory>
             <directory>FactoryTests</directory>
+            <directory>FormTests</directory>
+            <directory>LsdParserTests</directory>
+            <directory>ModelTests</directory>
+            <directory>SystemDefinitionTests</directory>
+            <directory>UtilTests</directory>
         </testsuite>
     </testsuites>
 

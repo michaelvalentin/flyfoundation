@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../../test-init.php';
 
-use FlyFoundation\Models\Forms\FormFields\SelectList;
+use FlyFoundation\Forms\FormFields\SelectList;
 
 class SelectListTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,7 +30,7 @@ class SelectListTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiation()
     {
-        $this->assertInstanceOf('\\FlyFoundation\\Models\\Forms\\FormFields\\FormField', $this->selectList);
+        $this->assertInstanceOf('\\FlyFoundation\\Forms\\FormFields\\FormField', $this->selectList);
     }
 
     public function testFieldHTML()

@@ -1,6 +1,6 @@
 <?php
 
-namespace FlyFoundation\Models\Forms\Builders;
+namespace FlyFoundation\Forms\Builders;
 
 
 class TextAreaBuilder extends FormFieldBuilder {

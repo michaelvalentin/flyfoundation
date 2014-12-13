@@ -1,9 +1,9 @@
 <?php
 
-namespace FlyFoundation\Models\Forms\FormValidations;
+namespace FlyFoundation\Forms\FormValidations;
 
 
-class MinimumLength extends FormValidation{
+class MaximumLength extends FormValidation{
 
     /**
      * @var int
@@ -23,9 +23,9 @@ class MinimumLength extends FormValidation{
         foreach($this->fields as $field){
             $value = $field->getValue();
             if(is_int($value)){
-                if($value < $this->limit) return false;
+                if($value > $this->limit) return false;
             } else {
-                if(strlen($value) < $this->limit) return false;
+                if(strlen($value) > $this->limit) return false;
             }
         }
         return true;

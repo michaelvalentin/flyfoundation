@@ -1,16 +1,16 @@
 <?php
 
-namespace FlyFoundation\Models\Forms;
+namespace FlyFoundation\Forms;
 
 
-use FlyFoundation\Models\Forms\Builders\SelectListBuilder;
-use FlyFoundation\Models\Forms\Builders\TextAreaBuilder;
-use FlyFoundation\Models\Forms\Builders\TextFieldBuilder;
-use FlyFoundation\Models\Forms\FormFields\FormField;
-use FlyFoundation\Models\Forms\FormFields\SelectList;
-use FlyFoundation\Models\Forms\FormFields\TextArea;
-use FlyFoundation\Models\Forms\FormFields\TextField;
-use FlyFoundation\Models\Forms\FormValidations\FormValidation;
+use FlyFoundation\Forms\Builders\SelectListBuilder;
+use FlyFoundation\Forms\Builders\TextAreaBuilder;
+use FlyFoundation\Forms\Builders\TextFieldBuilder;
+use FlyFoundation\Forms\FormFields\FormField;
+use FlyFoundation\Forms\FormFields\SelectList;
+use FlyFoundation\Forms\FormFields\TextArea;
+use FlyFoundation\Forms\FormFields\TextField;
+use FlyFoundation\Forms\FormValidations\FormValidation;
 use FlyFoundation\Dependencies\AppContext;
 
 class GenericForm implements Form

@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '/../../test-init.php';
 
-use FlyFoundation\Models\Forms\GenericForm;
-use FlyFoundation\Models\Forms\FormFields\TextField;
-use FlyFoundation\Models\Forms\Builders\TextFieldBuilder;
+use FlyFoundation\Forms\GenericForm;
+use FlyFoundation\Forms\FormFields\TextField;
+use FlyFoundation\Forms\Builders\TextFieldBuilder;
 
 class TextFieldBuilderTest extends \PHPUnit_Framework_TestCase
 {
