@@ -1,4 +1,4 @@
-**Bachelor project hand-in Commit**
+**This is the bachelor project hand-in commit**
 
 **CURRENT STATUS: Not suitable for production**
 
